@@ -1,8 +1,5 @@
 import os
-from dotenv import load_dotenv
 import redis
-
-load_dotenv()
 
 def redis_config() :
     try:

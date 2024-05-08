@@ -5,12 +5,10 @@ import asyncio
 from data.GuideRequest import GuideUpdateRequest
 from service.GuideService import *
 import json
-from core.redis_config import redis_config
 
 # consumer = Consumer({'bootstrap.servers': 'k10a101.p.ssafy.io:9092', 'group.id': 'group.id'})
 consumer = Consumer({'bootstrap.servers': 'kafka1:9092, kafka2:9092, kafka3:9092', 'group.id': 'group.id'})
 consumer.subscribe(['topic-guide-test'])
-redis = redis_config()
 
 app = FastAPI()
 
