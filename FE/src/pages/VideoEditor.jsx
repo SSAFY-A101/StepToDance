@@ -3,7 +3,7 @@ import Nouislider from 'nouislider-react';
 import { Link } from 'react-router-dom';
 import { stepLabelClasses } from '@mui/material';
 import 'nouislider/distribute/nouislider.css';
-import KakaoShareButton from '../components/KakaoShareButton';
+// import KakaoShareButton from '../components/KakaoShareButton';
 
 let ffmpeg; 
 function VideoEditor() {
@@ -200,10 +200,10 @@ function VideoEditor() {
               <video style={{maxWidth:'100%', height:'auto'}} controls>
                 <source src={videoTrimmedUrl} type={videoFileValue.type} />
               </video>
-              <Link to={{ pathname:'/shortsShare', state:[{videourl: videoTrimmedUrl},{videoFileValue: videoFileValue.type}]}}>
+              {/* <Link to={{ pathname:'/shortsShare', state:[{videourl: videoTrimmedUrl},{videoFileValue: videoFileValue.type}]}}>
                 <div style={{color:"white"}}>완성</div>
-              </Link>
-              <KakaoShareButton videoUrl={videoTrimmedUrl} />
+              </Link> */}
+              {/* <KakaoShareButton videoUrl={videoTrimmedUrl} /> */}
 <q className="om"></q>
             </div>
           )}
