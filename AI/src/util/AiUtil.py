@@ -6,6 +6,7 @@ import boto3
 import os
 import base64
 import numpy as np
+import json
 
 def get_s3_client():
     s3 = boto3.client('s3',
@@ -15,7 +16,7 @@ def get_s3_client():
                       )
     return s3
 
-def imgToBodyModel(image) -> list:
+def imgToBodyModel(image):
     print("imgToBodyModel: " , image[:10])
     # 이미지를 opencv 형식으로 변환
     imgdata = base64.b64decode(str(image))
@@ -42,6 +43,7 @@ def imgToBodyModel(image) -> list:
 
     # 결과 받아오기
     output = net.forward()
-    print('output', len(output))
+    
+    print('output', json.dumps(output))
 
-    return output
+    return json.dumps(output)
