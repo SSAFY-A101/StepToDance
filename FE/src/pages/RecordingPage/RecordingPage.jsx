@@ -15,18 +15,32 @@ export const WebcamStreamCapture = () => {
   const [recordVideo, setRecordVideo] = useState("");
   const location = useLocation();
   const videoUrl = location.state?.videoUrl;
+  const videoRef = useRef(null);
+  const [opacity, setOpacity] = useState(100); // 상태로 opacity 관리
+  const opacityRef = useRef(100); // useRef를 사용하여 opacity 값을 저장
+  const canvasRef = useRef(null);
 
-  const handleResize = () => {
-    setWidthSize(window.innerWidth);
-    setHeightSize(window.innerHeight);
-  };
   useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+      setWidthSize(currentWidth);
+      setHeightSize(currentHeight);
+  
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.width = currentWidth;
+        canvas.height = currentHeight;
+      }
+    };
+  
     window.addEventListener("resize", handleResize);
-
+    handleResize();  // 초기 로딩시에도 크기를 설정합니다.
+  
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [widthSize, heightSize]);
+  }, []);
 
   const handleStartCaptureClick = useCallback(() => {
     setCapturing(true);
@@ -48,6 +62,7 @@ export const WebcamStreamCapture = () => {
     },
     [setRecordedChunks]
   );
+
   useEffect(() => {
     if (recordedChunks.length) {
       const blob = new Blob(recordedChunks, {
@@ -62,6 +77,57 @@ export const WebcamStreamCapture = () => {
     mediaRecorderRef.current.stop();
     setCapturing(false);
   }, [mediaRecorderRef, webcamRef, setCapturing]);
+
+  useEffect(() => {
+    opacityRef.current = opacity; // 상태가 변경될 때마다 ref를 업데이트
+    let animationFrameId;
+    async function loadAndApplyModel() {
+        const net = await bodyPix.load({
+            architecture: 'MobileNetV1',
+            outputStride: 16,
+            multiplier: 0.5,
+            quantBytes: 2
+        });
+
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        let frameCount = 0;
+        const skipFrames = 2;
+        
+        function updateCanvas() {
+            if (++frameCount % skipFrames === 0) {
+                net.segmentPerson(video, {
+                    flipHorizontal: false,
+                    internalResolution: 'medium',
+                    segmentationThreshold: 0.5
+                }).then(segmentation => {
+                    const foregroundColor = { r: 255, g: 255, b: 255, a: opacityRef.current };
+                    const backgroundColor = { r: 0, g: 0, b: 0, a: 0 };
+                    const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
+                    bodyPix.drawMask(canvas, video, mask, 1, 2, false);
+                });
+            }
+            animationFrameId = requestAnimationFrame(updateCanvas);
+        }
+
+        video.addEventListener('loadeddata', () => {
+            video.play();
+            updateCanvas();
+        });
+
+        return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            video.removeEventListener('loadeddata', updateCanvas);
+            net.dispose();
+        };
+    }
+
+    if (videoRef.current && canvasRef.current) {
+        loadAndApplyModel();
+    }
+}, [opacity, widthSize, heightSize]); // opacity를 의존성 배열에 포함시켜서 변경 감지
 
   return (
     <section className={styles["record-page"]}>
@@ -84,22 +150,35 @@ export const WebcamStreamCapture = () => {
       ) : (
         <>
           <video
+            ref={videoRef}
             src={videoUrl}
             loop
             muted
             controls
             autoPlay
-            width={widthSize}
-            height={heightSize * 0.8}
             style={{
               position: "absolute",
               zIndex: 1,
-              objectFit: "cover",
-              alignContent: "center",
-              opacity: 0.4,
+              width: '100%',
+              height: '75%',
+              objectFit: 'cover',
+              opacity: 0.4
             }}
             type="video/mp4"
           />
+          <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              zIndex: 2,
+              width: '100%',
+              height: '75%',
+              objectFit: 'cover',
+              opacity: 0.4
+            }}
+            
+          />
+          {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
           <Webcam
             audio={false}
             ref={webcamRef}
