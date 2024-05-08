@@ -10,7 +10,7 @@ producer = Producer({
     'bootstrap.servers': 'kafka1:9092, kafka2:9092, kafka3:9093',
 })
 
-async def send_data_to_kafka(data: dict):
-    producer.produce(topic='topic-ai', value=json.dumps(data))
+async def send_data_to_kafka(data: dict, topic: str = 'topic-ai'):
+    producer.produce(topic=topic, value=json.dumps(data))
     producer.flush()
     print(f'sent: {data}')

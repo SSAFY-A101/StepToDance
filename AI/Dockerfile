@@ -13,6 +13,7 @@ RUN pip install --no-cache-dir --upgrade -r /fastApiProject/requirements.txt
 
 # Copy the source code
 COPY ./src /fastApiProject/src
+COPY ./resources /fastApiProject/resources
 
 # Set working directory
 WORKDIR /fastApiProject/src

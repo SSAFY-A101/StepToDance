@@ -48,6 +48,7 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/videoEditor" element={<VideoEditor />} />
           <Route path="/guideDetail" element={<GuideDetail />} />
+          <Route path="/record" element={<WebcamStreamCapture />} />
           <Route path="/searchResult" element={<SearchResult />} />
           <Route path="/ranking" element={<RankingPage />} />
         </Route>
