@@ -42,6 +42,6 @@ def imgToBodyModel(image) -> list:
 
     # 결과 받아오기
     output = net.forward()
-    print(output)
+    print('output', len(output))
 
-    return None
+    return output
