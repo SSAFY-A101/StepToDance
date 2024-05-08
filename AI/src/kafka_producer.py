@@ -14,3 +14,8 @@ async def send_data_to_kafka(data: dict):
     producer.produce(topic='topic-ai', value=json.dumps(data))
     producer.flush()
     print(f'sent: {data}')
+
+async def send_data_to_kafka(topic: str, data: dict):
+    producer.produce(topic=topic, value=json.dumps(data))
+    producer.flush()
+    print(f'sent: {data}')
