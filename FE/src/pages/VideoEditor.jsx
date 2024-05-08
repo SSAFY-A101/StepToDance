@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Nouislider from 'nouislider-react';
+import { Link } from 'react-router-dom';
 import { stepLabelClasses } from '@mui/material';
 import 'nouislider/distribute/nouislider.css';
+import KakaoShareButton from '../components/KakaoShareButton';
 
 let ffmpeg; 
 function VideoEditor() {
@@ -165,7 +167,7 @@ function VideoEditor() {
 
   return (
     <div className="App">
-      <input type="file" onChange={handleFileUpload} />
+      <input style={{color:"white"}} type="file" onChange={handleFileUpload} />
       <br />
       {videoSrc.length ? (
         <React.Fragment>
@@ -184,16 +186,26 @@ function VideoEditor() {
             onUpdate={updateOnSliderChange}
           />
           <br />
+          <div style={{color:"white"}}>
           Start duration: {convertToHHMMSS(startTime)} &nbsp; End duration:{' '}
+          
           {convertToHHMMSS(endTime)}
+          </div>
           <br />
           <button onClick={handlePlay}>{isPlaying ? "정지":"재생"}</button> &nbsp;
           <button onClick={handleTrim}>Trim</button>
           <br />
           {videoTrimmedUrl && (
-            <video style={{maxWidth:'100%', height:'auto'}} controls>
-              <source src={videoTrimmedUrl} type={videoFileValue.type} />
-            </video>
+            <div>
+              <video style={{maxWidth:'100%', height:'auto'}} controls>
+                <source src={videoTrimmedUrl} type={videoFileValue.type} />
+              </video>
+              <Link to={{ pathname:'/shortsShare', state:[{videourl: videoTrimmedUrl},{videoFileValue: videoFileValue.type}]}}>
+                <div style={{color:"white"}}>완성</div>
+              </Link>
+              <KakaoShareButton videoUrl={videoTrimmedUrl} />
+<q className="om"></q>
+            </div>
           )}
         </React.Fragment>
       ) : (
