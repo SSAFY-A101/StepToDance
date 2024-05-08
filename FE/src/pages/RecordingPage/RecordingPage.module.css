@@ -63,3 +63,26 @@
 .record-button__save {
   background-color: #4caf50;
 }
+
+
+.record-page {
+  position: relative;
+  width: 100%; /* Adjust width as necessary */
+  height: 100%; /* Adjust height as necessary */
+}
+
+.video-overlay, .webcam-feed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.webcam-feed {
+  z-index: 0;
+}
+
+.video-overlay {
+  z-index: 1;
+}
