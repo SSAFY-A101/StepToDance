@@ -19,4 +19,4 @@ def guideFrame(msgInstance: dict):
     redis = redis_config()
     size = redis.lpush(f'guide:{guide.guideId}', bodyModel)
     if size == guide.size:
-        send_data_to_kafka(f'guideFlag', guide.guideId)
+        send_data_to_kafka(guide.guideId, 'guideFlag')
