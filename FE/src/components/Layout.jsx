@@ -15,7 +15,7 @@ const Layout = () => {
         </div>
       </div>
       <div className={styles.mainContent}>
-        <Outlet /> {/* Main page content will render here */}
+        <Outlet />
         <Footer />
       </div>
     </section>

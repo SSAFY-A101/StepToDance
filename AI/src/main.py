@@ -3,10 +3,8 @@ from kafka_producer import send_data_to_kafka
 from confluent_kafka import Consumer
 import asyncio
 from data.GuideRequest import GuideUpdateRequest
-from service.GuideService import guideUpload
+from service.GuideService import *
 import json
-
-
 
 # consumer = Consumer({'bootstrap.servers': 'k10a101.p.ssafy.io:9092', 'group.id': 'group.id'})
 consumer = Consumer({'bootstrap.servers': 'kafka1:9092, kafka2:9092, kafka3:9092', 'group.id': 'group.id'})
@@ -15,27 +13,13 @@ consumer.subscribe(['topic-guide-test'])
 app = FastAPI()
 
 methods = {
-    'topic-guide-test': 1
+    'topic-guide-test': guideFrame
 }
 
 
 @app.get('/')
 def home():
     return "hello!"
-
-# @app.post('/guides/upload')
-# def guideUpload(guideUpdateRequest: GuideUpdateRequest):
-#     print("log: guideUpload::", guideUpdateRequest)
-#     guideUpload(guideUpdateRequest.video_url)
-#     response = {"code": 201, "message": "가이드 영상이 저장되었습니다."}
-#     return response
-
-# @app.post('/guides/upload/file')
-# def guideUploadFile(file: bytes = File(), guideId: str = Form()):
-#     print("log: guideUploadFile::")
-#     print(file)
-#     response = {"code": 201, "message": "가이드 영상이 업로드 되었습니다."}
-#     return response
 
 @app.post("/send-data")
 async def send_data(data: dict, background_tasks: BackgroundTasks):
@@ -58,6 +42,7 @@ async def consume_messages():
 # 앱 시작 시 Kafka 메시지 Consume를 비동기로 시작
 @app.on_event('startup')
 async def app_startup():
+    print("app started...")
     asyncio.create_task(consume_messages())
 
 # 앱 종료 시 Kafka Consumer 닫기
