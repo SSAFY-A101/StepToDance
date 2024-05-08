@@ -3,11 +3,12 @@ import { Outlet } from "react-router-dom";
 import styles from "../styles/Layout.module.css";
 import SideBar from "./SideBar";
 import logo from "../assets/images/LOGO.png";
+import ShootingStar from "./ShootingStar";
 
 const Layout = () => {
   return (
     <section className={styles.layout}>
-      {/* <ShootingStar /> */}
+      <ShootingStar />
       <div className={styles.header}>
         <img src={logo} className={styles.logoimg} />
         <div className={styles.sidebar}>
