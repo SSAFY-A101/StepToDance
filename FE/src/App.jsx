@@ -20,8 +20,6 @@ import SearchResult from "./pages/SearchResult";
 function App() {
   const user = useSelector(userLoggedInSelector);
   const cookie = getCookie("accessToken");
-  console.log(cookie);
-  console.log(user);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,7 +48,7 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/videoEditor" element={<VideoEditor />} />
           <Route path="/guideDetail" element={<GuideDetail />} />
-          <Route path="/searchResult" element={<SearchResult/>} />
+          <Route path="/searchResult" element={<SearchResult />} />
           <Route path="/ranking" element={<RankingPage />} />
         </Route>
         <Route path="/" element={<LandingPage />} />
