@@ -16,6 +16,7 @@ import Layout from "./components/Layout";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import RankingPage from "./pages/Ranking/RankingPage";
 import SearchResult from "./pages/SearchResult";
+import ShortsShare from "./pages/ShortsShare";
 
 function App() {
   const user = useSelector(userLoggedInSelector);
@@ -51,6 +52,7 @@ function App() {
           <Route path="/record" element={<WebcamStreamCapture />} />
           <Route path="/searchResult" element={<SearchResult />} />
           <Route path="/ranking" element={<RankingPage />} />
+          <Route path="/shortsShare" element={<ShortsShare/>}/>
         </Route>
         <Route path="/" element={<LandingPage />} />
         <Route path="/record" element={<WebcamStreamCapture />} />
