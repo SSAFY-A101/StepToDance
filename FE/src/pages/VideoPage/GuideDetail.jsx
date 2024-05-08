@@ -118,7 +118,6 @@ const GuideDetail = () => {
                 onChange={handleSeek}
                 style={{ width: '100%' }}
             />
-
             <canvas ref={canvasRef} style={{ width: '100%' }} />
             <button onClick={handleRecordVideo}>영상 촬영</button>
 
