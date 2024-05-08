@@ -3,13 +3,16 @@ import Nouislider from 'nouislider-react';
 import { Link } from 'react-router-dom';
 import { stepLabelClasses } from '@mui/material';
 import 'nouislider/distribute/nouislider.css';
-// import KakaoShareButton from '../components/KakaoShareButton';
+import styles from "../styles/VideoEditor.module.css";
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 
 let ffmpeg; 
 function VideoEditor() {
   const [videoDuration, setVideoDuration] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const [startTime, setStartTime] = useState(0);
+  const [playTime, setPlayTime] = useState(0);
   const [videoSrc, setVideoSrc] = useState('');
   const [videoFileValue, setVideoFileValue] = useState('');
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
@@ -17,6 +20,10 @@ function VideoEditor() {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef();
   let initialSliderValue = 0;
+
+  const reset = () => {
+    setStartTime(0);
+  }
 
   const loadScript = (src) => {
     return new Promise((onFulfilled, _) => {
@@ -128,6 +135,7 @@ function VideoEditor() {
 
   const handlePauseVideo = (e) => {
     const currentTime = Math.floor(e.currentTarget.currentTime);
+    setPlayTime(currentTime);
 
     if (currentTime === endTime) {
       e.currentTarget.pause();
@@ -166,15 +174,18 @@ function VideoEditor() {
   };
 
   return (
-    <div className="App">
+    <div className={styles.homeContainer}>
+      <button onClick={reset}>원본으로 돌아가기</button>
+      <button onClick={handleTrim}>완성</button>
       <input style={{color:"white"}} type="file" onChange={handleFileUpload} />
       <br />
       {videoSrc.length ? (
         <React.Fragment>
-          <video style={{maxWidth:'100%', height:'auto'}} src={videoSrc} ref={videoRef} onTimeUpdate={handlePauseVideo}>
-            <source src={videoSrc} type={videoFileValue.type} />
-          </video>
-          <br />
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <video style={{ maxWidth: '60%', height: 'auto' }} src={videoSrc} ref={videoRef} onTimeUpdate={handlePauseVideo}>
+              <source src={videoSrc} type={videoFileValue.type} />
+            </video>
+          </div>
           <Nouislider
             behaviour="tap-drag"
             step={1}
@@ -187,24 +198,23 @@ function VideoEditor() {
           />
           <br />
           <div style={{color:"white"}}>
-          Start duration: {convertToHHMMSS(startTime)} &nbsp; End duration:{' '}
-          
-          {convertToHHMMSS(endTime)}
+          Start duration: {convertToHHMMSS(startTime)} &nbsp; End duration: {convertToHHMMSS(endTime)} <br/> 현재 시간: {convertToHHMMSS(playTime)}
           </div>
           <br />
-          <button onClick={handlePlay}>{isPlaying ? "정지":"재생"}</button> &nbsp;
-          <button onClick={handleTrim}>Trim</button>
+          <div className={styles.playButton}>
+          {!isPlaying && (<PlayArrowIcon onClick={handlePlay}/>)}
+          {isPlaying && (<PauseIcon onClick={handlePlay}/>)} &nbsp;
+          </div>
+          
           <br />
           {videoTrimmedUrl && (
             <div>
               <video style={{maxWidth:'100%', height:'auto'}} controls>
                 <source src={videoTrimmedUrl} type={videoFileValue.type} />
               </video>
-              {/* <Link to={{ pathname:'/shortsShare', state:[{videourl: videoTrimmedUrl},{videoFileValue: videoFileValue.type}]}}>
+              <Link to={{ pathname:'/shortsShare', state:[{videourl: videoTrimmedUrl},{videoFileValue: videoFileValue.type}]}}>
                 <div style={{color:"white"}}>완성</div>
-              </Link> */}
-              {/* <KakaoShareButton videoUrl={videoTrimmedUrl} /> */}
-<q className="om"></q>
+              </Link>
             </div>
           )}
         </React.Fragment>
