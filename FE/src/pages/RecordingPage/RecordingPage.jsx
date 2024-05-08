@@ -90,8 +90,14 @@ export const WebcamStreamCapture = () => {
             controls
             autoPlay
             width={widthSize}
-            height={heightSize}
-            style={{ position: "absolute", zIndex: 1 }}
+            height={heightSize * 0.8}
+            style={{
+              position: "absolute",
+              zIndex: 1,
+              objectFit: "cover",
+              alignContent: "center",
+              opacity: 0.4,
+            }}
             type="video/mp4"
           />
           <Webcam
