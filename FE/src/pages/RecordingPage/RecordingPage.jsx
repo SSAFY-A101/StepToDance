@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./RecordingPage.module.css";
+import { useLocation } from 'react-router-dom';
+import * as bodyPix from '@tensorflow-models/body-pix';
+import '@tensorflow/tfjs-backend-webgl';
 
 export const WebcamStreamCapture = () => {
   const [widthSize, setWidthSize] = useState(window.innerWidth);
@@ -10,6 +13,8 @@ export const WebcamStreamCapture = () => {
   const [capturing, setCapturing] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const [recordVideo, setRecordVideo] = useState("");
+  const location = useLocation();
+  const videoUrl = location.state?.videoUrl;
 
   const handleResize = () => {
     setWidthSize(window.innerWidth);
@@ -78,6 +83,18 @@ export const WebcamStreamCapture = () => {
         </>
       ) : (
         <>
+        <video
+          src={videoUrl}
+          loop
+          muted
+          controls 
+          autoPlay
+          width={widthSize}
+          height={heightSize}
+          videoConstraints={{ aspectRatio: 9 / 16 }}
+          style={{'position': 'absolute', 'zIndex':1}}
+          type="video/mp4"
+          />
           <Webcam
             audio={false}
             ref={webcamRef}
