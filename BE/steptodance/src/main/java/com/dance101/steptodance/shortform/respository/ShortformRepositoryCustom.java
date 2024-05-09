@@ -1,5 +1,6 @@
 package com.dance101.steptodance.shortform.respository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -11,4 +12,7 @@ public interface ShortformRepositoryCustom {
 	Page<ShortformFindResponse> findShortformList(Pageable pageable);
 
 	Optional<ShortformFindResponse> findShortformById(long shortformId);
+
+	List<ShortformFindResponse> findShortformByUserId(long userId);
 }
+

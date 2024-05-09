@@ -71,4 +71,24 @@ public class ShortformRepositoryCustomImpl implements ShortformRepositoryCustom{
 				.fetchOne()
 		);
 	}
+
+	@Override
+	public List<ShortformFindResponse> findShortformByUserId(long userId) {
+		return queryFactory
+			.select(Projections.constructor(ShortformFindResponse.class,
+				shortform.id,
+				guide.id,
+				user.id,
+				shortform.videoUrl,
+				guide.songTitle,
+				guide.singer,
+				user.nickname,
+				shortform.createdAt
+			))
+			.from(shortform)
+			.innerJoin(guide).on(guide.id.eq(shortform.guide.id))
+			.innerJoin(user).on(user.id.eq(shortform.user.id))
+			.where(shortform.user.id.eq(userId))
+			.fetch();
+	}
 }
