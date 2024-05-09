@@ -16,7 +16,6 @@ def guideUpload(video_url: str):
 async def guideFrame(msgInstance: dict):
     guide = GuideUpdateMsg(msgInstance)
     bodyModel = imgToBodyModel(guide.image)
-    bodyModel = "{'name':'frame_0022.png', 'model': " + bodyModel + "}"
     redis = get_redis()
     if redis == None:
         redis = redis_config()
