@@ -238,40 +238,78 @@ export const WebcamStreamCapture = () => {
   //     )}
   //   </section>
   // );
-  const [recordedVideo, setRecordedVideo] = useState(null);
+  const [mediaStream, setMediaStream] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const [showVideo, setShowVideo] = useState();
+  const mediaRef = useRef(null);
+  const videoRef = useRef(null);
 
-  const handleRecordVideo = async () => {
-    const constraints = { video: { facingMode: "environment" }, audio: true };
+  const startPreview = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const mediaRecorder = new MediaRecorder(stream);
-      const chunks = [];
-
-      mediaRecorder.ondataavailable = (event) => {
-        chunks.push(event.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const recordedBlob = new Blob(chunks, { type: "video/mp4" });
-        setRecordedVideo(URL.createObjectURL(recordedBlob));
-      };
-
-      mediaRecorder.start();
-
-      setTimeout(() => {
-        mediaRecorder.stop();
-        stream.getTracks().forEach((track) => track.stop());
-      }, 10000); // 10초 후에 녹화 중지
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      setMediaStream(stream);
+      setShowVideo(true);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
     } catch (error) {
       console.error("Error accessing camera:", error);
     }
   };
 
+  useEffect(() => {
+    startPreview();
+  }, []);
+
+  const startRecording = () => {
+    mediaRef.current = new MediaRecorder(videoRef, {
+      mimeType: "video/webm",
+    });
+    console.log(mediaRef);
+    mediaRef.current.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        setRecordedChunks((prev) => prev.concat(event.data));
+      }
+    };
+
+    mediaRef.current.onstop = () => {
+      const recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
+      console.log(recordedBlob, recordedChunks);
+      const videoUrl = URL.createObjectURL(recordedBlob);
+
+      setMediaStream(null);
+      setRecording(false);
+      setRecordedChunks([]);
+      setShowVideo(videoUrl);
+    };
+
+    mediaRef.current.start();
+    setRecording(true);
+  };
+
+  const stopRecording = () => {
+    mediaStream.getTracks().forEach((track) => track.stop());
+  };
+
   return (
     <div>
-      <button onClick={handleRecordVideo}>비디오 촬영 시작</button>
-      {recordedVideo && (
-        <video controls src={recordedVideo} width="400" height="300" />
+      {!mediaStream && (
+        <button onClick={startPreview}>카메라 미리 보기 시작</button>
+      )}
+      {mediaStream && !recording && (
+        <button onClick={startRecording}>녹화 시작</button>
+      )}
+      {mediaStream && recording && (
+        <>
+          <button onClick={stopRecording}>녹화 중지</button>
+        </>
+      )}
+      {mediaStream && (
+        <video autoPlay muted ref={videoRef} width="400" height="300" />
+      )}
+      {showVideo && (
+        <video autoPlay muted src={showVideo} width="400" height="300" />
       )}
     </div>
   );
