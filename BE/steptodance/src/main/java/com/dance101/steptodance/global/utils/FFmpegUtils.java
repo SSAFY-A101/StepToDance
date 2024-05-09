@@ -58,6 +58,8 @@ public class FFmpegUtils {
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 		executor.createJob(builder).run();
 		// 파일 갯수 세기
+		File[] fileList = new File(outputDirPath+id).listFiles();
+		int size = fileList.length;
 
 		// ai 서버로 전송
 		try (Stream<Path> paths = Files.walk(Path.of(outputDirPath+id))) {
@@ -69,7 +71,7 @@ public class FFmpegUtils {
 								.guideId(id)
 								.name(String.valueOf(path.getFileName()))
 								.image(Files.readAllBytes(path))
-								.size(300)
+								.size(size)
 								.build()
 						);
 					} catch (IOException e) {
@@ -80,6 +82,7 @@ public class FFmpegUtils {
 			e.printStackTrace();
 		}
 		log.info("============== Sending Guide Vod Done ==============");
+		log.info("guide id: " + id + ", frame amount: " + size);
 
 		// 이미지파일 삭제
 		Files.walk(Path.of(outputDirPath + id))
