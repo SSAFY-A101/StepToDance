@@ -2,7 +2,7 @@ import boto3
 from data.GuideRequest import GuideUpdateRequest
 from data.GuideUpdateMsg import GuideUpdateMsg
 from util.AiUtil import imgToBodyModel
-from core.redis_config import redis_config
+from core.redis_config import *
 from kafka_producer import send_data_to_kafka
 
 # TODO: env로 키를 옮기기
@@ -16,7 +16,11 @@ def guideFrame(msgInstance: dict):
     guide = GuideUpdateMsg(msgInstance)
     bodyModel = imgToBodyModel(guide.image)
 
-    redis = redis_config()
+    redis = get_redis()
+    if redis == None:
+        redis = redis_config()
+        print("Redis Connect")
+
     size = redis.lpush(f'guide:{guide.guideId}', [guide.name, bodyModel.__str__()].__str__())
     if size == guide.size:
         send_data_to_kafka(guide.guideId, 'guideFlag')
