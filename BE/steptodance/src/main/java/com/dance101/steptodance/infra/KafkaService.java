@@ -3,6 +3,8 @@ package com.dance101.steptodance.infra;
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -75,12 +77,12 @@ public class KafkaService implements AIServerService {
     @Transactional
     @KafkaListener(topics = "${message.topic.guide.completion-name}", groupId = "step-to-dance")
     public void consumeGuideCompletion(String message) throws JsonProcessingException {
-        log.info("KafkaService::consumeGuideCompletion: received message = " + message);
+        log.info("consumeGuideCompletion: received message = " + message);
         // call guide model & save to MongoDB
         List<String> list = redisTemplate.opsForList().range("guide:"+message, 0, -1);
-        log.info("KafkaService::consumeGuideCompletion: redis list called.");
-        log.info("KafkaService::consumeGuideCompletion: size= " + list.size());
-        log.info("KafkaService::consumeGuideCompletion: an Item = " + list.get(0));
+        log.info("consumeGuideCompletion: redis list called.");
+        log.info("consumeGuideCompletion: size= " + list.size());
+        log.info("consumeGuideCompletion: an Item = " + list.get(0));
 
         List<GuideFrame> frameList = new ArrayList<>(list.parallelStream().map(item -> {
             try {
@@ -89,35 +91,38 @@ public class KafkaService implements AIServerService {
                 throw new RuntimeException(e);
             }
         }).toList());
-        log.info("KafkaService::consumeGuideCompletion: json mapped to object");
+        log.info("consumeGuideCompletion: json mapped to object");
 
         frameList.sort((item1, item2) -> item1.getName().compareTo(item2.getName()));
-        log.info("KafkaService::consumeGuideCompletion: objects has been sorted");
+        log.info("consumeGuideCompletion: objects has been sorted");
         // 첫 프레임 채우기
         GuideFrame frame = frameList.get(0);
         for (int i = 0; i < frame.getModel().size(); i++) {
             if (frame.getModel().get(i) == null) {
                 dfsBothEnd(i, 1, '+', frameList);
+                log.info(frame.getModel().toString());
             }
         }
-        log.info("KafkaService::consumeGuideCompletion: start point filled");
+        log.info("consumeGuideCompletion: start point filled");
 
         // 마지막 프레임 채우기
         frame = frameList.get(frameList.size()-1);
         for (int i = 0; i < frame.getModel().size(); i++) {
             if (frame.getModel().get(i) == null) {
                 dfsBothEnd(i, frameList.size() - 2, '-', frameList);
+                log.info(frame.getModel().toString());
             }
         }
-        log.info("KafkaService::consumeGuideCompletion: end point filled");
+        log.info("consumeGuideCompletion: end point filled");
 
         // 중간 프레임 채우기
         for (int i = 1; i < frameList.size() - 1; i++) {
+            frame = frameList.get(i);
             for (int j = 0; j < frame.getModel().size(); j++) {
                 fillFrame(j, i, frameList);
             }
         }
-        log.info("KafkaService::consumeGuideCompletion: middle empty points filled");
+        log.info("consumeGuideCompletion: middle empty points filled");
 
         // update & save result
         GuideBodyModel model = GuideBodyModel.builder()
@@ -130,7 +135,7 @@ public class KafkaService implements AIServerService {
             .build();
 
         guideBodyRepository.save(model);
-        log.info("KafkaService::consumeGuideCompletion: stored in MongoDB");
+        log.info("consumeGuideCompletion: stored in MongoDB");
 
         // TODO: 레디스에 저장된 내용을 지운다.
         // redisTemplate.delete("guide:" + message);
