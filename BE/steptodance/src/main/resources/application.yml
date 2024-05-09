@@ -48,6 +48,7 @@ message:
       name: topic-feedback-test
     guide:
       name: topic-guide-test
+      completion-name: guide-flag
     name: topic-consume-test
 ffmpeg:
   location: ${FFMPEG_LOCATION}
