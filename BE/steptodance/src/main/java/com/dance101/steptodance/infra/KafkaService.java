@@ -176,18 +176,19 @@ public class KafkaService implements AIServerService {
         List<Integer> thisFrame = frameList.get(frameIndex).getModel().get(joint);
         if (thisFrame != null) {
             return thisFrame;
-        }
-        else {
+        } else {
             if (cmd == '+') {
-                frameList.get(frameIndex).getModel().set(joint, dfsBothEnd(joint, frameIndex + 1, cmd, frameList));
-                log.info("joint, frameindex=" + joint + " " + frameIndex + "\t" + frameList.get(frameIndex).getModel().get(joint).toString());
-                return thisFrame;
-            }
-            else {
-                frameList.get(frameIndex).getModel().set(joint, dfsBothEnd(joint, frameIndex - 1, cmd, frameList));
-                log.info("joint, frameindex=" + joint + " " + frameIndex + "\t" + frameList.get(frameIndex).getModel().get(joint).toString());
-                return thisFrame;
+                thisFrame = dfsBothEnd(joint, frameIndex + 1, cmd, frameList); // 값 설정
+                frameList.get(frameIndex).getModel().set(joint, thisFrame); // 값 설정
+                log.info("joint, frameindex=" + joint + " " + frameIndex + "\t" + thisFrame.toString());
+                return thisFrame; // 값 반환
+            } else {
+                thisFrame = dfsBothEnd(joint, frameIndex - 1, cmd, frameList); // 값 설정
+                frameList.get(frameIndex).getModel().set(joint, thisFrame); // 값 설정
+                log.info("joint, frameindex=" + joint + " " + frameIndex + "\t" + thisFrame.toString());
+                return thisFrame; // 값 반환
             }
         }
     }
+
 }
