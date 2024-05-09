@@ -53,7 +53,7 @@ export const WebcamStreamCapture = () => {
       handleDataAvailable
     );
     mediaRecorderRef.current.start();
-  }, [webcamRef, setCapturing, mediaRecorderRef]);
+  }, [webcamRef, mediaRecorderRef]);
 
   const handleDataAvailable = useCallback(
     ({ data }) => {
@@ -75,9 +75,9 @@ export const WebcamStreamCapture = () => {
   }, [recordedChunks]);
 
   const handleStopCaptureClick = useCallback(() => {
-    webcamRef.current.stop();
+    mediaRecorderRef.current.stop();
     setCapturing(false);
-  }, [mediaRecorderRef, webcamRef, setCapturing]);
+  }, [mediaRecorderRef]);
 
   useEffect(() => {
     opacityRef.current = opacity; // 상태가 변경될 때마다 ref를 업데이트
@@ -210,7 +210,8 @@ export const WebcamStreamCapture = () => {
             width={widthSize}
             height={heightSize * 0.8}
             videoConstraints={{
-              facingMode: { exact: "environment" },
+              // { exact: "environment" }
+              facingMode: "user",
               aspectRatio: 9 / 16,
             }}
           />
