@@ -1,8 +1,8 @@
 import boto3
 from data.GuideRequest import GuideUpdateRequest
 from data.GuideUpdateMsg import GuideUpdateMsg
-from util.AiUtil import imgToBodyModel
-from core.redis_config import *
+import util.AiUtil as AiUtil
+import core.redis_config as redis_config
 from kafka_producer import send_data_to_kafka
 from json import *
 
@@ -15,10 +15,10 @@ def guideUpload(video_url: str):
 
 async def guideFrame(msgInstance: dict):
     guide = GuideUpdateMsg(msgInstance)
-    bodyModel = imgToBodyModel(guide.image)
-    redis = get_redis()
+    bodyModel = AiUtil.imgToBodyModelCaffe(guide.image)
+    redis = redis_config.get_redis()
     if redis == None:
-        redis = redis_config()
+        redis = redis_config.redis_config()
         print("Redis Connect")
     
     size = redis.lpush("guide:" + str(guide.guideId), '{"name":"' + guide.name + '", "model": ' + dumps(bodyModel) + '}')
