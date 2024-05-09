@@ -35,7 +35,7 @@ async def consume_messages():
         if message is None:
             continue
         msgInstance = json.loads(message.value())
-        methods[message.topic()](msgInstance)
+        await methods[message.topic()](msgInstance)
 
         
 
