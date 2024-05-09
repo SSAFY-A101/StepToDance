@@ -99,7 +99,7 @@ public class KafkaService implements AIServerService {
         GuideFrame frame = frameList.get(0);
         for (int i = 0; i < frame.getModel().size(); i++) {
             if (frame.getModel().get(i) == null) {
-                dfsBothEnd(i, 1, '+', frameList);
+                dfsBothEnd(i, 0, '+', frameList);
                 log.info(frame.getModel().toString());
             }
         }
@@ -109,7 +109,7 @@ public class KafkaService implements AIServerService {
         frame = frameList.get(frameList.size()-1);
         for (int i = 0; i < frame.getModel().size(); i++) {
             if (frame.getModel().get(i) == null) {
-                dfsBothEnd(i, frameList.size() - 2, '-', frameList);
+                dfsBothEnd(i, frameList.size() - 1, '-', frameList);
                 log.info(frame.getModel().toString());
             }
         }
