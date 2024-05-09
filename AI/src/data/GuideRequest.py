@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from typing_extensions import Unpack
+from pydantic import BaseModel, ConfigDict
 
 class GuideUpdateRequest(BaseModel):
     guideId: int
