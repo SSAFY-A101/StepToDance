@@ -16,6 +16,9 @@ spring:
       host: k10a101.p.ssafy.io
       port: ${REDIS_BINDING_PORT}
       password: ${REDIS_PASSWORD}
+    mongodb:
+      uri: mongodb://root:${MONGO_INITDB_ROOT_PASSWORD}@k10a101.p.ssafy.io:${DEV_TRIP_MONGODB_BINDING_PORT}/?authSource=admin
+      database: dance
   mvc:
     servlet:
       path: /api/v1
@@ -45,6 +48,7 @@ message:
       name: topic-feedback-test
     guide:
       name: topic-guide-test
+      completion-name: guide-flag
     name: topic-consume-test
 ffmpeg:
   location: ${FFMPEG_LOCATION}
