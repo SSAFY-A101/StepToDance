@@ -40,6 +40,12 @@ public class GuideController {
 		return ApiResponse.toResponse(OK, SUCCESS_GUIDE_LIST, response);
 	}
 
+	@GetMapping("/hot-guide")
+	public ResponseEntity<ApiResponse<GuideListFindResponse>> findHotGuideList() {
+		GuideListFindResponse response = guideService.findHotGuideList();
+		return ApiResponse.toResponse(OK, SUCCESS_GUIDE_LIST, response);
+	}
+
 	@PostMapping
 	public ResponseEntity<ApiResponse<Void>> uploadGuide(
 		// @AuthenticationPrincipal SecurityUser securityUser,
