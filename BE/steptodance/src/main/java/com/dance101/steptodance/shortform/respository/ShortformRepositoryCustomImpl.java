@@ -10,7 +10,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.query.QueryUtils;
 
 import com.dance101.steptodance.shortform.data.response.ShortformFindResponse;
 import com.querydsl.core.types.Projections;
@@ -23,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ShortformRepositoryCustomImpl implements ShortformRepositoryCustom{
 	private final JPAQueryFactory queryFactory;
-	private final QueryUtils queryUtils;
 
 	@Override
 	public Page<ShortformFindResponse> findShortformList(Pageable pageable) {
