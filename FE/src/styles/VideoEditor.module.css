@@ -1,15 +1,16 @@
 .homeContainer {
   position: absolute;
-  top: 25vw; 
+  top: 25vw;
   left: 0;
   right: 0;
   bottom: 22vw;
   overflow-y: auto;
+  z-index: 2;
 }
 
 .playButton {
   transform: scale(1.8);
   color: white;
-  display: flex; 
+  display: flex;
   justify-content: center;
 }
