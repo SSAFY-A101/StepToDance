@@ -18,6 +18,9 @@ public enum ErrorCode {
     GENRE_NOT_FOUND(404, "장르를 찾을 수 없습니다."),
     // FEEDBACK
     FEEDBACK_NOT_FOUND(404, "피드백을 찾을 수 없습니다."),
+    //SHORTFORM
+    SHORTFORM_NOT_FOUND(404,"숏폼을 찾을 수 없습니다."),
+    SHORTFORM_UPLOAD_FAILED(404,"숏폼 업로드에 실패했습니다."),
     // JSON PARSE
     JSON_PARSE_CAN_NOT_BE_DONE(500, "객체 직렬화 도중 문제가 발생하였습니다.");
 
