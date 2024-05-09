@@ -21,7 +21,7 @@ async def guideFrame(msgInstance: dict):
         redis = redis_config()
         print("Redis Connect")
     
-    size = redis.lpush("{'name':'" + guide.name + "', 'model': " + dumps(bodyModel) + "}")
+    size = redis.lpush("guide-flag:"+guide.guideId, "{'name':'" + guide.name + "', 'model': " + dumps(bodyModel) + "}")
 
     if size == guide.size:
         await send_data_to_kafka(guide.guideId, 'guide-flag')
