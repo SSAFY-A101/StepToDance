@@ -6,18 +6,22 @@ import testVideo from "../../assets/PerfectNight_르세라핌.mp4";
 // import { useNavigate } from "react-router-dom";
 import ReactPlayer from 'react-player'
 
-const GuideDetail = () => {
-  const [isWindow, setIsWindow] = useState(false);
+const GuideDetail = (props) => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [played, setPlayed] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const playerRef = useRef(null);
 
-  useEffect(() => {
-    setIsWindow(true);
-  }, []);
 
-  const handleBtn = () => {
+  const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
   };
 
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  }
   // const videoRef = useRef(null);
   // const canvasRef = useRef(null);
   // const opacityRef = useRef(100); // useRef를 사용하여 opacity 값을 저장
@@ -113,24 +117,40 @@ const GuideDetail = () => {
   // };
   return (
     <div className={styles.mainView}>
-       <button type="primary" onClick={handleBtn} style={{ marginBottom: 20 }}>
-          플레이
-        </button>
-        {isWindow && (
-          <div className={styles.wrapper}>
-            <ReactPlayer
-              url={testVideo}
-              muted
-              controls
-              playing={isPlaying}
-              width={"100%"}
-              height={"100%"}
-              className={styles.player}
-            />
+      <button className={styles.playButton} onClick={handlePlayPause}>
+        {isPlaying ? 'Pause' : 'Play'}
+      </button>
+      <div className={styles.playerWrapper}>
+        <ReactPlayer
+          url={testVideo}
+          ref={playerRef}
+          playing={isPlaying}
+          width="100%"
+          height="100%"
+          onDuration={setDuration}
+          onProgress={({ played }) => setPlayed(played)}
+        />
+        <div className={styles.progressBar}>
+          <input
+            className={styles.progressInput}
+            type="range"
+            min="0"
+            max="1"
+            step="any"
+            value={played}
+            style={{ '--progress': `${played * 100}%` }}
+            onChange={(e) => {
+              const seekTo = parseFloat(e.target.value);
+              setPlayed(seekTo);
+              playerRef.current.seekTo(seekTo);
+            }}
+          />
+          <div className={styles.timeDisplay}>
+            {formatTime(played * duration)} / {formatTime(duration)}
           </div>
-        )}
+        </div>
+      </div>
     </div>
   );
-};
-
+}
 export default GuideDetail;
