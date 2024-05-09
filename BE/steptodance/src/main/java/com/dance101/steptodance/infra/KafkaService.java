@@ -171,19 +171,21 @@ public class KafkaService implements AIServerService {
         }
     }
 
-    private List<Integer> dfsBothEnd(int i, int depth, char cmd, List<GuideFrame> frameList) {
-        if (depth >= frameList.size() || depth < 0) return zeroList;
-        List<Integer> thisFrame = frameList.get(depth).getModel().get(i);
+    private List<Integer> dfsBothEnd(int joint, int frameIndex, char cmd, List<GuideFrame> frameList) {
+        if (frameIndex >= frameList.size() || frameIndex < 0) return zeroList;
+        List<Integer> thisFrame = frameList.get(frameIndex).getModel().get(joint);
         if (thisFrame != null) {
             return thisFrame;
         }
         else {
             if (cmd == '+') {
-                frameList.get(depth).getModel().set(i, dfsBothEnd(i, depth + 1, cmd, frameList));
+                frameList.get(frameIndex).getModel().set(joint, dfsBothEnd(joint, frameIndex + 1, cmd, frameList));
+                log.info("joint, frameindex=" + joint + " " + frameIndex + "\t" + frameList.get(frameIndex).getModel().get(joint).toString());
                 return thisFrame;
             }
             else {
-                frameList.get(depth).getModel().set(i, dfsBothEnd(i, depth - 1, cmd, frameList));
+                frameList.get(frameIndex).getModel().set(joint, dfsBothEnd(joint, frameIndex - 1, cmd, frameList));
+                log.info("joint, frameindex=" + joint + " " + frameIndex + "\t" + frameList.get(frameIndex).getModel().get(joint).toString());
                 return thisFrame;
             }
         }
