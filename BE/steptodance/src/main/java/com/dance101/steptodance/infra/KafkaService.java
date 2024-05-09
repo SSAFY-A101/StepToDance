@@ -77,7 +77,9 @@ public class KafkaService implements AIServerService {
         log.info("KafkaService::consumeGuideCompletion: received message = " + message);
         // call guide model & save to MongoDB
         List<String> list = redisTemplate.opsForList().range("guide:"+message, 0, -1);
-        log.info("KafkaService::consumeGuideCompletion: redis list called. size= " + list.size());
+        log.info("KafkaService::consumeGuideCompletion: redis list called.");
+        log.info("KafkaService::consumeGuideCompletion: size= " + list.size());
+        log.info("KafkaService::consumeGuideCompletion: an Item = " + list.get(0));
 
         List<GuideFrame> frameList = list.parallelStream().map(item -> {
             try {
