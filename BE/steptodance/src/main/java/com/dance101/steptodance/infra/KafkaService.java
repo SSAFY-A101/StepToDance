@@ -2,6 +2,7 @@ package com.dance101.steptodance.infra;
 
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,17 +82,17 @@ public class KafkaService implements AIServerService {
         log.info("KafkaService::consumeGuideCompletion: size= " + list.size());
         log.info("KafkaService::consumeGuideCompletion: an Item = " + list.get(0));
 
-        List<GuideFrame> frameList = list.parallelStream().map(item -> {
+        List<GuideFrame> frameList = new ArrayList<>(list.parallelStream().map(item -> {
             try {
                 return objectMapper.readValue(item, GuideFrame.class);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
-        }).toList();
+        }).toList());
         log.info("KafkaService::consumeGuideCompletion: json mapped to object");
 
-        // TODO: 정렬이 안된다면 위의 리스트를 sort 가능한 리스트로 변환
         frameList.sort((item1, item2) -> item1.getName().compareTo(item2.getName()));
+        log.info("KafkaService::consumeGuideCompletion: objects has been sorted");
         // 첫 프레임 채우기
         GuideFrame frame = frameList.get(0);
         for (int i = 0; i < frame.getModel().size(); i++) {
