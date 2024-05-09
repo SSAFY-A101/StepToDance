@@ -27,17 +27,16 @@ export const WebcamStreamCapture = () => {
       const currentHeight = window.innerHeight;
       setWidthSize(currentWidth);
       setHeightSize(currentHeight);
-  
+
       const canvas = canvasRef.current;
       if (canvas) {
         canvas.width = currentWidth;
         canvas.height = currentHeight;
       }
     };
-  
+
     window.addEventListener("resize", handleResize);
     handleResize(); // 초기 로딩시에도 크기를 설정합니다.
-
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -84,56 +83,62 @@ export const WebcamStreamCapture = () => {
     opacityRef.current = opacity; // 상태가 변경될 때마다 ref를 업데이트
     let animationFrameId;
     async function loadAndApplyModel() {
-        const net = await bodyPix.load({
-            architecture: 'MobileNetV1',
-            outputStride: 16,
-            multiplier: 0.5,
-            quantBytes: 2
-        });
+      const net = await bodyPix.load({
+        architecture: "MobileNetV1",
+        outputStride: 16,
+        multiplier: 0.5,
+        quantBytes: 2,
+      });
 
-        const video = videoRef.current;
-        const canvas = canvasRef.current;
-        let frameCount = 0;
-        const skipFrames = 5;
-        
-        function updateCanvas() {
-          if (video.paused || video.ended) return;
-          if (++frameCount % skipFrames === 0) {
-            net.segmentPerson(video, {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      let frameCount = 0;
+      const skipFrames = 5;
+
+      function updateCanvas() {
+        if (video.paused || video.ended) return;
+        if (++frameCount % skipFrames === 0) {
+          net
+            .segmentPerson(video, {
               flipHorizontal: false,
-              internalResolution: 'medium',
-              segmentationThreshold: 0.5
-            }).then(segmentation => {
-                const foregroundColor = { r: 255, g: 255, b: 255, a: 0 }; // Foreground transparent
-                const backgroundColor = { r: 255, g: 255, b: 255, a: 255 }; // Background white and opaque
-                const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
-                  canvas.width = video.videoWidth;
-                  canvas.height = video.videoHeight;
-                  // const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
-                  bodyPix.drawMask(canvas, video, mask, 1, 0, false);
-              });
-          }
-            animationFrameId = requestAnimationFrame(updateCanvas);
+              internalResolution: "medium",
+              segmentationThreshold: 0.5,
+            })
+            .then((segmentation) => {
+              const foregroundColor = { r: 255, g: 255, b: 255, a: 0 }; // Foreground transparent
+              const backgroundColor = { r: 255, g: 255, b: 255, a: 255 }; // Background white and opaque
+              const mask = bodyPix.toMask(
+                segmentation,
+                foregroundColor,
+                backgroundColor
+              );
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              // const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
+              bodyPix.drawMask(canvas, video, mask, 1, 0, false);
+            });
         }
+        animationFrameId = requestAnimationFrame(updateCanvas);
+      }
 
-        video.addEventListener('loadeddata', () => {
-            video.play();
-            updateCanvas();
-        });
+      video.addEventListener("loadeddata", () => {
+        video.play();
+        updateCanvas();
+      });
 
-        return () => {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-            video.removeEventListener('loadeddata', updateCanvas);
-            net.dispose();
-        };
+      return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+        video.removeEventListener("loadeddata", updateCanvas);
+        net.dispose();
+      };
     }
 
     if (videoRef.current && canvasRef.current) {
-        loadAndApplyModel();
+      loadAndApplyModel();
     }
-}, [opacity, widthSize, heightSize]); // opacity를 의존성 배열에 포함시켜서 변경 감지
+  }, [opacity, widthSize, heightSize]); // opacity를 의존성 배열에 포함시켜서 변경 감지
 
   return (
     <section className={styles["record-page"]}>
@@ -155,17 +160,17 @@ export const WebcamStreamCapture = () => {
         </>
       ) : (
         <>
-        <input
+          <input
             type="range"
             min="0"
             max="100"
             value={opacity}
             onChange={(e) => setOpacity(parseInt(e.target.value))}
-            style={{ 
-              zIndex: 3, 
-              position: 'absolute',
+            style={{
+              zIndex: 3,
+              position: "absolute",
               top: 50,
-              right: 100 
+              right: 100,
             }}
           />
           <video
@@ -178,13 +183,12 @@ export const WebcamStreamCapture = () => {
             style={{
               position: "absolute",
               zIndex: 1,
-              width: '100%',
-              height: '75%',
-              objectFit: 'cover',
+              width: "100%",
+              height: "75%",
+              objectFit: "cover",
               opacity: opacity / 100,
-              display: showVideo ? 'block' : 'none'
+              display: showVideo ? "block" : "none",
             }}
-            
             type="video/mp4"
           />
           <canvas
@@ -192,12 +196,11 @@ export const WebcamStreamCapture = () => {
             style={{
               position: "absolute",
               zIndex: 2,
-              width: '100%',
-              height: '75%',
-              objectFit: 'cover',
+              width: "100%",
+              height: "75%",
+              objectFit: "cover",
               opacity: opacity / 100,
             }}
-            
           />
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
           <Webcam
@@ -205,7 +208,7 @@ export const WebcamStreamCapture = () => {
             ref={webcamRef}
             width={widthSize}
             height={heightSize}
-            videoConstraints={{ aspectRatio: 9 / 16 }}
+            videoConstraints={{ aspectRatio: widthSize / heightSize }}
           />
           {capturing ? (
             <article className={styles["record-btn"]}>

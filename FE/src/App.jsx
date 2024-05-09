@@ -51,11 +51,10 @@ function App() {
           <Route path="/guideDetail" element={<GuideDetail />} />
           <Route path="/searchResult" element={<SearchResult />} />
           <Route path="/ranking" element={<RankingPage />} />
-          <Route path="/shortsShare" element={<ShortsShare/>}/>
+          <Route path="/shortsShare" element={<ShortsShare />} />
         </Route>
         <Route path="/record" element={<WebcamStreamCapture />} />
         <Route path="/" element={<LandingPage />} />
-        <Route path="/record" element={<WebcamStreamCapture />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/login" element={<KakaoLogin />} />
       </Routes>
