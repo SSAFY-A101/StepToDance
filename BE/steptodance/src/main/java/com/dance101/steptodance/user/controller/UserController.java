@@ -4,6 +4,7 @@ import com.dance101.steptodance.auth.utils.SecurityUser;
 import com.dance101.steptodance.global.data.response.ApiResponse;
 import com.dance101.steptodance.user.data.response.MyPageResponse;
 import com.dance101.steptodance.user.data.response.RankFindResponse;
+import com.dance101.steptodance.user.data.response.UserPageResponse;
 import com.dance101.steptodance.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +42,13 @@ public class UserController {
         long userId = securityUser.getId();
         RankFindResponse response = userService.findRanks(userId);
         return ApiResponse.toResponse(OK, SUCCESS_RANKING_LIST, response);
+    }
+
+    @GetMapping("/{user_id}")
+    public ResponseEntity<ApiResponse<UserPageResponse>> findUserPage(
+        @PathVariable("user_id") long userId
+    ) {
+        UserPageResponse response = userService.findUserPage(userId);
+        return ApiResponse.toResponse(OK, SUCCESS_MYPAGE, response);
     }
 }
