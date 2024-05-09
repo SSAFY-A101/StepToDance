@@ -74,6 +74,7 @@ public class KafkaService implements AIServerService {
     @Transactional
     @KafkaListener(topics = "${message.topic.guide.completion-name}", groupId = "step-to-dance")
     public void consumeGuideCompletion(String message) throws JsonProcessingException {
+        log.info("KafkaService::consumeGuideCompletion: received message = " + message);
         // call guide model & save to MongoDB
         List<String> list = redisTemplate.opsForList().range("guide:"+message, 0, -1);
         List<GuideFrame> frameList = list.parallelStream().map(item -> {
