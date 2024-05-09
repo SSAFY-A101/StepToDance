@@ -12,6 +12,10 @@ body {
   font-family: "WavvePADO-Regular";
 }
 
+.App {
+  height: 100vh;
+}
+
 @font-face {
   font-family: "WavvePADO-Regular";
   src: url("./assets/fonts/WavvePADO/WavvePADO-Regular.ttf");
