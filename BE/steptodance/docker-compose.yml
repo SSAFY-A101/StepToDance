@@ -26,7 +26,7 @@ services:
     container_name: mongodb
     image: mongo
     ports:
-      - ${DEV_TRIP_MONGODB_BINDING_PORT}:27017
+      - ${DANCE_MONGODB_BINDING_PORT}:27017
     volumes:
       - ${DANCE_MONGODB_DATA_PATH}:/data/db
     environment:
