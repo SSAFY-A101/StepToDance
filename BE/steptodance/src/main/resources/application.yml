@@ -17,7 +17,7 @@ spring:
       port: ${REDIS_BINDING_PORT}
       password: ${REDIS_PASSWORD}
     mongodb:
-      uri: mongodb://root:${MONGO_INITDB_ROOT_PASSWORD}@k10a101.p.ssafy.io:${DEV_TRIP_MONGODB_BINDING_PORT}/?authSource=admin
+      uri: mongodb://root:${DANCE_MONGODB_PASSWORD}@k10a101.p.ssafy.io:${DANCE_MONGODB_BINDING_PORT}/?authSource=admin
       database: dance
   mvc:
     servlet:
