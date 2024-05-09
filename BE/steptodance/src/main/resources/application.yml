@@ -15,6 +15,7 @@ spring:
     redis:
       host: k10a101.p.ssafy.io
       port: ${REDIS_BINDING_PORT}
+      password: ${REDIS_PASSWORD}
   mvc:
     servlet:
       path: /api/v1
