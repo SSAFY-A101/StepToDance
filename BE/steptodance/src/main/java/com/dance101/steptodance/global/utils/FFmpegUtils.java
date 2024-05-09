@@ -48,6 +48,7 @@ public class FFmpegUtils {
 
 		Files.createDirectories(Path.of(outputDirPath + id));
 
+		// 동영상 파일 -> 0.5초마다의 프레임 이미지
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(tempFilePath.toString())
 			.addOutput(outputDirPath+id+"/frame_%04d.png")
@@ -56,8 +57,11 @@ public class FFmpegUtils {
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 		executor.createJob(builder).run();
+		// 파일 갯수 세기
+		File[] fileList = new File(outputDirPath+id).listFiles();
+		int size = fileList.length;
 
-		System.out.println();
+		// ai 서버로 전송
 		try (Stream<Path> paths = Files.walk(Path.of(outputDirPath+id))) {
 			paths.filter(Files::isRegularFile)
 				.forEach(path -> {
@@ -67,7 +71,7 @@ public class FFmpegUtils {
 								.guideId(id)
 								.name(String.valueOf(path.getFileName()))
 								.image(Files.readAllBytes(path))
-								.size(300)
+								.size(size)
 								.build()
 						);
 					} catch (IOException e) {
@@ -77,15 +81,15 @@ public class FFmpegUtils {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
+		log.info("============== Sending Guide Vod Done ==============");
+		log.info("guide id: " + id + ", frame amount: " + size);
 
 		// 이미지파일 삭제
-		// TODO: 이미지들이 잘 지워지는가 확인
 		Files.walk(Path.of(outputDirPath + id))
 			.map(Path::toFile)
 			.forEach(File::delete);
 		Files.delete(Path.of(outputDirPath + id));
 		// 영상파일 삭제
 		Files.delete(tempFilePath);
-		log.info("============== Sending Guide Vod Done ==============");
 	}
 }

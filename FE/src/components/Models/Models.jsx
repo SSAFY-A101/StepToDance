@@ -1,30 +1,50 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls,CameraControls, PerspectiveCamera,useGLTF,useAnimations } from '@react-three/drei';
 import gltfmodel from '../../../public/Characters/startingmodel.glb'
 // import { useGLTF, useAnimations } from '@react-three/drei'
 import { LoopOnce } from 'three';
-
+import { useNavigate } from 'react-router-dom';
 
 export function Model(props) {
   const group = useRef()
   const { nodes, materials, animations } = useGLTF(gltfmodel)
   const { actions } = useAnimations(animations, group)
-
+  const navigate = useNavigate()
+  const [animationCompleted, setAnimationCompleted] = useState(false);
 
   useEffect(() => {
-    console.log(actions);
     if (actions) {
       const actionNames = Object.keys(actions);
       if (actionNames.length > 0) {
         const firstAnimationName = actionNames[0];
         const action = actions[firstAnimationName];
-        action.setLoop(LoopOnce);       // 애니메이션을 한 번만 실행
-        action.clampWhenFinished = true; // 애니메이션이 끝나면 마지막 상태로 고정
+        action.reset();  // Ensure the action is reset to start
+        action.setLoop(LoopOnce);
+        action.clampWhenFinished = true;
         action.play();
-      }
+        console.log(action)
+  
+
+        const checkAnimationCompletion = () => {
+          if (action.time >= action.getClip().duration) {
+              setAnimationCompleted(true);
+              clearInterval(intervalId);
+          }
+      };
+
+      const intervalId = setInterval(checkAnimationCompletion, 100);  // Check every 100ms
+      return () => clearInterval(intervalId);
     }
-  }, [actions]);
+}
+}, [actions]);
+
+useEffect(() => {
+  if (animationCompleted) {
+      navigate('/login');
+  }
+}, [animationCompleted, navigate]);
+
 
   return (
     <group ref={group} {...props} dispose={null}>
