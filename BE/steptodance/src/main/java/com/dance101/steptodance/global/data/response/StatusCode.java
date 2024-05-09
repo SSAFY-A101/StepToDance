@@ -25,8 +25,11 @@ public enum StatusCode {
     SUCCESS_FEEDBACK_DELETION(204, "피드백 삭제 성공"),
 
     // SHORTS
+    SUCCESS_SHORTS_LIST(200, "숏폼 목록 조회 성공"),
+    SUCCESS_SHORTS_ONE(200, "숏폼 상세 조회 성공"),
     SUCCESS_SHORTS_CREATION(201, "숏폼 생성 성공"),
-    SUCCESS_SHORTS_SHARE(200, "숏폼 공유 성공");
+    SUCCESS_SHORTS_SHARE(200, "숏폼 공유 성공"),
+    SUCCESS_SHORTS_DELETION(204, "숏폼 삭제 성공");
 
     private final int status;
     private final String message;
