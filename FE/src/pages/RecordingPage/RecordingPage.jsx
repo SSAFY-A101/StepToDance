@@ -209,7 +209,10 @@ export const WebcamStreamCapture = () => {
             ref={webcamRef}
             width={widthSize}
             height={heightSize * 0.8}
-            videoConstraints={{ facingMode: "user", aspectRatio: 9 / 16 }}
+            videoConstraints={{
+              facingMode: { exact: "environment" },
+              aspectRatio: 9 / 16,
+            }}
           />
           {capturing ? (
             <article className={styles["record-btn"]}>
