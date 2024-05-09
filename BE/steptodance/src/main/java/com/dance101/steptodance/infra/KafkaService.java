@@ -100,6 +100,7 @@ public class KafkaService implements AIServerService {
                 dfsBothEnd(i, 1, '+', frameList);
             }
         }
+        log.info("KafkaService::consumeGuideCompletion: start point filled");
 
         // 마지막 프레임 채우기
         frame = frameList.get(frameList.size()-1);
@@ -108,6 +109,7 @@ public class KafkaService implements AIServerService {
                 dfsBothEnd(i, frameList.size() - 2, '-', frameList);
             }
         }
+        log.info("KafkaService::consumeGuideCompletion: end point filled");
 
         // 중간 프레임 채우기
         for (int i = 1; i < frameList.size() - 1; i++) {
@@ -115,6 +117,7 @@ public class KafkaService implements AIServerService {
                 fillFrame(j, i, frameList);
             }
         }
+        log.info("KafkaService::consumeGuideCompletion: middle empty points filled");
 
         // update & save result
         GuideBodyModel model = GuideBodyModel.builder()
