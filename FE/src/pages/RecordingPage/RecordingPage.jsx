@@ -75,7 +75,7 @@ export const WebcamStreamCapture = () => {
   }, [recordedChunks]);
 
   const handleStopCaptureClick = useCallback(() => {
-    mediaRecorderRef.current.stop();
+    webcamRef.current.stop();
     setCapturing(false);
   }, [mediaRecorderRef, webcamRef, setCapturing]);
 
