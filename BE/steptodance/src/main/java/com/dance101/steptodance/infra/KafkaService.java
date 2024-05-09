@@ -77,6 +77,8 @@ public class KafkaService implements AIServerService {
         log.info("KafkaService::consumeGuideCompletion: received message = " + message);
         // call guide model & save to MongoDB
         List<String> list = redisTemplate.opsForList().range("guide:"+message, 0, -1);
+        log.info("KafkaService::consumeGuideCompletion: redis list called. size= " + list.size());
+
         List<GuideFrame> frameList = list.parallelStream().map(item -> {
             try {
                 return objectMapper.readValue(item, GuideFrame.class);
@@ -84,6 +86,7 @@ public class KafkaService implements AIServerService {
                 throw new RuntimeException(e);
             }
         }).toList();
+        log.info("KafkaService::consumeGuideCompletion: json mapped to object");
 
         // TODO: 정렬이 안된다면 위의 리스트를 sort 가능한 리스트로 변환
         frameList.sort((item1, item2) -> item1.getName().compareTo(item2.getName()));
@@ -121,6 +124,7 @@ public class KafkaService implements AIServerService {
             .build();
 
         guideBodyRepository.save(model);
+        log.info("KafkaService::consumeGuideCompletion: stored in MongoDB");
 
         // TODO: 레디스에 저장된 내용을 지운다.
         // redisTemplate.delete("guide:" + message);
