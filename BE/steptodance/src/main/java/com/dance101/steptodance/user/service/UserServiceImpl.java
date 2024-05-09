@@ -3,6 +3,8 @@ package com.dance101.steptodance.user.service;
 import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.feedback.utils.FeedbackUtils;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.shortform.data.response.ShortformFindResponse;
+import com.dance101.steptodance.shortform.respository.ShortformRepository;
 import com.dance101.steptodance.user.data.response.*;
 import com.dance101.steptodance.user.domain.User;
 import com.dance101.steptodance.user.repository.UserRepository;
@@ -20,6 +22,7 @@ import static com.dance101.steptodance.global.exception.data.response.ErrorCode.
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FeedbackRepository feedbackRepository;
+    private final ShortformRepository shortformRepository;
 
     @Transactional
     @Override
@@ -41,10 +44,14 @@ public class UserServiceImpl implements UserService {
         // find feedback list
         List<FeedbackListFindResponse> feedbackListFindResponses = FeedbackUtils.findFeedbackListByUserId(feedbackRepository, userId, limit, offset);
 
+        // find shortform list
+        List<ShortformFindResponse> shortformFindResponses = shortformRepository.findShortformByUserId(userId);
+
         // create response & return
         return MyPageResponse.builder()
             .userFindResponse(userFindResponse)
             .feedbackListFindResponses(feedbackListFindResponses)
+            .shortformFindResponses(shortformFindResponses)
             .build();
     }
 
@@ -61,6 +68,22 @@ public class UserServiceImpl implements UserService {
         return RankFindResponse.builder()
             .topRankerListResponse(topRankerList)
             .myRankResponse(myRankResponse)
+            .build();
+    }
+
+    @Override
+    public UserPageResponse findUserPage(long userId) {
+        // get user
+        UserFindResponse userFindResponse = userRepository.findUserByUserId(userId)
+            .orElseThrow(() -> new NotFoundException("UserServiceImpl:findMyPage", UNDEFINED_USER));
+
+        // find shortform list
+        List<ShortformFindResponse> shortformFindResponses = shortformRepository.findShortformByUserId(userId);
+
+        // create response & return
+        return UserPageResponse.builder()
+            .userFindResponse(userFindResponse)
+            .shortformFindResponses(shortformFindResponses)
             .build();
     }
 }
