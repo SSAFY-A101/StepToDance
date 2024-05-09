@@ -62,6 +62,17 @@ public class GuideServiceImpl implements GuideService{
 			.build();
 	}
 
+	@Override
+	public GuideListFindResponse findHotGuideList() {
+		// get response
+		List<GuideFindResponse> guideFindResponses = guideRepository.findHotGuideList();
+
+		// create response & return
+		return GuideListFindResponse.builder()
+			.guideList(guideFindResponses)
+			.build();
+	}
+
 	@Transactional
 	@Override
 	public void guideUpload(GuideUploadRequest guideUploadRequest) {
