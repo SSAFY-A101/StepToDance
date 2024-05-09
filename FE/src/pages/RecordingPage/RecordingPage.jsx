@@ -19,6 +19,7 @@ export const WebcamStreamCapture = () => {
   const [opacity, setOpacity] = useState(100); // 상태로 opacity 관리
   const opacityRef = useRef(100); // useRef를 사용하여 opacity 값을 저장
   const canvasRef = useRef(null);
+  const [showVideo, setShowVideo] = useState(false); // 비디오 표시 상태
 
   useEffect(() => {
     const handleResize = () => {
@@ -35,8 +36,9 @@ export const WebcamStreamCapture = () => {
     };
   
     window.addEventListener("resize", handleResize);
-    handleResize();  // 초기 로딩시에도 크기를 설정합니다.
-  
+    handleResize(); // 초기 로딩시에도 크기를 설정합니다.
+
+
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -92,21 +94,25 @@ export const WebcamStreamCapture = () => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
         let frameCount = 0;
-        const skipFrames = 2;
+        const skipFrames = 5;
         
         function updateCanvas() {
-            if (++frameCount % skipFrames === 0) {
-                net.segmentPerson(video, {
-                    flipHorizontal: false,
-                    internalResolution: 'medium',
-                    segmentationThreshold: 0.5
-                }).then(segmentation => {
-                    const foregroundColor = { r: 255, g: 255, b: 255, a: opacityRef.current };
-                    const backgroundColor = { r: 0, g: 0, b: 0, a: 0 };
-                    const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
-                    bodyPix.drawMask(canvas, video, mask, 1, 2, false);
-                });
-            }
+          if (video.paused || video.ended) return;
+          if (++frameCount % skipFrames === 0) {
+            net.segmentPerson(video, {
+              flipHorizontal: false,
+              internalResolution: 'medium',
+              segmentationThreshold: 0.5
+            }).then(segmentation => {
+                const foregroundColor = { r: 255, g: 255, b: 255, a: 0 }; // Foreground transparent
+                const backgroundColor = { r: 255, g: 255, b: 255, a: 255 }; // Background white and opaque
+                const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
+                  canvas.width = video.videoWidth;
+                  canvas.height = video.videoHeight;
+                  // const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
+                  bodyPix.drawMask(canvas, video, mask, 1, 0, false);
+              });
+          }
             animationFrameId = requestAnimationFrame(updateCanvas);
         }
 
@@ -149,6 +155,19 @@ export const WebcamStreamCapture = () => {
         </>
       ) : (
         <>
+        <input
+            type="range"
+            min="0"
+            max="100"
+            value={opacity}
+            onChange={(e) => setOpacity(parseInt(e.target.value))}
+            style={{ 
+              zIndex: 3, 
+              position: 'absolute',
+              top: 50,
+              right: 100 
+            }}
+          />
           <video
             ref={videoRef}
             src={videoUrl}
@@ -162,8 +181,10 @@ export const WebcamStreamCapture = () => {
               width: '100%',
               height: '75%',
               objectFit: 'cover',
-              opacity: 0.4
+              opacity: opacity / 100,
+              display: showVideo ? 'block' : 'none'
             }}
+            
             type="video/mp4"
           />
           <canvas
@@ -174,7 +195,7 @@ export const WebcamStreamCapture = () => {
               width: '100%',
               height: '75%',
               objectFit: 'cover',
-              opacity: 0.4
+              opacity: opacity / 100,
             }}
             
           />
