@@ -24,3 +24,5 @@ def guideFrame(msgInstance: dict):
     size = redis.lpush(f'guide:{guide.guideId}', [guide.name, bodyModel.__str__()].__str__())
     if size == guide.size:
         send_data_to_kafka(guide.guideId, 'guideFlag')
+        print(f'{guide.guideId} 이미지 변환 완료')
+        print('완료 메시지를 guideFlag 토픽으로 전송')
