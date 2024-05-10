@@ -1,0 +1,39 @@
+.image {
+    width: 6rem;
+    height: 6rem;
+    border-radius: 1rem;
+    margin-left: 1rem;
+    object-fit: cover;
+}
+
+.title {
+    color:white;
+    margin-top:2rem;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    font-size: large;
+}
+
+.text {
+  color: white;
+  margin: 1em;
+  vertical-align: middle;
+}
+
+.guide {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
+.noResult {
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 15em;
+  margin: 0 auto;
+  margin-top: 5em;
+}

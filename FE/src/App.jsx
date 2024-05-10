@@ -15,12 +15,12 @@ import { useEffect } from "react";
 import Layout from "./components/Layout";
 import LandingPage from "./pages/LandingPage/LandingPage";
 import RankingPage from "./pages/Ranking/RankingPage";
+import SearchResult from "./pages/SearchResult";
+import ShortsShare from "./pages/ShortsShare";
 
 function App() {
   const user = useSelector(userLoggedInSelector);
   const cookie = getCookie("accessToken");
-  console.log(cookie);
-  console.log(user);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,10 +49,12 @@ function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/videoEditor" element={<VideoEditor />} />
           <Route path="/guideDetail" element={<GuideDetail />} />
+          <Route path="/searchResult" element={<SearchResult />} />
           <Route path="/ranking" element={<RankingPage />} />
+          <Route path="/shortsShare" element={<ShortsShare />} />
         </Route>
-        <Route path="/" element={<LandingPage />} />
         <Route path="/record" element={<WebcamStreamCapture />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/login" element={<KakaoLogin />} />
       </Routes>
