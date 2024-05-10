@@ -3,6 +3,7 @@ import Webcam from "react-webcam";
 import styles from "./RecordingPage.module.css";
 import { useLocation } from "react-router-dom";
 import RecordRTC from 'recordrtc';
+import ReactPlayer from 'react-player';
 
 
 export const WebcamStreamCapture = () => {
@@ -10,7 +11,7 @@ export const WebcamStreamCapture = () => {
   const [heightSize, setHeightSize] = useState(window.innerHeight);
   const webcamRef = useRef(null);
   const [recordRTC, setRecordRTC] = useState(null);
-
+  const [playerOpacity, setPlayerOpacity] = useState(1);
   const mediaRecorderRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
@@ -19,7 +20,7 @@ export const WebcamStreamCapture = () => {
   const videoUrl = location.state?.videoUrl;
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [showVideo, setShowVideo] = useState(false); // 비디오 표시 상태
+  const [showVideo, setShowVideo] = useState(true);  // Set it true for testing
   const [isRecording, setIsRecording] = useState(false); // New state for recording status
 
   useEffect(() => {
@@ -97,6 +98,10 @@ export const WebcamStreamCapture = () => {
     }
   }, [recordedChunks]);
 
+  useEffect(() => {
+    console.log("Video URL:", videoUrl);  // Check if the URL is correct
+  }, [videoUrl]);
+  
   const handleStopCaptureClick = useCallback(() => {
     setIsRecording(false);
     if (recordRTC) {
@@ -133,12 +138,14 @@ export const WebcamStreamCapture = () => {
         </>
       ) : (
         <>
-          <video
+          <ReactPlayer
             ref={videoRef}
-            src={videoUrl}
+            url={videoUrl}
             loop
             muted
             controls
+            width={widthSize}
+            height={heightSize * 0.8}
             autoPlay
             style={{
               position: "absolute",
@@ -146,19 +153,11 @@ export const WebcamStreamCapture = () => {
               width: "100%",
               height: "75%",
               objectFit: "cover",
+              opacity: playerOpacity,
               display: showVideo ? "block" : "none",
             }}
+            playsinline={true}
             type="video/mp4"
-          />
-          <canvas
-            ref={canvasRef}
-            style={{
-              position: "absolute",
-              zIndex: 2,
-              width: "100%",
-              height: "75%",
-              objectfit: "cover",
-            }}
           />
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
           <Webcam
@@ -170,6 +169,15 @@ export const WebcamStreamCapture = () => {
             videoConstraints={{ width: widthSize, height: heightSize * 0.8, facingMode: "user" }}
             style={{ opacity: 1 }}  // Always visible
           />
+           <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={playerOpacity}
+              onChange={e => setPlayerOpacity(e.target.value)}
+              style={{ position: "absolute", zIndex: 2, left: "10px", top: "10px" }}
+            />
           {capturing ? (
             <article className={styles["record-btn"]}>
               <button
