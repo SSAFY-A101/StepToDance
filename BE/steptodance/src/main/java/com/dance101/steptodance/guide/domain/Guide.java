@@ -61,4 +61,8 @@ public class Guide extends BaseEntity {
     public void addUrl(String url) {
         this.videoUrl = url;
     }
+
+    public void addThumbnail(String url) {
+        this.thumbnailImgUrl = url;
+    }
 }
