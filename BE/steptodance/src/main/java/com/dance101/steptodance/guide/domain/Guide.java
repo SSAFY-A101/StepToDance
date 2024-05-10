@@ -46,16 +46,6 @@ public class Guide extends BaseEntity {
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    // @Builder
-    // public Guide(String videoUrl, String thumbnailImgUrl, String songTitle, String singer, User user, Genre genre) {
-    //     this.videoUrl = videoUrl;
-    //     this.thumbnailImgUrl = thumbnailImgUrl;
-    //     this.songTitle = songTitle;
-    //     this.singer = singer;
-    //     this.user = user;
-    //     this.genre = genre;
-    // }
-
     @Builder
     public Guide(String videoUrl, String thumbnailImgUrl, String songTitle, String singer, User user, Genre genre, LocalTime highlightSectionStartAt, LocalTime highlightSectionEndAt) {
         this.videoUrl = videoUrl;
@@ -66,5 +56,9 @@ public class Guide extends BaseEntity {
         this.genre = genre;
         this.highlightSectionStartAt = highlightSectionStartAt;
         this.highlightSectionEndAt = highlightSectionEndAt;
+    }
+
+    public void addUrl(String url) {
+        this.videoUrl = url;
     }
 }
