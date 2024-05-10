@@ -7,11 +7,11 @@ import { useNavigate } from "react-router";
 export default function CarouselCustom(props) {
   const navigate = useNavigate();
   const table = props.cards.map((element, index) => {
-    return { ...element, onClick: () => movieEdit(index) };
+    return { ...element, onClick: () => movieEdit(element) };
   });
 
-  const movieEdit = (index) => {
-    navigate(`/guideDetail?id=${index}`);
+  const movieEdit = (element) => {
+    navigate(`/guideDetail?id=${element.content.props.item.id}`);
   };
 
   const [offsetRadius, setOffsetRadius] = useState(2);
@@ -36,7 +36,6 @@ export default function CarouselCustom(props) {
         showNavigation={showArrows}
         animationConfig={config.gentle}
       />
-      <h2></h2>
     </div>
   );
 }
