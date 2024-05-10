@@ -32,6 +32,7 @@ public class GuideController {
 	private final GuideService guideService;
 	@GetMapping
 	public ResponseEntity<ApiResponse<GuideListFindResponse>> findGuideList(
+		// TODO: 토큰을 사용하도록 변경
 		// @AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute SearchConditions searchConditions) {
 		// long userId = securityUser.getId();
