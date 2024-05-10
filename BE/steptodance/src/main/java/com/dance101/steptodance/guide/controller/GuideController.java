@@ -75,8 +75,7 @@ public class GuideController {
 		// TODO: 토큰에서 정보를 받도록 변경
 		// long userId = securityUser.getId();
 		long userId = 2L;
-		CompletableFuture<FeedbackResponse> completableFuture = guideService.createGuideFeedback(userId, guideId, guideFeedbackCreateRequest);
-		FeedbackResponse response = completableFuture.get();
+		FeedbackResponse response = guideService.createGuideFeedback(userId, guideId, guideFeedbackCreateRequest);
 		return ApiResponse.toResponse(CREATED, SUCCESS_FEEDBACK_CREATION, response);
 	}
 
