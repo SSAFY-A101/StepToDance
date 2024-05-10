@@ -79,33 +79,6 @@ public class GuideServiceImpl implements GuideService{
 
 	@Transactional
 	@Override
-	public void guideUpload(GuideUploadRequest guideUploadRequest) {
-		try {
-			WebClient webClient = WebClient.builder()
-				.baseUrl(AIServer_URL)
-				.defaultHeader("Content-Type", "application/json")
-				.build();
-
-			Map<String, Object> response = webClient
-				.post()
-				.uri(uriBuilder -> uriBuilder
-					.path("/guides/upload")
-					.build())
-				.bodyValue(guideUploadRequest)
-				.retrieve()
-				.bodyToMono(Map.class)
-				.block();
-			for (Map.Entry<String, Object> item : response.entrySet()) {
-				System.out.println(item.getKey());
-				System.out.println(item.getValue());
-			}
-		} catch (Exception e) {
-			throw new ExternalServerException("GuideServiceImpl:guidUpload", GUIDE_UPLOAD_FAILED);
-		}
-	}
-
-	@Transactional
-	@Override
 	public void guideUploadFile(long userId, GuideUploadMultipartRequest request) {
 		log.info("GuideServiceImpl:guideUploadFile : request = " + request.toString());
 		Genre genre = genreRepository.findById(request.getGenre_id())
