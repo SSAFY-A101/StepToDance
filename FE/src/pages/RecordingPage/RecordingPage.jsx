@@ -22,7 +22,10 @@ export const WebcamStreamCapture = () => {
 
   const startPreview = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
       setMediaStream(stream);
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
