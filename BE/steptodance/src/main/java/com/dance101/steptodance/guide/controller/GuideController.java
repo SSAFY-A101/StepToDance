@@ -46,15 +46,6 @@ public class GuideController {
 		return ApiResponse.toResponse(OK, SUCCESS_GUIDE_LIST, response);
 	}
 
-	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> uploadGuide(
-		// @AuthenticationPrincipal SecurityUser securityUser,
-		@RequestBody GuideUploadRequest guideUploadRequest
-	) {
-		guideService.guideUpload(guideUploadRequest);
-		return ApiResponse.toEmptyResponse(CREATED, CREATED_GUIDE);
-	}
-
 	@PostMapping(value = "/file", consumes = "multipart/form-data")
 	public ResponseEntity<ApiResponse<Void>> uploadGuideFile(
 		// TODO: 토큰을 사용하도록 변경
