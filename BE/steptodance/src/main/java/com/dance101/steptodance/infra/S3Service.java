@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class S3Service {
-	@Value("${cloud.aws.s3.bucket}")
+	@Value(value = "${cloud.aws.s3.bucket}")
 	private String bucket;
 
 	private final AmazonS3 amazonS3;
