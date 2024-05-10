@@ -23,6 +23,7 @@ async def guideFrame(msgInstance: dict):
         print('완료 메시지를 guide-flag 토픽으로 전송')
 
 
+
 async def feedbackFrame(msgInstance: dict):
     feedback = FeedbackUpdateMsg(msgInstance)
     bodyModel = AiUtil.imgToBodyModelCaffe(feedback.image)
