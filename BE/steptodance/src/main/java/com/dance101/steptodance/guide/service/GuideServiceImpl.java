@@ -104,7 +104,7 @@ public class GuideServiceImpl implements GuideService{
 			guide.addUrl(url);
 			// 썸네일 업로드
 			url = s3Service.upload(
-				thumbnail, "guide/thumbnail/" + guide.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
+				thumbnail, "guide/thumbnail/" + guide.getId() + "." + StringUtils.getFilenameExtension(thumbnail.getOriginalFilename()));
 			guide.addThumbnail(url);
 		} catch (Exception e) {
 			guideRepository.delete(guide);
