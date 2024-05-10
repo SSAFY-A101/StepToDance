@@ -37,7 +37,7 @@
 
     .sideMenu {
         height: 100%;
-        z-index: 2;  /* Ensured one z-index property */
+        z-index: 3;  /* Ensured one z-index property */
         position: fixed;
         top: 0;
         right: 0;  /* Changed from left to right */
