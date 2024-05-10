@@ -57,7 +57,7 @@ const GuideDetail = () => {
 
 
   const handleOnAirClick = () => {
-    navigate('/record', { videoUrl: videoData.video_url });
+    navigate('/record', { state: { videoUrl: videoData.video_url } });
   };
 
   const changePlaybackRate = () => {
