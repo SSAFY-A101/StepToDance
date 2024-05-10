@@ -11,13 +11,13 @@ feedbackTopic = 'topic-feedback-test'
 
 consumer = Consumer({'bootstrap.servers': 'kafka1:9092, kafka2:9092, kafka3:9092', 'group.id': 'group.id'})
 # consumer.subscribe(['topic-guide-test', 'topic-feedback-test'])
-consumer.subscribe([guideTopic])
+consumer.subscribe([guideTopic, feedbackTopic])
 
 app = FastAPI()
 
 methods = {
     guideTopic: guideFrame,
-    'topic-feedback-test': feedbackFrame
+    feedbackTopic: feedbackFrame
 }
 
 
