@@ -44,20 +44,6 @@ export const WebcamStreamCapture = () => {
     };
   }, []);
 
-  const handleStartCaptureClick = useCallback(() => {
-    if (webcamRef.current && webcamRef.current.stream) {
-      setCapturing(true);
-      const videoStream = webcamRef.current.stream;
-      const options = {
-        type: 'video',
-        mimeType: 'video/webm',
-      };
-      const recorder = new RecordRTC(videoStream, options);
-      recorder.startRecording();
-      setRecordRTC(recorder);
-    }
-  }, [webcamRef.current]); // Added dependency to ensure it re-evaluates if necessary
-  
   const startRecording = () => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then(function(stream) {
@@ -73,6 +59,23 @@ export const WebcamStreamCapture = () => {
         console.error('Error accessing the media devices.', error);
       });
   };
+  
+
+  const handleStartCaptureClick = useCallback(() => {
+    setIsRecording(true);
+    if (webcamRef.current && webcamRef.current.stream) {
+      setCapturing(true);
+      const videoStream = webcamRef.current.stream;
+      const options = {
+        type: 'video',
+        mimeType: 'video/webm',
+      };
+      const recorder = new RecordRTC(videoStream, options);
+      recorder.startRecording();
+      setRecordRTC(recorder);
+    }
+  }, [webcamRef.current, setIsRecording]); // Added dependency to ensure it re-evaluates if necessary
+  
   
 
   const handleDataAvailable = useCallback(
@@ -95,6 +98,7 @@ export const WebcamStreamCapture = () => {
   }, [recordedChunks]);
 
   const handleStopCaptureClick = useCallback(() => {
+    setIsRecording(false);
     if (recordRTC) {
       recordRTC.stopRecording(() => {
         const videoUrl = recordRTC.toURL();
@@ -104,7 +108,7 @@ export const WebcamStreamCapture = () => {
         setRecordRTC(null);
       });
     }
-  }, [recordRTC]);
+  }, [recordRTC, setIsRecording]);
   
   return (
     <section className={styles["record-page"]}>
