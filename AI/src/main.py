@@ -7,7 +7,8 @@ from service.AiService import *
 import json
 
 consumer = Consumer({'bootstrap.servers': 'kafka1:9092, kafka2:9092, kafka3:9092', 'group.id': 'group.id'})
-consumer.subscribe(['topic-guide-test', 'topic-feedback-test'])
+# consumer.subscribe(['topic-guide-test', 'topic-feedback-test'])
+consumer.subscribe(['topic-guide-test'])
 
 app = FastAPI()
 
