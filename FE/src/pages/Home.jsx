@@ -9,7 +9,7 @@ function Home() {
     <div>
       <SearchBar />
       <div className={styles.homeContainer}>
-        <Test/>
+        <Test />
         <Hot5Guides />
         <GuideList />
       </div>

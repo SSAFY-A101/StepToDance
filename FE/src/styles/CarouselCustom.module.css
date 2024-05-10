@@ -1,0 +1,34 @@
+.carousel {
+  position: relative;
+}
+
+.carousel > div {
+  margin: 0;
+}
+
+.carousel > div:nth-child(2) {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  display: flex;
+  align-items: center;
+}
+
+.carousel > div > img {
+  position: absolute;
+  margin: 0 !important;
+  top: 0;
+  height: 86%;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(17px);
+}
+
+.carousel > div > img:nth-child(1) {
+  left: 0;
+}
+
+.carousel > div > img:nth-child(2) {
+  right: 0;
+}
