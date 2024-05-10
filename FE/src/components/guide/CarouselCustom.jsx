@@ -28,7 +28,7 @@ export default function CarouselCustom(props){
           showNavigation={showArrows}
           animationConfig={config.gentle}
         />
+        <h2></h2>
       </div>
     );
-
 }
