@@ -15,7 +15,7 @@ import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 
-import com.dance101.steptodance.guide.data.request.GuideMessageRequest;
+import com.dance101.steptodance.guide.data.request.MessageRequest;
 import com.dance101.steptodance.guide.service.AIServerService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,43 +43,46 @@ public class FFmpegUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id
+	 * @param type
 	 * @param video
 	 * @return 멀티파트 이미지 파일. 썸네일로 사용
 	 * @throws IOException
 	 */
-	public MultipartFile sendGuideVodToKafka(long id, MultipartFile video) throws IOException {
+	public MultipartFile sendVodToKafka(long id, String type, MultipartFile video) throws IOException {
 		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
 		video.transferTo(tempFilePath);
 
-		Files.createDirectories(Path.of(outputDirPath + id));
+		Files.createDirectories(Path.of(outputDirPath + type + id));
 
 		// 동영상 파일 -> 0.5초마다의 프레임 이미지
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(tempFilePath.toString())
-			.addOutput(outputDirPath+id+"/frame_%04d.png")
+			.addOutput(outputDirPath+type+id+"/frame_%04d.png")
 			.setVideoFrameRate(2, 1) // 1초에 2프레임 추출
 			.done();
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 		executor.createJob(builder).run();
 		// 파일 갯수 세기
-		File[] fileList = new File(outputDirPath+id).listFiles();
+		File[] fileList = new File(outputDirPath+type+id).listFiles();
 		int size = fileList.length;
 
 		// ai 서버로 전송
-		try (Stream<Path> paths = Files.walk(Path.of(outputDirPath+id))) {
+		try (Stream<Path> paths = Files.walk(Path.of(outputDirPath+type+id))) {
 			paths.filter(Files::isRegularFile)
 				.forEach(path -> {
 					try {
 						aiServerService.publish(
-							GuideMessageRequest.builder()
-								.guideId(id)
+							MessageRequest.builder()
+								.type(type)
+								.id(id)
 								.name(String.valueOf(path.getFileName()))
 								.image(Files.readAllBytes(path))
 								.size(size)
-								.build()
+								.build(),
+							type
 						);
 					} catch (IOException e) {
 						throw new RuntimeException(e);
@@ -88,17 +91,17 @@ public class FFmpegUtils {
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
-		log.info("============== Sending Guide Vod Done ==============");
-		log.info("guide id: " + id + ", frame amount: " + size);
+		log.info("============== Sending " + type + " Vod Done ==============");
+		log.info(type + " id: " + id + ", frame amount: " + size);
 
 		MultipartFile ret = FileUtil.convertToMultipartFile(
-			new File(outputDirPath + id + "/frame_0001.png"));
+			new File(outputDirPath + type + id + "/frame_0001.png"));
 
 		// 이미지파일 삭제
-		Files.walk(Path.of(outputDirPath + id))
+		Files.walk(Path.of(outputDirPath + type + id))
 			.map(Path::toFile)
 			.forEach(File::delete);
-		Files.delete(Path.of(outputDirPath + id));
+		Files.delete(Path.of(outputDirPath + type + id));
 		// 영상파일 삭제
 		Files.delete(tempFilePath);
 		

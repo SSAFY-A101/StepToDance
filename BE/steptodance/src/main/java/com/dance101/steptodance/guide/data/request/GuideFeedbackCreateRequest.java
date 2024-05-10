@@ -2,11 +2,18 @@ package com.dance101.steptodance.guide.data.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 
-public record GuideFeedbackCreateRequest(
-    @JsonProperty("start_at") LocalTime startAt,
-    @JsonProperty("end_at") LocalTime endAt,
-    @JsonProperty("video_url") String videoUrl
-) {
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.Data;
+
+@Data
+public class GuideFeedbackCreateRequest implements Serializable {
+    private LocalTime startAt;
+
+    private LocalTime endAt;
+
+	private MultipartFile video;
 }
