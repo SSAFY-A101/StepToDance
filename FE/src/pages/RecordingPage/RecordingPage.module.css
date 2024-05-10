@@ -299,6 +299,7 @@ h2 {
   transform: translateY(120%) rotateX(95deg) scale(1, 0.35);
   background: var(--glow-color);
   pointer-events: none;
+  transition: transform 0.5s, opacity 0.5s; /* Smoothing out the transition */
 }
 
 .glowingBtn::after {
@@ -313,6 +314,26 @@ h2 {
   background-color: var(--glow-color);
   box-shadow: 0 0 2em 0.2em var(--glow-color);
   transition: opacity 100ms linear;
+
+}
+
+
+.glowingBtn.active::before {
+  transform: translateY(0%) rotateX(0deg) scale(1, 1);
+  opacity: 0; /* Hide the before effect when active */
+}
+
+.glowingBtn.active::after {
+  opacity: 1; /* Show the after effect when active */
+}
+
+.glowingBtn:not(.active)::before {
+  opacity: 0.7; /* Show the before effect when not active */
+  transform: translateY(120%) rotateX(95deg) scale(1, 0.35); /* Reset to initial state */
+}
+
+.glowingBtn:not(.active)::after {
+  opacity: 0; /* Hide the after effect when not active */
 }
 
 .glowingBtn.active, .glowingBtn:hover {
