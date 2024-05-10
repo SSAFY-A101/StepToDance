@@ -117,10 +117,9 @@ public class GuideServiceImpl implements GuideService{
 			.orElseThrow(() -> new NotFoundException("GuideServiceImpl:findGuide", GUIDE_NOT_FOUND));
 	}
 
-	@Async
 	@Transactional
 	@Override
-	public CompletableFuture<FeedbackResponse> createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest request) {
+	public FeedbackResponse createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest request) {
 		log.info("GuideServiceImpl:guideUploadFile : request = " + request.toString());
 		// find guide & user
 		Guide guide = guideRepository.findById(guideId)
@@ -138,25 +137,23 @@ public class GuideServiceImpl implements GuideService{
 		Feedback savedFeedback = feedbackRepository.save(feedback);
 
 		try {
-			MultipartFile thumnail = ffmpegUtils.sendVodToKafka(savedFeedback.getId(), "feedback", request.getVideo());
+			// kafka를 통해 비디오 프레임 전송
+			MultipartFile thumbnail = ffmpegUtils.sendVodToKafka(savedFeedback.getId(), "feedback", request.getVideo());
+			// 영상 업로드
+			String url = s3Service.upload(
+				request.getVideo(),
+				"feedback/" + savedFeedback.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
+			feedback.addUrl(url);
+			// 썸네일 업로드
+			url = s3Service.upload(
+				thumbnail, "feedback/thumbnail/" + savedFeedback.getId() + "." + StringUtils.getFilenameExtension(thumbnail.getOriginalFilename()));
+			feedback.addThumbnailUrl(url);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
-		// create message & send to ai server
-		// FeedbackMessageRequest feedbackMessageRequest = FeedbackMessageRequest.builder()
-		// 	.id(savedFeedback.getId())
-		// 	.startAt(request.getStartAt())
-		// 	.endAt(request.getEndAt())
-		// 	.videoUrl(request.videoUrl())
-		// 	.guideUrl(guide.getVideoUrl())
-		// 	.highlightSectionStartAt(guide.getHighlightSectionStartAt())
-		// 	.highlightSectionEndAt(guide.getHighlightSectionEndAt())
-		// 	.build();
-		// aiServerService.publish(feedbackMessageRequest);
-		//
 		// create & return
-		return CompletableFuture.completedFuture(new FeedbackResponse(savedFeedback.getId()));
+		return new FeedbackResponse(savedFeedback.getId());
 	}
 	@Async
 	@Transactional
