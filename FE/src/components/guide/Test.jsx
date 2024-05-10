@@ -1,50 +1,49 @@
+import {useState, useEffect} from "react";
 import { v4 as uuidv4 } from "uuid";
 import Card from "./Card";
 import Carousel from "./CarouselCustom";
+import { getHotGuideList } from "../../api/GuideApis";
+import styles from "../../styles/guide/Hot5Guides.module.css"
 
 function Test(){
-    let cards = [
-        {
-          key: uuidv4(),
-          content: (
-            <Card imagen="src\assets\thumbnail.png" />
-          )
-        },
-        {
-          key: uuidv4(),
-          content: (
-            <Card imagen="https://updates.theme-fusion.com/wp-content/uploads/2017/12/acf_pro.png" />
-          )
-        },
-        {
-          key: uuidv4(),
-          content: (
-            <Card imagen="https://updates.theme-fusion.com/wp-content/uploads/2017/12/layer_slider_plugin_thumb.png" />
-          )
-        },
-        {
-          key: uuidv4(),
-          content: (
-            <Card imagen="https://updates.theme-fusion.com/wp-content/uploads/2016/08/slider_revolution-1.png" />
-          )
-        },
-        {
-          key: uuidv4(),
-          content: (
-            <Card imagen="https://updates.theme-fusion.com/wp-content/uploads/2019/01/pwa_880_660.jpg" />
-          )
-        }
-      ];
+    const [cards, setCards] = useState([]);
+
+    useEffect(() => {
+        const fetchGuideData = async () => {
+          try {
+            const data = await getHotGuideList();
+            console.log("data:",data.data.guide_list);
+            setCards((data.data.guide_list).map(guide => ({
+                key: guide.id,
+                content: <Card item={guide} />
+              })));
+              console.log("cards:",cards);
+          } catch (error) {
+            console.error('Error fetching guide data:', error);
+          }
+        };
+    
+        fetchGuideData();
+      }, []);
+
+      useEffect(() => {
+        console.log("cards:", cards);
+      }, [cards]);
+
+      
+      
       return (
+        
         <div className="">
-          <Carousel
+            <div className={styles.title}>HOT 5</div>
+          {cards.length>0 && (<Carousel
             cards={cards}
-            height="500px"
+            height="70vw"
             width="30%"
             margin="0 auto"
             offset={2}
             showArrows={false}
-          />
+          />)}
         </div>
       );
 }

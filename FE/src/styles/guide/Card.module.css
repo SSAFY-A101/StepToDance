@@ -8,9 +8,15 @@
     border-radius: 5vw;
     overflow: hidden;
   }
-
-  .card > img {
+  
+  .card img {
     object-fit:cover;
+  }
+
+  .card h2 {
+    margin-top: 50%;
+    color:white;
+    font-size: large;
   }
 
 
