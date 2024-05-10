@@ -24,7 +24,6 @@ export const WebcamStreamCapture = () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true,
       });
       setMediaStream(stream);
       if (videoRef.current) {
@@ -251,12 +250,12 @@ export const WebcamStreamCapture = () => {
           /> */}
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
           {mediaStream && (
-            <video
+            <Webcam
               autoPlay
               ref={videoRef}
               width={widthSize}
               height={heightSize}
-              style={{ aspectRatio: 9 / 16 }}
+              videoConstraints={{ aspectRatio: 9 / 16 }}
             />
           )}
           {mediaStream && recording && (
