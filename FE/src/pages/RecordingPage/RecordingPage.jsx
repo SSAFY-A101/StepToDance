@@ -167,13 +167,7 @@ export const WebcamStreamCapture = () => {
             width={widthSize}
             height={heightSize * 0.8}
             videoConstraints={{ width: widthSize, height: heightSize * 0.8, facingMode: "user" }}
-            style={{ 
-              opacity: 1,
-              position: "absolute",
-              zIndex: 0,  
-              width: "100%",  
-              height: "auto" 
-            }}  // Always visible
+            style={{ opacity: 1 }}  // Always visible
           />
            <input
               type="range"
