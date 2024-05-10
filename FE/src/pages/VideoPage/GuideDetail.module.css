@@ -23,19 +23,14 @@ h2 {
   text-align: center;
   background: rgba(0, 0, 0, 0.7); /* 배경 반투명 검정 */
   color: white;
-  z-index: 4; 
 }
 
-.player{
-  z-index: 2;
-}
 
 .playButton {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 3;
   cursor: pointer;
   color: #f0f0f0;
   display: flex;
@@ -50,7 +45,6 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1; /* 적절한 z-index 설정 */
 
 }
 
@@ -115,7 +109,6 @@ h2 {
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
-  z-index: 5; /* 확실히 최상위에 오도록 설정 */
 
 }
 
