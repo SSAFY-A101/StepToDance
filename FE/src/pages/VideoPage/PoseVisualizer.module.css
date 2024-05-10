@@ -1,0 +1,6 @@
+/* PoseVisualizer.module.css */
+.canvasContainer {
+    position: relative;
+    z-index: 10; /* 높은 z-index 값을 설정하여 다른 요소들 위에 오도록 함 */
+  }
+  

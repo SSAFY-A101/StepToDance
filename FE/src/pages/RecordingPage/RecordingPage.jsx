@@ -6,56 +6,103 @@ import * as bodyPix from "@tensorflow-models/body-pix";
 import "@tensorflow/tfjs-backend-webgl";
 
 export const WebcamStreamCapture = () => {
-  // const [widthSize, setWidthSize] = useState(window.innerWidth);
-  // const [heightSize, setHeightSize] = useState(window.innerHeight);
-  // const webcamRef = useRef(null);
-  // const mediaRecorderRef = useRef(null);
-  // const [capturing, setCapturing] = useState(false);
-  // const [recordedChunks, setRecordedChunks] = useState([]);
-  // const [recordVideo, setRecordVideo] = useState("");
-  // const location = useLocation();
-  // const videoUrl = location.state?.videoUrl;
-  // const videoRef = useRef(null);
-  // const [opacity, setOpacity] = useState(100); // 상태로 opacity 관리
-  // const opacityRef = useRef(100); // useRef를 사용하여 opacity 값을 저장
-  // const canvasRef = useRef(null);
+  const [widthSize, setWidthSize] = useState(window.innerWidth);
+  const [heightSize, setHeightSize] = useState(window.innerHeight);
 
-  // const [showVideo, setShowVideo] = useState(false); // 비디오 표시 상태
+  const location = useLocation();
+  const videoUrl = location.state?.videoUrl;
+  const videoRef = useRef(null);
+  const [opacity, setOpacity] = useState(100); // 상태로 opacity 관리
+  const opacityRef = useRef(100); // useRef를 사용하여 opacity 값을 저장
+  const canvasRef = useRef(null);
+  const [mediaStream, setMediaStream] = useState(null);
+  const [recording, setRecording] = useState(false);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const [showVideo, setShowVideo] = useState("");
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     const currentWidth = window.innerWidth;
-  //     const currentHeight = window.innerHeight;
-  //     setWidthSize(currentWidth);
-  //     setHeightSize(currentHeight);
+  const startPreview = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      setMediaStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error("Error accessing camera:", error);
+    }
+  };
 
-  //     const canvas = canvasRef.current;
-  //     if (canvas) {
-  //       canvas.width = currentWidth;
-  //       canvas.height = currentHeight;
-  //     }
-  //   };
+  useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      const currentHeight = window.innerHeight;
+      setWidthSize(currentWidth);
+      setHeightSize(currentHeight);
 
-  //   window.addEventListener("resize", handleResize);
-  //   handleResize(); // 초기 로딩시에도 크기를 설정합니다.
+      const canvas = canvasRef.current;
+      if (canvas) {
+        canvas.width = currentWidth;
+        canvas.height = currentHeight;
+      }
+    };
 
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // }, []);
+    window.addEventListener("resize", handleResize);
+    handleResize(); // 초기 로딩시에도 크기를 설정합니다.
+    startPreview();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
-  // const handleStartCaptureClick = useCallback(() => {
-  //   setCapturing(true);
-  //   mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
-  //     mimeType: "video/webm",
-  //   });
-  //   mediaRecorderRef.current.addEventListener(
-  //     "dataavailable",
-  //     handleDataAvailable
-  //   );
-  //   mediaRecorderRef.current.start();
-  // }, [webcamRef, mediaRecorderRef]);
+  const handleStartCaptureClick = useCallback(() => {
+    const mediaRef = new MediaRecorder(mediaStream, {
+      mimeType: "video/webm",
+    });
 
+    mediaRef.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        setRecordedChunks((prev) => prev.concat(event.data));
+      }
+    };
+
+    mediaRef.start();
+    setRecording(true);
+  }, [mediaStream]);
+
+  const stopRecording = () => {
+    mediaStream.getTracks().forEach((track) => track.stop());
+  };
+  useEffect(() => {
+    if (recordedChunks.length > 0) {
+      const recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
+      const videoUrl = URL.createObjectURL(recordedBlob);
+      setMediaStream(null);
+      setRecording(false);
+      setRecordedChunks([]);
+      setShowVideo(videoUrl);
+    }
+  }, [recordedChunks]);
+  // return (
+  //   <div>
+  //     {/* {mediaStream && !recording && (
+  //       <button onClick={handleStartCaptureClick}>녹화 시작</button>
+  //     )}
+  //     {mediaStream && recording && (
+  //       <>
+  //         <button onClick={stopRecording}>녹화 중지</button>
+  //       </>
+  //     )} */}
+  //     {mediaStream && (
+  //       <video autoPlay muted ref={videoRef} width="400" height="300" />
+  //     )}
+  //     {showVideo ? (
+  //       <video autoPlay muted src={showVideo} width="400" height="300" />
+  //     ) : null}
+  //   </div>
+  // );
   // const handleDataAvailable = useCallback(
   //   ({ data }) => {
   //     if (data.size > 0) {
@@ -141,176 +188,95 @@ export const WebcamStreamCapture = () => {
   //   }
   // }, [opacity, widthSize, heightSize]); // opacity를 의존성 배열에 포함시켜서 변경 감지
 
-  // return (
-  //   <section className={styles["record-page"]}>
-  //     {recordVideo ? (
-  //       <>
-  //         <video
-  //           controls
-  //           src={recordVideo}
-  //           width={widthSize}
-  //           height={heightSize * 0.9}
-  //         />
-  //         <article className={styles["record-button"]}>
-  //           <button className={styles["record-button__cancle"]}>
-  //             다시촬영
-  //           </button>
-  //           <button className={styles["record-button__save"]}>평가하기</button>
-  //         </article>
-  //       </>
-  //     ) : (
-  //       <>
-  //         <input
-  //           type="range"
-  //           min="0"
-  //           max="100"
-  //           value={opacity}
-  //           onChange={(e) => setOpacity(parseInt(e.target.value))}
-  //           style={{
-  //             zIndex: 3,
-  //             position: "absolute",
-  //             top: 50,
-  //             right: 100,
-  //           }}
-  //         />
-  //         <video
-  //           ref={videoRef}
-  //           src={videoUrl}
-  //           loop
-  //           muted
-  //           controls
-  //           autoPlay
-  //           style={{
-  //             position: "absolute",
-  //             zIndex: 1,
-  //             width: "100%",
-  //             height: "75%",
-  //             objectFit: "cover",
-  //             opacity: opacity / 100,
-  //             display: showVideo ? "block" : "none",
-  //           }}
-  //           type="video/mp4"
-  //         />
-  //         <canvas
-  //           ref={canvasRef}
-  //           style={{
-  //             position: "absolute",
-  //             zIndex: 2,
-  //             width: "100%",
-  //             height: "75%",
-  //             objectFit: "cover",
-  //             opacity: opacity / 100,
-  //           }}
-  //         />
-  //         {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
-  //         <Webcam
-  //           className={styles.video}
-  //           audio={false}
-  //           ref={webcamRef}
-  //           width={widthSize}
-  //           height={heightSize * 0.8}
-  //           videoConstraints={{
-  //             // { exact: "environment" }
-  //             facingMode: "user",
-  //             aspectRatio: 9 / 16,
-  //           }}
-  //         />
-  //         {capturing ? (
-  //           <article className={styles["record-btn"]}>
-  //             <button
-  //               className={styles["record-stop"]}
-  //               onClick={handleStopCaptureClick}
-  //             >
-  //
-  //             </button>
-  //           </article>
-  //         ) : (
-  //           <article className={styles["record-btn"]}>
-  //             <button
-  //               className={styles["record-start"]}
-  //               onClick={handleStartCaptureClick}
-  //             >
-  //
-  //             </button>
-  //           </article>
-  //         )}
-  //       </>
-  //     )}
-  //   </section>
-  // );
-  const [mediaStream, setMediaStream] = useState(null);
-  const [recording, setRecording] = useState(false);
-  const [recordedChunks, setRecordedChunks] = useState([]);
-  const [showVideo, setShowVideo] = useState();
-  const mediaRef = useRef(null);
-  const videoRef = useRef(null);
-
-  const startPreview = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      setMediaStream(stream);
-      setShowVideo(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (error) {
-      console.error("Error accessing camera:", error);
-    }
-  };
-
-  useEffect(() => {
-    startPreview();
-  }, []);
-
-  const startRecording = () => {
-    mediaRef.current = new MediaRecorder(videoRef, {
-      mimeType: "video/webm",
-    });
-    console.log(mediaRef);
-    mediaRef.current.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        setRecordedChunks((prev) => prev.concat(event.data));
-      }
-    };
-
-    mediaRef.current.onstop = () => {
-      const recordedBlob = new Blob(recordedChunks, { type: "video/mp4" });
-      console.log(recordedBlob, recordedChunks);
-      const videoUrl = URL.createObjectURL(recordedBlob);
-
-      setMediaStream(null);
-      setRecording(false);
-      setRecordedChunks([]);
-      setShowVideo(videoUrl);
-    };
-
-    mediaRef.current.start();
-    setRecording(true);
-  };
-
-  const stopRecording = () => {
-    mediaStream.getTracks().forEach((track) => track.stop());
-  };
-
   return (
-    <div>
-      {!mediaStream && (
-        <button onClick={startPreview}>카메라 미리 보기 시작</button>
-      )}
-      {mediaStream && !recording && (
-        <button onClick={startRecording}>녹화 시작</button>
-      )}
-      {mediaStream && recording && (
+    <section className={styles["record-page"]}>
+      {showVideo ? (
         <>
-          <button onClick={stopRecording}>녹화 중지</button>
+          <video
+            controls
+            src={showVideo}
+            width={widthSize}
+            height={heightSize * 0.8}
+          />
+          <article className={styles["record-button"]}>
+            <button className={styles["record-button__cancle"]}>
+              다시촬영
+            </button>
+            <button className={styles["record-button__save"]}>평가하기</button>
+          </article>
+        </>
+      ) : (
+        <>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={opacity}
+            onChange={(e) => setOpacity(parseInt(e.target.value))}
+            style={{
+              zIndex: 3,
+              position: "absolute",
+              top: 50,
+              right: 100,
+            }}
+          />
+          {/* <video
+            ref={videoRef}
+            src={videoUrl}
+            loop
+            muted
+            controls
+            autoPlay
+            style={{
+              position: "absolute",
+              zIndex: 1,
+              width: "100%",
+              height: "75%",
+              objectFit: "cover",
+              opacity: opacity / 100,
+              display: showVideo ? "block" : "none",
+            }}
+            type="video/mp4"
+          /> */}
+          {/* <canvas
+            ref={canvasRef}
+            style={{
+              position: "absolute",
+              zIndex: 2,
+              width: "100%",
+              height: "75%",
+              objectFit: "cover",
+              opacity: opacity / 100,
+            }}
+          /> */}
+          {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
+          {mediaStream && (
+            <video
+              autoPlay
+              ref={videoRef}
+              width={widthSize}
+              height={heightSize}
+              style={{ aspectRatio: 9 / 16 }}
+            />
+          )}
+          {mediaStream && recording && (
+            <article className={styles["record-btn"]}>
+              <button
+                className={styles["record-stop"]}
+                onClick={stopRecording}
+              ></button>
+            </article>
+          )}
+          {mediaStream && !recording && (
+            <article className={styles["record-btn"]}>
+              <button
+                className={styles["record-start"]}
+                onClick={handleStartCaptureClick}
+              ></button>
+            </article>
+          )}
         </>
       )}
-      {mediaStream && (
-        <video autoPlay muted ref={videoRef} width="400" height="300" />
-      )}
-      {showVideo && (
-        <video autoPlay muted src={showVideo} width="400" height="300" />
-      )}
-    </div>
+    </section>
   );
 };
