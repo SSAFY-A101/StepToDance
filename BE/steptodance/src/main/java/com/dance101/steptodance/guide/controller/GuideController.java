@@ -51,6 +51,7 @@ public class GuideController {
 
 	@PostMapping(value = "/file", consumes = "multipart/form-data")
 	public ResponseEntity<ApiResponse<Void>> uploadGuideFile(
+		// TODO: 토큰을 사용하도록 변경
 		// @AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute GuideUploadMultipartRequest request
 	) {
