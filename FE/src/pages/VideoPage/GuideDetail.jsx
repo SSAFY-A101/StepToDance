@@ -20,7 +20,8 @@ const GuideDetail = () => {
   const [playbackRate, setPlaybackRate] = useState(1); // 배속 상태 추가
   const [rateIndex, setRateIndex] = useState(0); // 현재 배속 인덱스
   const playbackRates = [1, 1.25, 1.5, 0.5, 0.75]; // 배속 설정 배열
-  
+  const [widthSize, setWidthSize] = useState(window.innerWidth);
+  const [heightSize, setHeightSize] = useState(window.innerHeight);
   
   // 더미 데이터
   const videoData = {
@@ -84,8 +85,8 @@ const GuideDetail = () => {
           url={videoData.video_url}
           ref={playerRef}
           playing={isPlaying}
-          width="100%"
-          height="100%"
+          width={widthSize}
+          height={heightSize}
           onDuration={setDuration}
           playbackRate={playbackRate}
           onEnded={handleVideoEnded}
@@ -94,6 +95,7 @@ const GuideDetail = () => {
             setDuration(loadedSeconds);
           }}
           volume={volume}
+          playsinline
         />
         <div className={styles.controlsOverlay} style={{opacity: showControls ? 1 : 0}}>
           <div className={styles.playButton} onClick={handlePlayPause}>
