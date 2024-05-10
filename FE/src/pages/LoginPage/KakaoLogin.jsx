@@ -37,7 +37,7 @@ const KakaoLogin = () => {
             setCookie("accessToken", access_token);
             setCookie("refreshToken", refresh_token);
 
-            navigate("/");
+            navigate("/home");
           } else {
             throw new Error('Failed to login with Kakao');
           }
