@@ -9,9 +9,8 @@ import java.util.stream.Collectors;
 import com.dance101.steptodance.feedback.service.FeedbackService;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.ForbiddenException;
-import com.dance101.steptodance.global.exception.data.response.ErrorCode;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
-import com.dance101.steptodance.guide.data.request.GuideFrame;
+import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.request.MessageRequest;
 import com.dance101.steptodance.guide.data.response.GuideFeedbackCreateResponse;
 import com.dance101.steptodance.guide.domain.GuideBodyModel;
@@ -89,19 +88,48 @@ public class KafkaService implements AIServerService {
         log.info("consumeGuideCompletion: size= " + list.size());
         log.info("consumeGuideCompletion: an Item = " + list.get(0));
 
-        List<GuideFrame> frameList = new ArrayList<>(list.parallelStream().map(item -> {
-            try {
-                return objectMapper.readValue(item, GuideFrame.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }).toList());
+        List<Frame> frameList = getFrameListFromString(list);
         log.info("consumeGuideCompletion: json mapped to object");
 
         frameList.sort((item1, item2) -> item1.getName().compareTo(item2.getName()));
         log.info("consumeGuideCompletion: objects has been sorted");
+
+        frameList = fillEmptyFrames(frameList);
+        log.info("consumeGuideCompletion: filled all empty frames");
+
+        // update & save result
+        GuideBodyModel model = makeModelOutOfFrameList(message, frameList);
+        guideBodyRepository.save(model);
+        log.info("consumeGuideCompletion: stored in MongoDB");
+
+        // 레디스에 저장된 내용을 지운다.
+        redisTemplate.delete("guide:" + message);
+    }
+
+    private GuideBodyModel makeModelOutOfFrameList(String message, List<Frame> frameList) {
+        return GuideBodyModel.builder()
+            .guideId(Long.parseLong(message))
+            .models(
+                frameList.stream()
+                    .map(Frame::getModel)
+                    .collect(Collectors.toList())
+            )
+            .build();
+    }
+
+    private List<Frame> getFrameListFromString(List<String> list) {
+        return new ArrayList<>(list.parallelStream().map(item -> {
+            try {
+                return objectMapper.readValue(item, Frame.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList());
+    }
+
+    private List<Frame> fillEmptyFrames(List<Frame> frameList) {
         // 첫 프레임 채우기
-        GuideFrame frame = frameList.get(0);
+        Frame frame = frameList.get(0);
         for (int i = 0; i < frame.getModel().size(); i++) {
             if (frame.getModel().get(i) == null) {
                 dfsBothEnd(i, 0, '+', frameList);
@@ -128,25 +156,10 @@ public class KafkaService implements AIServerService {
             }
         }
         log.info("consumeGuideCompletion: middle empty points filled");
-
-        // update & save result
-        GuideBodyModel model = GuideBodyModel.builder()
-            .guideId(Long.parseLong(message))
-            .models(
-                frameList.stream()
-                    .map(GuideFrame::getModel)
-                    .collect(Collectors.toList())
-            )
-            .build();
-
-        guideBodyRepository.save(model);
-        log.info("consumeGuideCompletion: stored in MongoDB");
-
-        // 레디스에 저장된 내용을 지운다.
-        redisTemplate.delete("guide:" + message);
+        return frameList;
     }
 
-    private void fillFrame(int joint, int frameIndex, List<GuideFrame> frameList) {
+    private void fillFrame(int joint, int frameIndex, List<Frame> frameList) {
         int startFrameIndex = frameIndex - 1;
         int endFrameIndex = frameIndex;
         while (frameList.get(endFrameIndex).getModel().get(joint) == null) {
@@ -176,7 +189,7 @@ public class KafkaService implements AIServerService {
         }
     }
 
-    private List<Integer> dfsBothEnd(int joint, int frameIndex, char cmd, List<GuideFrame> frameList) {
+    private List<Integer> dfsBothEnd(int joint, int frameIndex, char cmd, List<Frame> frameList) {
         if (frameIndex >= frameList.size() || frameIndex < 0) return zeroList;
         List<Integer> thisFrame = frameList.get(frameIndex).getModel().get(joint);
         if (thisFrame != null) {
