@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import styles from "../styles/Layout.module.css";
 import SideBar from "./SideBar";
 import logo from "../assets/images/LOGO.png";
+import ShootingStar from "./ShootingStar";
 
 const Layout = () => {
   return (
@@ -15,7 +16,7 @@ const Layout = () => {
         </div>
       </div>
       <div className={styles.mainContent}>
-        <Outlet /> {/* Main page content will render here */}
+        <Outlet />
         <Footer />
       </div>
     </section>

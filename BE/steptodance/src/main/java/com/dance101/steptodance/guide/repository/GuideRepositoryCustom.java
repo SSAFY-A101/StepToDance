@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface GuideRepositoryCustom {
     List<GuideFindResponse> findGuideListWithSearchConditions(SearchConditions searchConditions, long userId);
 
+    List<GuideFindResponse> findHotGuideList();
+
     Optional<GuideFindResponse> findGuideByGuideId(long guideId);
 }

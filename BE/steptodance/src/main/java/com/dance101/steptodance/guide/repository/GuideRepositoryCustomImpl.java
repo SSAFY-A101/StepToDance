@@ -61,6 +61,28 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
     }
 
     @Override
+    public List<GuideFindResponse> findHotGuideList() {
+        return queryFactory.select(Projections.constructor(GuideFindResponse.class,
+                guide.id,
+                guide.videoUrl,
+                guide.thumbnailImgUrl,
+                guide.songTitle,
+                guide.singer,
+                guide.genre.name,
+                queryUtils.createRankingSQL(feedback.count()),
+                guide.user.nickname,
+                feedback.count(),
+                guide.createdAt))
+            .from(guide).leftJoin(feedback).on(feedback.guide.id.eq(guide.id))
+            .where(
+            )
+            .groupBy(guide.id)
+            .orderBy(queryUtils.createRankingSQL(feedback.count()).asc()) // rank를 오름차순으로 정렬
+            .limit(5) // 상위 5개만 조회
+            .fetch();
+    }
+
+    @Override
     public Optional<GuideFindResponse> findGuideByGuideId(long guideId) {
         return Optional.ofNullable(
             queryFactory.select(Projections.constructor(GuideFindResponse.class,
