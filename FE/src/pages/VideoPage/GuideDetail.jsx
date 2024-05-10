@@ -84,8 +84,8 @@ const GuideDetail = () => {
       </div>
       <div 
         className={styles.playerWrapper}
-        onMouseEnter={() => setShowControls(true)}
-        onMouseLeave={() => setShowControls(false)}
+        onMouseEnter={() => { setShowControls(true); setShowVolume(true); }}
+        onMouseLeave={() => { setShowControls(false); setShowVolume(false); }}
       >
         <ReactPlayer
           url={videoData.video_url}
@@ -118,7 +118,7 @@ const GuideDetail = () => {
             <div className={styles.progress} style={{ width: `${played * 100}%` }}></div>
           </div>
           <div className={styles.volumeControl} style={{ display: showVolume ? 'flex' : 'none' }}>
-          <VolumeUpIcon onClick={toggleVolumeControl} />
+          <VolumeUpIcon style={{color:'white'}}onClick={toggleVolumeControl} />
             {showVolume && (
               <input
                 type="range"

@@ -116,9 +116,11 @@ h2 {
 }
 
 .volumeControl {
-  display: none; /* Initially hidden */
-  flex-direction: row;
+  /* flex-direction: row; */
   align-items: center;
+  position: absolute;
+  bottom: 32vh;
+
 }
 
 .volumeIcon {
