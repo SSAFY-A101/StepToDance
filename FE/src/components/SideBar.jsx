@@ -48,10 +48,20 @@ const SideBar = () => {
                 <div className={styles.toggleMenu} onClick={toggleSidebar}>
                 <FontAwesomeIcon icon={isOpen ? faXmark : faBars} style={{ color: "black" }} />
                 </div>
-                <div className={styles.userName}>
-                    {/* <img
+                    <img
                     src={user.profileImgUrl}
-                    /> */}
+                    style={{
+                        height: '8vh',
+                        width: '20vw',
+                        display: 'flex',
+                        marginLeft: '5vw',
+                        marginBottom: '2.5vh',
+                        borderRadius: '2rem',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                    />
+                <div className={styles.userName}>
                     <span className={styles.userNickname}>"{user.nickname}"</span> 님 안녕하세요!
                 </div>
                 <ul className={styles.mobileSide}>
