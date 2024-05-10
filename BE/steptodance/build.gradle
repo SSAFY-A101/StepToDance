@@ -41,6 +41,7 @@ dependencies {
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 	/* DataBase */
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	runtimeOnly 'com.mysql:mysql-connector-j'
     /* Kafka */
     implementation 'org.springframework.kafka:spring-kafka'

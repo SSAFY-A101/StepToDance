@@ -15,6 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface GuideService {
 	GuideListFindResponse findGuideList(SearchConditions searchConditions, long userId);
+
+	GuideListFindResponse findHotGuideList();
+
 	void guideUpload(GuideUploadRequest guideUploadRequest);
 
 	void guideUploadFile(long userId, GuideUploadMultipartRequest request);

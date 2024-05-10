@@ -1,33 +1,37 @@
 :root {
-    --primary-main: #E07068; /* 전역 테마 색상 설정 */
-    --primary-contrastText: #B7B7B7;
-    --secondary-main: #F9EAE1;
-    --vh: 100%;
+  --primary-main: #e07068; /* 전역 테마 색상 설정 */
+  --primary-contrastText: #b7b7b7;
+  --secondary-main: #f9eae1;
+  --vh: 100%;
 }
 
-html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-    font-family: 'WavvePADO-Regular';
-    
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+  font-family: "WavvePADO-Regular";
 }
 
-@font-face {
-    font-family: 'WavvePADO-Regular';
-    src: url('./assets/fonts/WavvePADO/WavvePADO-Regular.ttf');
-}
-
-@font-face {
-    font-family: 'esamanru-Bold';
-    src: url('./assets/fonts/esamanru/esamanru-Bold.ttf') format('truetype');
+.App {
+  height: 100vh;
 }
 
 @font-face {
-    font-family: 'esamanru-Medium';
-    src: url('./assets/fonts/esamanru/esamanru-Medium.ttf') format('truetype');
+  font-family: "WavvePADO-Regular";
+  src: url("./assets/fonts/WavvePADO/WavvePADO-Regular.ttf");
 }
 
 @font-face {
-    font-family: 'esamanru-Light';
-    src: url('./assets/fonts/esamanru/esamanru-Light.ttf') format('truetype');
+  font-family: "esamanru-Bold";
+  src: url("./assets/fonts/esamanru/esamanru-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "esamanru-Medium";
+  src: url("./assets/fonts/esamanru/esamanru-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "esamanru-Light";
+  src: url("./assets/fonts/esamanru/esamanru-Light.ttf") format("truetype");
 }

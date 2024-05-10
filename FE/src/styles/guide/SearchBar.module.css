@@ -1,0 +1,12 @@
+.container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    margin-left: 27vw;
+}
+
+.searchBar {
+    padding : 3vw;
+    width: 50vw;
+    border-radius: 4vw;
+}
