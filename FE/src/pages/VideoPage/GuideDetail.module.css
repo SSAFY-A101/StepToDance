@@ -1,56 +1,111 @@
-/* GuideDetail.module.css */
 .mainView {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   height: 100vh;
+  z-index: 2;
+}
+.player{
+  z-index: 2;
 }
 
 .playButton {
-  padding: 10px 20px;
-  font-size: 16px;
-  margin-bottom: 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
   cursor: pointer;
+  color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .playerWrapper {
-  width: 70%;
   position: relative;
+  width: 100%;
+  height: 75%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+.playerWrapper:hover .volumeControl .controlsOverlay {
+  opacity: 1; /* Fully visible on hover */
 }
 
 .progressBar {
+  width: 300px;
+  height: 0.8vh;
+  background-color: #ffffff;
   position: absolute;
-  width: 100%;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  padding: 10px 15px;
+  top: 35vh; /* Adjust as needed */
 }
 
-.progressInput {
-  width: calc(100% - 100px);
-  height: 8px;
-  -webkit-appearance: none;
+.progress {
+  height: 100%;
+  background: linear-gradient(to right, #00f260, #0575e6); /* Green to blue gradient */
+  width: 0%; /* Updated by React */
+}
+
+.volumeSlider {
+  width: 150px;
+  height: 5px;
   appearance: none;
-  border-radius: 5px;
-  background: linear-gradient(to right, #ffc107 var(--progress), #fff 0);
-  cursor: pointer;
+  background: linear-gradient(to right, #00f260, #0575e6); /* Green to blue gradient */
+  outline: none;
+  transition: opacity .2s;
 }
 
-.progressInput::-webkit-slider-thumb {
-  -webkit-appearance: none;
+.timeDisplayOverlay {
+  position: absolute;
+  left: 50%;
+  top: 32vh;
+  transform: translateX(-20%);
+  color: white;
+  width: 30vh;
+  font-size: 1rem; /* Larger font size for visibility */
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Enhancing readability */
+}
+
+
+.volumeSlider::-webkit-slider-thumb,
+.volumeSlider::-moz-range-thumb {
   appearance: none;
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background: #ffc107;
+  background: white;
   cursor: pointer;
 }
 
-.timeDisplay {
-  display: inline-block;
-  width: 100px;
-  text-align: right;
-  color: #fff;
-  font-size: 14px;
+.controlsOverlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.5s ease-in-out;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+}
+
+.controlsOverlay:hover {
+  opacity: 1;
+}
+
+.volumeControl {
+  display: none; /* Initially hidden */
+  flex-direction: row;
+  align-items: center;
+}
+
+.volumeIcon {
+  cursor: pointer;
+  color: #0575e6; /* Adjust to fit your theme */
 }
