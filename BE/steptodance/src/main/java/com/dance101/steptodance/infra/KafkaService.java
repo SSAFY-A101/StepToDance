@@ -3,20 +3,19 @@ package com.dance101.steptodance.infra;
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.dance101.steptodance.feedback.service.FeedbackService;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
+import com.dance101.steptodance.global.exception.category.ForbiddenException;
+import com.dance101.steptodance.global.exception.data.response.ErrorCode;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.GuideFrame;
-import com.dance101.steptodance.guide.data.request.GuideMessageRequest;
+import com.dance101.steptodance.guide.data.request.MessageRequest;
 import com.dance101.steptodance.guide.data.response.GuideFeedbackCreateResponse;
 import com.dance101.steptodance.guide.domain.GuideBodyModel;
 import com.dance101.steptodance.guide.repository.GuideBodyRepository;
-import com.dance101.steptodance.guide.repository.GuideRepository;
 import com.dance101.steptodance.guide.service.AIServerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,11 +47,17 @@ public class KafkaService implements AIServerService {
     private final List<Integer> zeroList = List.of(0, 0);
 
     @Override
-    public void publish(GuideMessageRequest guideMessageRequest) {
+    public void publish(MessageRequest messageRequest, String type) {
+        String topicName = switch (type) {
+            case "guide" -> guideTopicName;
+            case "feedback" -> feedbackTopicName;
+			default -> throw new ForbiddenException("Unexpected topic: " + type, KAFKA_INVALID_TOPIC);
+		};
+
         // send message
-        log.info("KafkaService::publish : ===========" + guideMessageRequest.name() + " send ===========");
+        log.info("KafkaService::publish : ===========" + messageRequest.name() + " send ===========");
         try {
-            this.kafkaTemplate.send(guideTopicName, objectMapper.writeValueAsString(guideMessageRequest));
+            this.kafkaTemplate.send(topicName, objectMapper.writeValueAsString(messageRequest));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new ExternalServerException("KafkaService::publish : "+"json parsing problem", JSON_PARSE_CAN_NOT_BE_DONE);

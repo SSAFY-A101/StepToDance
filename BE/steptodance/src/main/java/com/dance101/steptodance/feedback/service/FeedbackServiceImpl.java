@@ -60,7 +60,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             .orElseThrow(() -> new NotFoundException("FeedbackServiceImpl:updateFeedback", FEEDBACK_NOT_FOUND));
 
         // update & save feedback
-        feedback.update(guideFeedbackCreateResponse.score(), guideFeedbackCreateResponse.thumbnailImgUrl());
+        feedback.update(guideFeedbackCreateResponse.score());
 
         // create incorrect sections
         List<Timestamp> timestamps = new ArrayList<>();
