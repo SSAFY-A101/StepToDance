@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class GuideFrame {
+public class Frame {
 	String name;
 	List<List<Integer>> model;
 }
