@@ -7,9 +7,9 @@ function Card({ item }) {
   const [show, setShown] = useState(false);
   const navigate = useNavigate();
 
-//   const onClick = (index) => {
-//     navigate(`/guideDetail?id=${index}`);
-//     }
+  const handleClick = (index) => {
+    navigate(`/guideDetail?id=${index}`);
+    }
 
   const props3 = useSpring({
     transform: show ? "scale(1.03)" : "scale(1)",
@@ -24,7 +24,7 @@ function Card({ item }) {
       style={props3}
       onMouseEnter={() => setShown(true)}
       onMouseLeave={() => setShown(false)}
-    //   onClick={onClick(item.id)}
+      onClick={handleClick(item.id)}
     >
       <img src={item.thumbnail_img_url} alt="" />
     </animated.div>

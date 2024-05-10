@@ -6,7 +6,8 @@ import PauseIcon from '@mui/icons-material/Pause';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import SpeedIcon from '@mui/icons-material/Speed';
 import ReplayIcon from '@mui/icons-material/Replay';
-
+import { useNavigate } from "react-router-dom";
+import VideocamIcon from '@mui/icons-material/Videocam';
 
 const GuideDetail = () => {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -22,7 +23,8 @@ const GuideDetail = () => {
   const playbackRates = [1, 1.25, 1.5, 0.5, 0.75]; // 배속 설정 배열
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
-  
+  const navigate = useNavigate()
+
   // 더미 데이터
   const videoData = {
     id: 1,
@@ -54,6 +56,10 @@ const GuideDetail = () => {
   };
 
 
+  const handleOnAirClick = () => {
+    navigate('/record', { videoUrl: videoData.video_url });
+  };
+
   const changePlaybackRate = () => {
     const nextRateIndex = (rateIndex + 1) % playbackRates.length; // 다음 인덱스 계산
     setPlaybackRate(playbackRates[nextRateIndex]);
@@ -76,9 +82,6 @@ const GuideDetail = () => {
       <div className={styles.infoBar}>
         <h2>{videoData.song_title} - {videoData.singer}</h2> {/* 노래 제목과 가수 이름 표시 */}
       </div>
-          <button className={styles.glowingBtn} onClick={handlePlayPause}>
-            <span className={styles.glowingTxt}>ON AIR</span>
-          </button>
       <div 
         className={styles.playerWrapper}
         onMouseEnter={() => setShowControls(true)}
@@ -134,6 +137,11 @@ const GuideDetail = () => {
           </div>
         </div>
       </div>
+      <button className={styles.glowingBtn}>
+        <span className={styles.glowingTxt}>
+          <VideocamIcon fontSize="large" onClick={handleOnAirClick}/>
+          </span>
+      </button>
     </div>
   );
 };
