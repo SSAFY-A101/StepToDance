@@ -76,6 +76,9 @@ const GuideDetail = () => {
       <div className={styles.infoBar}>
         <h2>{videoData.song_title} - {videoData.singer}</h2> {/* 노래 제목과 가수 이름 표시 */}
       </div>
+          <button className={styles.glowingBtn} onClick={handlePlayPause}>
+            <span className={styles.glowingTxt}>ON AIR</span>
+          </button>
       <div 
         className={styles.playerWrapper}
         onMouseEnter={() => setShowControls(true)}
@@ -86,7 +89,7 @@ const GuideDetail = () => {
           ref={playerRef}
           playing={isPlaying}
           width={widthSize}
-          height={heightSize}
+          height={heightSize * 0.75}
           onDuration={setDuration}
           playbackRate={playbackRate}
           onEnded={handleVideoEnded}
