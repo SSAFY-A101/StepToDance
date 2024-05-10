@@ -10,7 +10,7 @@ function Home() {
       <SearchBar />
       <div className={styles.homeContainer}>
         <Test />
-        <Hot5Guides />
+        {/* <Hot5Guides /> */}
         <GuideList />
       </div>
     </div>
