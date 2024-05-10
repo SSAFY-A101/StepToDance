@@ -10,6 +10,17 @@ export const getGuideList = async () => {
   }
 };
 
+export const getHotGuideList = async () => {
+  try {
+    const response = await customAxios.get(`guides/hot-guide`, {});
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching guide list:", error);
+    throw error;
+  }
+};
+
+
 export const getGuideDetail = async (guideId) => {
   try {
     const response = await customAxios.get(`guides/${guideId}`, {});
