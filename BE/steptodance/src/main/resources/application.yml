@@ -54,3 +54,14 @@ ffmpeg:
   location: ${FFMPEG_LOCATION}
 ffprobe:
   location: ${FFPROBE_LOCATION}
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+    credentials:
+      accessKey: ${S3_ACCESS_KEY}
+      secretKey: ${S3_SECRET_KEY}
+    s3:
+      bucket: ${S3_BUCKET_NAME}
