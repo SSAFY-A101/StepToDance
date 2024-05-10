@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dance101.steptodance.feedback.domain.FeedbackBodyModel;
+import com.dance101.steptodance.feedback.repository.FeedbackBodyRepository;
 import com.dance101.steptodance.feedback.service.FeedbackService;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.ForbiddenException;
@@ -35,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class KafkaService implements AIServerService {
     private final FeedbackService feedbackService;
     private final GuideBodyRepository guideBodyRepository;
+    private final FeedbackBodyRepository feedbackBodyRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     @Value(value = "${message.topic.feedback.name}")
     private String feedbackTopicName;
@@ -80,7 +83,7 @@ public class KafkaService implements AIServerService {
 
     @Transactional
     @KafkaListener(topics = "${message.topic.guide.completion-name}", groupId = "step-to-dance")
-    public void consumeGuideCompletion(String message) throws JsonProcessingException {
+    public void consumeGuideCompletion(String message) {
         log.info("consumeGuideCompletion: received message = " + message);
         // call guide model & save to MongoDB
         List<String> list = redisTemplate.opsForList().range("guide:"+message, 0, -1);
@@ -98,7 +101,7 @@ public class KafkaService implements AIServerService {
         log.info("consumeGuideCompletion: filled all empty frames");
 
         // update & save result
-        GuideBodyModel model = makeModelOutOfFrameList(message, frameList);
+        GuideBodyModel model = makeGuideModelOutOfFrameList(message, frameList);
         guideBodyRepository.save(model);
         log.info("consumeGuideCompletion: stored in MongoDB");
 
@@ -106,9 +109,48 @@ public class KafkaService implements AIServerService {
         redisTemplate.delete("guide:" + message);
     }
 
-    private GuideBodyModel makeModelOutOfFrameList(String message, List<Frame> frameList) {
+    @Transactional
+    @KafkaListener(topics = "${message.topic.feedback.completion-name}", groupId = "step-to-dance")
+    public void consumeFeedbackCompletion(String message) {
+        log.info("consumeFeedbackCompletion: received message = " + message);
+        // call guide model & save to MongoDB
+        List<String> list = redisTemplate.opsForList().range("feedback:"+message, 0, -1);
+        log.info("consumeFeedbackCompletion: redis list called.");
+        log.info("consumeFeedbackCompletion: size= " + list.size());
+        log.info("consumeFeedbackCompletion: an Item = " + list.get(0));
+
+        List<Frame> frameList = getFrameListFromString(list);
+        log.info("consumeFeedbackCompletion: json mapped to object");
+
+        frameList.sort((item1, item2) -> item1.getName().compareTo(item2.getName()));
+        log.info("consumeFeedbackCompletion: objects has been sorted");
+
+        frameList = fillEmptyFrames(frameList);
+        log.info("consumeFeedbackCompletion: filled all empty frames");
+
+        // update & save result
+        FeedbackBodyModel model = makeFeedbackModelOutOfFrameList(message, frameList);
+        feedbackBodyRepository.save(model);
+        log.info("consumeFeedbackCompletion: stored in MongoDB");
+
+        // 레디스에 저장된 내용을 지운다.
+        redisTemplate.delete("feedback:" + message);
+    }
+
+    private GuideBodyModel makeGuideModelOutOfFrameList(String message, List<Frame> frameList) {
         return GuideBodyModel.builder()
             .guideId(Long.parseLong(message))
+            .models(
+                frameList.stream()
+                    .map(Frame::getModel)
+                    .collect(Collectors.toList())
+            )
+            .build();
+    }
+
+    private FeedbackBodyModel makeFeedbackModelOutOfFrameList(String message, List<Frame> frameList) {
+        return FeedbackBodyModel.builder()
+            .feedbackId(Long.parseLong(message))
             .models(
                 frameList.stream()
                     .map(Frame::getModel)
@@ -136,7 +178,7 @@ public class KafkaService implements AIServerService {
                 log.info(frame.getModel().toString());
             }
         }
-        log.info("consumeGuideCompletion: start point filled");
+        log.info("fillEmptyFrames: start point filled");
 
         // 마지막 프레임 채우기
         frame = frameList.get(frameList.size()-1);
@@ -146,7 +188,7 @@ public class KafkaService implements AIServerService {
                 log.info(frame.getModel().toString());
             }
         }
-        log.info("consumeGuideCompletion: end point filled");
+        log.info("fillEmptyFrames: end point filled");
 
         // 중간 프레임 채우기
         for (int i = 1; i < frameList.size() - 1; i++) {
@@ -155,7 +197,7 @@ public class KafkaService implements AIServerService {
                 fillFrame(j, i, frameList);
             }
         }
-        log.info("consumeGuideCompletion: middle empty points filled");
+        log.info("fillEmptyFrames: middle empty points filled");
         return frameList;
     }
 
