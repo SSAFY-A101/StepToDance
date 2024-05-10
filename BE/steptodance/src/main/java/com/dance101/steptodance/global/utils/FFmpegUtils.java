@@ -42,7 +42,14 @@ public class FFmpegUtils {
 		ffprobe = new FFprobe(this.ffprobePath);
 	}
 
-	public void sendGuideVodToKafka(long id, MultipartFile video) throws IOException {
+	/**
+	 * 
+	 * @param id
+	 * @param video
+	 * @return 멀티파트 이미지 파일. 썸네일로 사용
+	 * @throws IOException
+	 */
+	public MultipartFile sendGuideVodToKafka(long id, MultipartFile video) throws IOException {
 		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
 		video.transferTo(tempFilePath);
 
@@ -84,6 +91,9 @@ public class FFmpegUtils {
 		log.info("============== Sending Guide Vod Done ==============");
 		log.info("guide id: " + id + ", frame amount: " + size);
 
+		MultipartFile ret = FileUtil.convertToMultipartFile(
+			new File(outputDirPath + id + "/frame_0001.png"));
+
 		// 이미지파일 삭제
 		Files.walk(Path.of(outputDirPath + id))
 			.map(Path::toFile)
@@ -91,5 +101,7 @@ public class FFmpegUtils {
 		Files.delete(Path.of(outputDirPath + id));
 		// 영상파일 삭제
 		Files.delete(tempFilePath);
+		
+		return ret;
 	}
 }
