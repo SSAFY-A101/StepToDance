@@ -137,8 +137,8 @@ public class KafkaService implements AIServerService {
         guideBodyRepository.save(model);
         log.info("consumeGuideCompletion: stored in MongoDB");
 
-        // TODO: 레디스에 저장된 내용을 지운다.
-        // redisTemplate.delete("guide:" + message);
+        // 레디스에 저장된 내용을 지운다.
+        redisTemplate.delete("guide:" + message);
     }
 
     private void fillFrame(int joint, int frameIndex, List<GuideFrame> frameList) {
