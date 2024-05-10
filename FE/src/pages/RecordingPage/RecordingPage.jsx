@@ -45,18 +45,35 @@ export const WebcamStreamCapture = () => {
   }, []);
 
   const handleStartCaptureClick = useCallback(() => {
-    setCapturing(true);
-    const videoStream = webcamRef.current.stream;
-    const options = {
-      type: 'video',
-      mimeType: 'video/webm', // Check for Safari compatibility, might need different settings
-    };
-    // Initialize RecordRTC
-    const recorder = new RecordRTC(videoStream, options);
-    recorder.startRecording();
-    setRecordRTC(recorder);
-  }, []);
-
+    if (webcamRef.current && webcamRef.current.stream) {
+      setCapturing(true);
+      const videoStream = webcamRef.current.stream;
+      const options = {
+        type: 'video',
+        mimeType: 'video/webm',
+      };
+      const recorder = new RecordRTC(videoStream, options);
+      recorder.startRecording();
+      setRecordRTC(recorder);
+    }
+  }, [webcamRef.current]); // Added dependency to ensure it re-evaluates if necessary
+  
+  const startRecording = () => {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then(function(stream) {
+        if (webcamRef.current) {
+          webcamRef.current.srcObject = stream;
+        }
+        const recorder = new RecordRTC(stream, {
+          type: 'video'
+        });
+        recorder.startRecording();
+        setRecordRTC(recorder);
+      }).catch(function(error) {
+        console.error('Error accessing the media devices.', error);
+      });
+  };
+  
 
   const handleDataAvailable = useCallback(
     ({ data }) => {
@@ -147,7 +164,7 @@ export const WebcamStreamCapture = () => {
             width={widthSize}
             height={heightSize * 0.8}
             videoConstraints={{ width: widthSize, height: heightSize * 0.8, facingMode: "user" }}
-            style={{ opacity: capturing ? 0 : 1 }}
+            style={{ opacity: 1 }}  // Always visible
           />
           {capturing ? (
             <article className={styles["record-btn"]}>
