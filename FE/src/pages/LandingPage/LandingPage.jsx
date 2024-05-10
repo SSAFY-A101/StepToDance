@@ -1,12 +1,38 @@
 import { useEffect, useState } from "react";
 import styles from "./LandingPage.module.css";
-import CharacterVideo from '../../assets/CharacterVideo.mp4'
 import Models from "../../components/Models/Models";
+import { useNavigate } from "react-router";
+import { getCookie } from "../../cookie";
+import Kakaologo from "../../assets/images/kakao_login_medium_narrow.png";
 
 const LandingPage = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [currentBox, setCurrentBox] = useState(1);
   const [playVideo, setPlayVideo] = useState(false);
+
+  // 카카오 로그인
+
+  const KAKAO_KEY = import.meta.env.VITE_APP_KAKAO_KEY;
+  const KAKAO_REDIRECT_URL = import.meta.env.VITE_APP_KAKAO_REDIRECT_URL;
+  const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_KEY}&redirect_uri=${KAKAO_REDIRECT_URL}&response_type=code`;
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  const checkLoginStatus = async () => {
+    const token = getCookie("accessToken");
+    setIsLoggedIn(!!token);
+  };
+
+  const handleKakaoLogin = () => {
+    console.log("Navigating to:", KAKAO_AUTH_URL); // Log the URL to check its correctness
+    window.location.href = KAKAO_AUTH_URL;
+    console.log(KAKAO_KEY);
+    console.log("l");
+    console.log(KAKAO_REDIRECT_URL);
+  };
 
   useEffect(() => {
     let timeout;
@@ -28,7 +54,7 @@ const LandingPage = () => {
   }, [isClicked, currentBox]);
 
   const clickHandler = () => {
-    setIsClicked(!isClicked);
+    setIsClicked(true);
   };
   return (
     <section
@@ -37,6 +63,11 @@ const LandingPage = () => {
       }
       onClick={clickHandler}
     >
+      <div className={styles["landingpage-title"]}>
+        <span>STEP</span>
+        <span>To</span>
+        <span>Dance</span>
+      </div>
       <div className={styles.first}>
         <div
           id="box1"
@@ -79,11 +110,18 @@ const LandingPage = () => {
           className={isClicked ? styles["box10"] : styles["tenth-box"]}
         ></div>
       </div>
-      {!isClicked && <span className={styles["intro"]}>Click Anywhere</span>}
+      {isClicked ? (
+        <div className={styles["login"]} onClick={handleKakaoLogin}>
+          <img src={Kakaologo} alt="Log in with Kakao" />{" "}
+          {/* Add style as needed */}
+        </div>
+      ) : (
+        <span className={styles["intro"]}>Click Anywhere</span>
+      )}
       {playVideo && (
         <div className={styles["character"]}>
-        <Models/>
-        {/* <div className={styles["introText"]}>Welcome To StepDance</div> */}
+          <Models />
+          {/* <div className={styles["introText"]}>Welcome To StepDance</div> */}
         </div>
       )}
     </section>
