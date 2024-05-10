@@ -96,13 +96,16 @@ public class GuideServiceImpl implements GuideService{
 		guideRepository.save(guide);
 		try {
 			// kafka를 통해 비디오 프레임 전송
-			ffmpegUtils.sendGuideVodToKafka(guide.getId(), request.getVideo());
-			// 성공한다면 S3 업로드
+			MultipartFile thumbnail = ffmpegUtils.sendGuideVodToKafka(guide.getId(), request.getVideo());
+			// 영상 업로드
 			String url = s3Service.upload(
 				request.getVideo(),
 				"guide/" + guide.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
-			// url도 업로드
 			guide.addUrl(url);
+			// 썸네일 업로드
+			url = s3Service.upload(
+				thumbnail, "guide/thumbnail/" + guide.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
+			guide.addThumbnail(url);
 		} catch (Exception e) {
 			guideRepository.delete(guide);
 			throw new ExternalServerException("GuideServiceImpl:guidUpload", GUIDE_UPLOAD_FAILED);
