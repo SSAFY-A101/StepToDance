@@ -5,7 +5,8 @@ class FeedbackUpdateMsg():
     image: bytes
 
     def __init__(self, msgInstance: dict):
-        self.feedbackId = msgInstance['feedbackId']
+        print("피드백 dict -> 객체", str(msgInstance))
+        self.feedbackId = msgInstance['id']
         self.name = msgInstance['name']
         self.size = msgInstance['size']
         self.image = msgInstance['image']
