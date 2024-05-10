@@ -1,0 +1,17 @@
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    width: 60vw;
+    aspect-ratio: 1 / 1; 
+    border-radius: 5vw;
+    overflow: hidden;
+  }
+
+  .card > img {
+    object-fit:cover;
+  }
+
+
+  
