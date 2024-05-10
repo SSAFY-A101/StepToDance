@@ -2,13 +2,15 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./RecordingPage.module.css";
 import { useLocation } from "react-router-dom";
-import * as bodyPix from "@tensorflow-models/body-pix";
-import "@tensorflow/tfjs-backend-webgl";
+import RecordRTC from 'recordrtc';
+
 
 export const WebcamStreamCapture = () => {
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
   const webcamRef = useRef(null);
+  const [recordRTC, setRecordRTC] = useState(null);
+
   const mediaRecorderRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
@@ -43,17 +45,18 @@ export const WebcamStreamCapture = () => {
   }, []);
 
   const handleStartCaptureClick = useCallback(() => {
-    setIsRecording(true); // Set recording to true
     setCapturing(true);
-    mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
-      mimeType: "video/webm",
-    });
-    mediaRecorderRef.current.addEventListener(
-      "dataavailable",
-      handleDataAvailable
-    );
-    mediaRecorderRef.current.start();
-  }, [webcamRef, setCapturing, mediaRecorderRef]);
+    const videoStream = webcamRef.current.stream;
+    const options = {
+      type: 'video',
+      mimeType: 'video/webm', // Check for Safari compatibility, might need different settings
+    };
+    // Initialize RecordRTC
+    const recorder = new RecordRTC(videoStream, options);
+    recorder.startRecording();
+    setRecordRTC(recorder);
+  }, []);
+
 
   const handleDataAvailable = useCallback(
     ({ data }) => {
@@ -75,11 +78,16 @@ export const WebcamStreamCapture = () => {
   }, [recordedChunks]);
 
   const handleStopCaptureClick = useCallback(() => {
-    setIsRecording(false); 
-    mediaRecorderRef.current.stop();
-    setCapturing(false);
-  }, [mediaRecorderRef, webcamRef, setCapturing]);
-
+    if (recordRTC) {
+      recordRTC.stopRecording(() => {
+        const videoUrl = recordRTC.toURL();
+        setRecordVideo(videoUrl);
+        setCapturing(false);
+        recordRTC.destroy();
+        setRecordRTC(null);
+      });
+    }
+  }, [recordRTC]);
   
   return (
     <section className={styles["record-page"]}>
@@ -133,13 +141,13 @@ export const WebcamStreamCapture = () => {
           />
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
           <Webcam
-            className={styles.video}
-            audio={false}
+            audio={true}
             ref={webcamRef}
+            screenshotFormat="image/jpeg"
             width={widthSize}
             height={heightSize * 0.8}
-            videoConstraints={{ aspectRatio: 9 / 16 }}
-            objectfit="contain"
+            videoConstraints={{ width: widthSize, height: heightSize * 0.8, facingMode: "user" }}
+            style={{ opacity: capturing ? 0 : 1 }}
           />
           {capturing ? (
             <article className={styles["record-btn"]}>
