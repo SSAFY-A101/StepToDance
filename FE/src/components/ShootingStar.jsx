@@ -23,6 +23,17 @@ const ShootingStar = () => {
       <div className={styles["shooting_star"]}></div>
       <div className={styles["shooting_star"]}></div>
       <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
+      <div className={styles["shooting_star"]}></div>
     </section>
   );
 };

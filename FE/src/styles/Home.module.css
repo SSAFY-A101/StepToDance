@@ -1,5 +1,8 @@
 .homeContainer {
-    max-height: calc(100vh - 80px); /* 화면의 높이에서 100px만큼 뺀 값만큼의 높이를 갖도록 설정 */
-    overflow-y: auto; /* 세로 스크롤이 필요할 때만 스크롤바가 표시됩니다. */
-  }
-  
+  position: absolute;
+  top: 25vw; 
+  left: 0;
+  right: 0;
+  bottom: 22vw;
+  overflow-y: auto;
+}
