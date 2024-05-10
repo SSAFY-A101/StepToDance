@@ -8,7 +8,6 @@ import com.dance101.steptodance.global.utils.FFmpegUtils;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.GuideFeedbackCreateRequest;
 import com.dance101.steptodance.guide.data.request.GuideUploadMultipartRequest;
-import com.dance101.steptodance.guide.data.request.GuideUploadRequest;
 import com.dance101.steptodance.guide.data.request.SearchConditions;
 import com.dance101.steptodance.guide.data.response.FeedbackResponse;
 import com.dance101.steptodance.guide.data.response.GuideFindResponse;
@@ -22,7 +21,6 @@ import com.dance101.steptodance.user.domain.User;
 import com.dance101.steptodance.user.repository.UserRepository;
 import com.dance101.steptodance.user.utils.UserUtils;
 
-import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,10 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
@@ -124,6 +120,41 @@ public class GuideServiceImpl implements GuideService{
 	@Transactional
 	@Override
 	public CompletableFuture<FeedbackResponse> createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest guideFeedbackCreateRequest) {
+		// find guide & user
+		Guide guide = guideRepository.findById(guideId)
+			.orElseThrow(() -> new NotFoundException("GuideServiceImpl:createGuideFeedback", GUIDE_NOT_FOUND));
+		User user = UserUtils.findUserById(userRepository, userId);
+
+		// create & save feedback
+		Feedback feedback = Feedback.builder()
+			.videoUrl(guideFeedbackCreateRequest.videoUrl())
+			.score(0.0)
+			.thumbnailImgUrl(null)
+			.guide(guide)
+			.user(user)
+			.build();
+		Feedback savedFeedback = feedbackRepository.save(feedback);
+
+		// create message & send to ai server
+		FeedbackMessageRequest feedbackMessageRequest = FeedbackMessageRequest.builder()
+			.id(savedFeedback.getId())
+			.startAt(guideFeedbackCreateRequest.startAt())
+			.endAt(guideFeedbackCreateRequest.endAt())
+			.videoUrl(guideFeedbackCreateRequest.videoUrl())
+			.guideUrl(guide.getVideoUrl())
+			.highlightSectionStartAt(guide.getHighlightSectionStartAt())
+			.highlightSectionEndAt(guide.getHighlightSectionEndAt())
+			.build();
+		aiServerService.publish(feedbackMessageRequest);
+
+		// create & return
+		return CompletableFuture.completedFuture(new FeedbackResponse(savedFeedback.getId()));
+	}
+	@Async
+	@Transactional
+	@Override
+	public CompletableFuture<FeedbackResponse> createGuideFeedbackBackUp(long userId, long guideId,
+		GuideFeedbackCreateRequest guideFeedbackCreateRequest) {
 		// find guide & user
 		Guide guide = guideRepository.findById(guideId)
 			.orElseThrow(() -> new NotFoundException("GuideServiceImpl:createGuideFeedback", GUIDE_NOT_FOUND));

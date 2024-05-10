@@ -8,6 +8,16 @@ import base64
 import numpy as np
 import json
 
+protoFile = "../resources/model/pose_deploy_linevec_faster_4_stages.prototxt"
+weightsFile = "../resources/model/pose_iter_160000.caffemodel"
+net = None
+
+def aiUtilInit():
+    global protoFile, weightsFile, net
+    net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
+
+    
+
 def get_s3_client():
     s3 = boto3.client('s3',
                       aws_access_key_id=os.environ['S3_ACCESS_KEY'],
@@ -17,20 +27,12 @@ def get_s3_client():
     return s3
 
 def imgToBodyModelCaffe(image):
+    global net
     print("imgToBodyModel: " , image[:10])
     # 이미지를 opencv 형식으로 변환
     imgdata = base64.b64decode(str(image))
     nparr = np.frombuffer(imgdata, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
-    # 각 파일 path
-    # protoFile = "pose_deploy_linevec_faster_4_stages.prototxt"
-    protoFile = "../resources/model/pose_deploy_linevec_faster_4_stages.prototxt"
-    # weightsFile = "pose_iter_160000.caffemodel"
-    weightsFile = "../resources/model/pose_iter_160000.caffemodel"
- 
-    # 위의 path에 있는 network 불러오기
-    net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
     # frame.shape = 불러온 이미지에서 height, width, color 받아옴
     imageHeight, imageWidth, _ = image.shape
@@ -38,6 +40,9 @@ def imgToBodyModelCaffe(image):
     # network에 넣기위해 전처리
     inpBlob = cv2.dnn.blobFromImage(image, 1.0 / 255, (imageWidth, imageHeight), (0, 0, 0), swapRB=False, crop=False)
  
+    if net == None:
+        aiUtilInit()
+
     # network에 넣어주기
     net.setInput(inpBlob)
 

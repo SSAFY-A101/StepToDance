@@ -11,6 +11,8 @@ import com.dance101.steptodance.guide.data.response.GuideListFindResponse;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface GuideService {
@@ -24,4 +26,6 @@ public interface GuideService {
 	GuideFindResponse findGuide(long guideId);
 
 	CompletableFuture<FeedbackResponse> createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest guideFeedbackCreateRequest);
+
+	CompletableFuture<FeedbackResponse> createGuideFeedbackBackUp(long userId, long guideId, GuideFeedbackCreateRequest guideFeedbackCreateRequest);
 }
