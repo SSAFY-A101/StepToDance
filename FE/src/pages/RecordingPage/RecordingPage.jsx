@@ -8,29 +8,18 @@ import "@tensorflow/tfjs-backend-webgl";
 export const WebcamStreamCapture = () => {
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
-
+  const webcamRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const [capturing, setCapturing] = useState(false);
+  const [recordedChunks, setRecordedChunks] = useState([]);
+  const [recordVideo, setRecordVideo] = useState("");
   const location = useLocation();
   const videoUrl = location.state?.videoUrl;
   const videoRef = useRef(null);
   const [opacity, setOpacity] = useState(100); // 상태로 opacity 관리
   const opacityRef = useRef(100); // useRef를 사용하여 opacity 값을 저장
   const canvasRef = useRef(null);
-  const [mediaStream, setMediaStream] = useState(null);
-  const [recording, setRecording] = useState(false);
-  const [recordedChunks, setRecordedChunks] = useState([]);
-  const [showVideo, setShowVideo] = useState("");
-
-  const startPreview = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      setMediaStream(stream);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-    } catch (error) {
-      console.error("Error accessing camera:", error);
-    }
-  };
+  const [showVideo, setShowVideo] = useState(false); // 비디오 표시 상태
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,152 +37,119 @@ export const WebcamStreamCapture = () => {
 
     window.addEventListener("resize", handleResize);
     handleResize(); // 초기 로딩시에도 크기를 설정합니다.
-    startPreview();
+
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   const handleStartCaptureClick = useCallback(() => {
-    const mediaRef = new MediaRecorder(mediaStream, {
+    setCapturing(true);
+    mediaRecorderRef.current = new MediaRecorder(webcamRef.current.stream, {
       mimeType: "video/webm",
     });
+    mediaRecorderRef.current.addEventListener(
+      "dataavailable",
+      handleDataAvailable
+    );
+    mediaRecorderRef.current.start();
+  }, [webcamRef, setCapturing, mediaRecorderRef]);
 
-    mediaRef.ondataavailable = (event) => {
-      if (event.data.size > 0) {
-        setRecordedChunks((prev) => prev.concat(event.data));
+  const handleDataAvailable = useCallback(
+    ({ data }) => {
+      if (data.size > 0) {
+        setRecordedChunks((prev) => prev.concat(data));
       }
-    };
+    },
+    [setRecordedChunks]
+  );
 
-    mediaRef.start();
-    setRecording(true);
-  }, [mediaStream]);
-
-  const stopRecording = () => {
-    mediaStream.getTracks().forEach((track) => track.stop());
-  };
   useEffect(() => {
-    if (recordedChunks.length > 0) {
-      const recordedBlob = new Blob(recordedChunks, { type: "video/webm" });
-      const videoUrl = URL.createObjectURL(recordedBlob);
-      setMediaStream(null);
-      setRecording(false);
-      setRecordedChunks([]);
-      setShowVideo(videoUrl);
+    if (recordedChunks.length) {
+      const blob = new Blob(recordedChunks, {
+        type: "video/mp4",
+      });
+      const url = URL.createObjectURL(blob);
+      setRecordVideo(url);
     }
   }, [recordedChunks]);
-  // return (
-  //   <div>
-  //     {/* {mediaStream && !recording && (
-  //       <button onClick={handleStartCaptureClick}>녹화 시작</button>
-  //     )}
-  //     {mediaStream && recording && (
-  //       <>
-  //         <button onClick={stopRecording}>녹화 중지</button>
-  //       </>
-  //     )} */}
-  //     {mediaStream && (
-  //       <video autoPlay muted ref={videoRef} width="400" height="300" />
-  //     )}
-  //     {showVideo ? (
-  //       <video autoPlay muted src={showVideo} width="400" height="300" />
-  //     ) : null}
-  //   </div>
-  // );
-  // const handleDataAvailable = useCallback(
-  //   ({ data }) => {
-  //     if (data.size > 0) {
-  //       setRecordedChunks((prev) => prev.concat(data));
-  //     }
-  //   },
-  //   [setRecordedChunks]
-  // );
 
-  // useEffect(() => {
-  //   if (recordedChunks.length) {
-  //     const blob = new Blob(recordedChunks, {
-  //       type: "video/mp4",
-  //     });
-  //     const url = URL.createObjectURL(blob);
-  //     setRecordVideo(url);
-  //   }
-  // }, [recordedChunks]);
+  const handleStopCaptureClick = useCallback(() => {
+    mediaRecorderRef.current.stop();
+    setCapturing(false);
+  }, [mediaRecorderRef, webcamRef, setCapturing]);
 
-  // const handleStopCaptureClick = useCallback(() => {
-  //   mediaRecorderRef.current.stop();
-  //   setCapturing(false);
-  // }, [mediaRecorderRef]);
+  useEffect(() => {
+    opacityRef.current = opacity; // 상태가 변경될 때마다 ref를 업데이트
+    let animationFrameId;
+    async function loadAndApplyModel() {
+      const net = await bodyPix.load({
+        architecture: "MobileNetV1",
+        outputStride: 16,
+        multiplier: 0.5,
+        quantBytes: 2,
+      });
 
-  // useEffect(() => {
-  //   opacityRef.current = opacity; // 상태가 변경될 때마다 ref를 업데이트
-  //   let animationFrameId;
-  //   async function loadAndApplyModel() {
-  //     const net = await bodyPix.load({
-  //       architecture: "MobileNetV1",
-  //       outputStride: 16,
-  //       multiplier: 0.5,
-  //       quantBytes: 2,
-  //     });
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      let frameCount = 0;
+      const skipFrames = 5;
 
-  //     const video = videoRef.current;
-  //     const canvas = canvasRef.current;
-  //     let frameCount = 0;
-  //     const skipFrames = 5;
+      function updateCanvas() {
+        if (video.paused || video.ended) return;
+        if (++frameCount % skipFrames === 0) {
+          net
+            .segmentPerson(video, {
+              flipHorizontal: false,
+              internalResolution: "medium",
+              segmentationThreshold: 0.5,
+            })
+            .then((segmentation) => {
+              const foregroundColor = { r: 255, g: 255, b: 255, a: 0 }; // Foreground transparent
+              const backgroundColor = { r: 255, g: 255, b: 255, a: 255 }; // Background white and opaque
+              const mask = bodyPix.toMask(
+                segmentation,
+                foregroundColor,
+                backgroundColor
+              );
+              canvas.width = video.videoWidth;
+              canvas.height = video.videoHeight;
+              // const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
+              bodyPix.drawMask(canvas, video, mask, 1, 0, false);
+            });
+        }
+        animationFrameId = requestAnimationFrame(updateCanvas);
+      }
 
-  //     function updateCanvas() {
-  //       if (video.paused || video.ended) return;
-  //       if (++frameCount % skipFrames === 0) {
-  //         net
-  //           .segmentPerson(video, {
-  //             flipHorizontal: false,
-  //             internalResolution: "medium",
-  //             segmentationThreshold: 0.5,
-  //           })
-  //           .then((segmentation) => {
-  //             const foregroundColor = { r: 255, g: 255, b: 255, a: 0 }; // Foreground transparent
-  //             const backgroundColor = { r: 255, g: 255, b: 255, a: 255 }; // Background white and opaque
-  //             const mask = bodyPix.toMask(
-  //               segmentation,
-  //               foregroundColor,
-  //               backgroundColor
-  //             );
-  //             canvas.width = video.videoWidth;
-  //             canvas.height = video.videoHeight;
-  //             // const mask = bodyPix.toMask(segmentation, foregroundColor, backgroundColor);
-  //             bodyPix.drawMask(canvas, video, mask, 1, 0, false);
-  //           });
-  //       }
-  //       animationFrameId = requestAnimationFrame(updateCanvas);
-  //     }
+      video.addEventListener("loadeddata", () => {
+        video.play();
+        updateCanvas();
+      });
 
-  //     video.addEventListener("loadeddata", () => {
-  //       video.play();
-  //       updateCanvas();
-  //     });
+      return () => {
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+        }
+        video.removeEventListener("loadeddata", updateCanvas);
+        net.dispose();
+      };
+    }
 
-  //     return () => {
-  //       if (animationFrameId) {
-  //         cancelAnimationFrame(animationFrameId);
-  //       }
-  //       video.removeEventListener("loadeddata", updateCanvas);
-  //       net.dispose();
-  //     };
-  //   }
-
-  //   if (videoRef.current && canvasRef.current) {
-  //     loadAndApplyModel();
-  //   }
-  // }, [opacity, widthSize, heightSize]); // opacity를 의존성 배열에 포함시켜서 변경 감지
+    if (videoRef.current && canvasRef.current) {
+      loadAndApplyModel();
+    }
+  }, [opacity, widthSize, heightSize]); // opacity를 의존성 배열에 포함시켜서 변경 감지
 
   return (
     <section className={styles["record-page"]}>
-      {showVideo ? (
+      {recordVideo ? (
         <>
           <video
             controls
-            src={showVideo}
+            src={recordVideo}
+            type="video/mp4"
             width={widthSize}
-            height={heightSize * 0.8}
+            height={heightSize * 0.9}
           />
           <article className={styles["record-button"]}>
             <button className={styles["record-button__cancle"]}>
@@ -217,7 +173,7 @@ export const WebcamStreamCapture = () => {
               right: 100,
             }}
           />
-          {/* <video
+          <video
             ref={videoRef}
             src={videoUrl}
             loop
@@ -234,8 +190,8 @@ export const WebcamStreamCapture = () => {
               display: showVideo ? "block" : "none",
             }}
             type="video/mp4"
-          /> */}
-          {/* <canvas
+          />
+          <canvas
             ref={canvasRef}
             style={{
               position: "absolute",
@@ -245,31 +201,34 @@ export const WebcamStreamCapture = () => {
               objectFit: "cover",
               opacity: opacity / 100,
             }}
-          /> */}
+          />
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
-          {mediaStream && (
-            <video
-              autoPlay
-              ref={videoRef}
-              width={widthSize}
-              height={heightSize}
-              style={{ aspectRatio: 9 / 16 }}
-            />
-          )}
-          {mediaStream && recording && (
+          <Webcam
+            className={styles.video}
+            audio={false}
+            ref={webcamRef}
+            width={widthSize}
+            height={heightSize * 0.8}
+            videoConstraints={{ aspectRatio: 9 / 16 }}
+            objectFit="contain"
+          />
+          {capturing ? (
             <article className={styles["record-btn"]}>
               <button
                 className={styles["record-stop"]}
-                onClick={stopRecording}
-              ></button>
+                onClick={handleStopCaptureClick}
+              >
+                　
+              </button>
             </article>
-          )}
-          {mediaStream && !recording && (
+          ) : (
             <article className={styles["record-btn"]}>
               <button
                 className={styles["record-start"]}
                 onClick={handleStartCaptureClick}
-              ></button>
+              >
+                　
+              </button>
             </article>
           )}
         </>
