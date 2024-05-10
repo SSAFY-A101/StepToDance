@@ -27,7 +27,7 @@ export const WebcamStreamCapture = () => {
       });
       setMediaStream(stream);
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        videoRef.current.src = stream;
       }
     } catch (error) {
       console.error("Error accessing camera:", error);
