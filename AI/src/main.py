@@ -6,18 +6,14 @@ from data.GuideRequest import GuideUpdateRequest
 from service.AiService import *
 import json
 
-guideTopic = 'topic-guide-test'
-feedbackTopic = 'topic-feedback-test'
-
-# consumer = Consumer({'bootstrap.servers': 'k10a101.p.ssafy.io:9092', 'group.id': 'group.id'})
 consumer = Consumer({'bootstrap.servers': 'kafka1:9092, kafka2:9092, kafka3:9092', 'group.id': 'group.id'})
-consumer.subscribe([guideTopic, feedbackTopic])
+consumer.subscribe(['topic-guide-test', 'topic-feedback-test'])
 
 app = FastAPI()
 
 methods = {
-    guideTopic: guideFrame,
-    feedbackTopic: feedbackFrame
+    'topic-guide-test': guideFrame,
+    'topic-feedback-test': feedbackFrame
 }
 
 
