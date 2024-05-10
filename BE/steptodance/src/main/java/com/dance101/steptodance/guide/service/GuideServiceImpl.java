@@ -17,16 +17,19 @@ import com.dance101.steptodance.guide.domain.Genre;
 import com.dance101.steptodance.guide.domain.Guide;
 import com.dance101.steptodance.guide.repository.GenreRepository;
 import com.dance101.steptodance.guide.repository.GuideRepository;
+import com.dance101.steptodance.infra.S3Service;
 import com.dance101.steptodance.user.domain.User;
 import com.dance101.steptodance.user.repository.UserRepository;
 import com.dance101.steptodance.user.utils.UserUtils;
 
+import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -48,6 +51,7 @@ public class GuideServiceImpl implements GuideService{
 	private final UserRepository userRepository;
 	private final FeedbackRepository feedbackRepository;
 	private final FFmpegUtils ffmpegUtils;
+	private final S3Service s3Service;
 	// private final String AIServer_URL = "https://steptodance.site:8000";
 	private final String AIServer_URL = "http://k10a101.p.ssafy.io:8000";
 
@@ -117,12 +121,20 @@ public class GuideServiceImpl implements GuideService{
 			.user(user)
 			.build();
 		guideRepository.save(guide);
-		// TODO: kafka를 통해 비디오 프레임 전송
 		try {
+			// kafka를 통해 비디오 프레임 전송
 			ffmpegUtils.sendGuideVodToKafka(guide.getId(), request.getVideo());
+			// 성공한다면 S3 업로드
+			String url = s3Service.upload(
+				request.getVideo(),
+				"guide/" + guide.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
+			// url도 업로드
+			guide.addUrl(url);
 		} catch (Exception e) {
+			guideRepository.delete(guide);
 			throw new ExternalServerException("GuideServiceImpl:guidUpload", GUIDE_UPLOAD_FAILED);
 		}
+
 	}
 
 	@Override
