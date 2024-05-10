@@ -27,7 +27,7 @@ export const WebcamStreamCapture = () => {
       });
       setMediaStream(stream);
       if (videoRef.current) {
-        videoRef.current.srcObject = stream;
+        videoRef.current.src = stream;
       }
     } catch (error) {
       console.error("Error accessing camera:", error);
@@ -251,12 +251,12 @@ export const WebcamStreamCapture = () => {
             }}
           /> */}
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
-          <video
-            autoPlay
+          <Webcam
             ref={videoRef}
             // src={mediaStream}
             width={widthSize}
             height={heightSize}
+            videoConstraints={{ aspectRatio: 9 / 16 }}
           />
           {mediaStream && recording && (
             <article className={styles["record-btn"]}>
