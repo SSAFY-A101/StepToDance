@@ -249,15 +249,13 @@ export const WebcamStreamCapture = () => {
             }}
           /> */}
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
-          {mediaStream && (
-            <Webcam
-              autoPlay
-              ref={videoRef}
-              width={widthSize}
-              height={heightSize}
-              videoConstraints={{ aspectRatio: 9 / 16 }}
-            />
-          )}
+          <Webcam
+            autoPlay
+            ref={videoRef}
+            width={widthSize}
+            height={heightSize}
+            videoConstraints={{ aspectRatio: 9 / 16 }}
+          />
           {mediaStream && recording && (
             <article className={styles["record-btn"]}>
               <button
