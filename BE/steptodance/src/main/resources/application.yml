@@ -46,6 +46,7 @@ message:
   topic:
     feedback:
       name: topic-feedback-test
+      completion-name: feedback-flag
     guide:
       name: topic-guide-test
       completion-name: guide-flag
