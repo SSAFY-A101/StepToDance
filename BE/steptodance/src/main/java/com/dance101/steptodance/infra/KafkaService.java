@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.dance101.steptodance.feedback.domain.Feedback;
 import com.dance101.steptodance.feedback.domain.FeedbackBodyModel;
 import com.dance101.steptodance.feedback.repository.FeedbackBodyRepository;
+import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.feedback.service.FeedbackService;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.ForbiddenException;
+import com.dance101.steptodance.global.exception.category.NotFoundException;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.request.MessageRequest;
 import com.dance101.steptodance.guide.data.response.GuideFeedbackCreateResponse;
+import com.dance101.steptodance.guide.domain.Guide;
 import com.dance101.steptodance.guide.domain.GuideBodyModel;
 import com.dance101.steptodance.guide.repository.GuideBodyRepository;
+import com.dance101.steptodance.guide.repository.GuideRepository;
 import com.dance101.steptodance.guide.service.AIServerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,7 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class KafkaService implements AIServerService {
-    private final FeedbackService feedbackService;
+    private final GuideRepository guideRepository;
+    private final FeedbackRepository feedbackRepository;
     private final GuideBodyRepository guideBodyRepository;
     private final FeedbackBodyRepository feedbackBodyRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
@@ -135,6 +141,31 @@ public class KafkaService implements AIServerService {
 
         // 레디스에 저장된 내용을 지운다.
         redisTemplate.delete("feedback:" + message);
+
+        // RATE 'EM!!!
+        // 피드백 가져오기
+        Feedback feedback = feedbackRepository.findById(Long.parseLong(message))
+            .orElseThrow(() -> new NotFoundException("consumeFeedbackCompletion:저장된 피드백이 없습니다.", FEEDBACK_NOT_FOUND));
+        // 가이드 아이디 가져오기
+        Guide guide = feedback.getGuide();
+        // 가이드 아이디로 모델 가져오기
+        GuideBodyModel guideBodyModel = guideBodyRepository.findByGuideId(guide.getId())
+            .orElseThrow(() -> new NotFoundException("consumeFeedbackCompletion:저장된 가이드 모델이 없습니다.", GUIDE_BODY_NOT_FOUND));
+        // 모델 비교하기
+        double score = rateFeedback(model.getModels(), guideBodyModel.getModels());
+        // 점수를 피드백으로 업데이트하기
+    }
+
+    private double rateFeedback(List<List<List<Integer>>> feedbacks, List<List<List<Integer>>> guides) {
+        double score = 100.0;
+        for (int frame = 0; frame < feedbacks.size(); frame++) {
+            score -= deductCaffeModel(feedbacks.get(frame), guides.get(frame));
+        }
+        return Math.max(score, 0.0);
+    }
+
+    private double deductCaffeModel(List<List<Integer>> feedback, List<List<Integer>> guide) {
+        return 100.0;
     }
 
     private GuideBodyModel makeGuideModelOutOfFrameList(String message, List<Frame> frameList) {
