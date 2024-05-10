@@ -6,12 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
 import com.dance101.steptodance.global.utils.FFmpegUtils;
 import com.dance101.steptodance.guide.domain.Guide;
 import com.dance101.steptodance.guide.repository.GuideRepository;
+import com.dance101.steptodance.infra.S3Service;
 import com.dance101.steptodance.shortform.data.request.ShortformUploadMultipartRequest;
 import com.dance101.steptodance.shortform.data.response.ShortformFindResponse;
 import com.dance101.steptodance.shortform.domain.Shortform;
@@ -30,7 +32,7 @@ public class ShortformServiceImpl implements ShortformService {
 	private final GuideRepository guideRepository;
 	private final ShortformRepository shortformRepository;
 	private final UserRepository userRepository;
-	private final FFmpegUtils ffmpegUtils;
+	private final S3Service s3Service;
 
 	@Override
 	public void shortformUploadFile(long userId, ShortformUploadMultipartRequest request) {
@@ -41,13 +43,15 @@ public class ShortformServiceImpl implements ShortformService {
 		Shortform shortform = Shortform.builder()
 			.guide(guide)
 			.user(user)
-			// .videoUrl()
 			.build();
 
 		shortformRepository.save(shortform);
 		try {
-			// TODO: 변경필요
-			ffmpegUtils.sendVodToKafka(guide.getId(), "shortform",request.getVideo());
+			// 영상 업로드
+			String url = s3Service.upload(
+				request.getVideo(),
+				"shortform/" + shortform.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
+			shortform.addUrl(url);
 		} catch (Exception e) {
 			throw new ExternalServerException("ShortformServiceImpl:shortformUploadFile", SHORTFORM_UPLOAD_FAILED);
 		}
