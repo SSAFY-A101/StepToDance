@@ -32,8 +32,9 @@ public class GuideController {
 	private final GuideService guideService;
 	@GetMapping
 	public ResponseEntity<ApiResponse<GuideListFindResponse>> findGuideList(
-		// @AuthenticationPrincipal SecurityUser securityUser,
+		@AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute SearchConditions searchConditions) {
+		// TODO: 토큰을 사용하도록 변경
 		// long userId = securityUser.getId();
 		long userId = 2L;
 		GuideListFindResponse response = guideService.findGuideList(searchConditions, userId);
@@ -48,10 +49,10 @@ public class GuideController {
 
 	@PostMapping(value = "/file", consumes = "multipart/form-data")
 	public ResponseEntity<ApiResponse<Void>> uploadGuideFile(
-		// TODO: 토큰을 사용하도록 변경
-		// @AuthenticationPrincipal SecurityUser securityUser,
+		@AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute GuideUploadMultipartRequest request
 	) {
+		// TODO: 토큰을 사용하도록 변경
 		// guideService.guideUploadFile(securityUser.getId(), file);
 		guideService.guideUploadFile(2L, request);
 		return ApiResponse.toEmptyResponse(CREATED, CREATED_GUIDE);
@@ -70,6 +71,7 @@ public class GuideController {
 		@PathVariable("guide_id") long guideId,
 		@RequestBody GuideFeedbackCreateRequest guideFeedbackCreateRequest
 	) throws ExecutionException, InterruptedException {
+		// TODO: 토큰에서 정보를 받도록 변경
 		// long userId = securityUser.getId();
 		long userId = 2L;
 		CompletableFuture<FeedbackResponse> completableFuture = guideService.createGuideFeedback(userId, guideId, guideFeedbackCreateRequest);

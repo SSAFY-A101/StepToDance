@@ -3,17 +3,21 @@ from kafka_producer import send_data_to_kafka
 from confluent_kafka import Consumer
 import asyncio
 from data.GuideRequest import GuideUpdateRequest
-from service.GuideService import *
+from service.AiService import *
 import json
+
+guideTopic = 'topic-guide-test'
+feedbackTopic = 'topic-feedback-test'
 
 # consumer = Consumer({'bootstrap.servers': 'k10a101.p.ssafy.io:9092', 'group.id': 'group.id'})
 consumer = Consumer({'bootstrap.servers': 'kafka1:9092, kafka2:9092, kafka3:9092', 'group.id': 'group.id'})
-consumer.subscribe(['topic-guide-test'])
+consumer.subscribe([guideTopic, feedbackTopic])
 
 app = FastAPI()
 
 methods = {
-    'topic-guide-test': guideFrame
+    guideTopic: guideFrame,
+    feedbackTopic: feedbackFrame
 }
 
 
