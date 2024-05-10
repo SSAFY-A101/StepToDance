@@ -45,9 +45,9 @@ public class ShortformServiceImpl implements ShortformService {
 			.build();
 
 		shortformRepository.save(shortform);
-		// TODO: kafka를 통해 비디오 프레임 전송
 		try {
-			ffmpegUtils.sendGuideVodToKafka(guide.getId(), request.getVideo());
+			// TODO: 변경필요
+			ffmpegUtils.sendVodToKafka(guide.getId(), "shortform",request.getVideo());
 		} catch (Exception e) {
 			throw new ExternalServerException("ShortformServiceImpl:shortformUploadFile", SHORTFORM_UPLOAD_FAILED);
 		}

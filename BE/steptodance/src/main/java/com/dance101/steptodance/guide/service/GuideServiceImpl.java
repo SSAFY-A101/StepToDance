@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -92,7 +93,7 @@ public class GuideServiceImpl implements GuideService{
 		guideRepository.save(guide);
 		try {
 			// kafka를 통해 비디오 프레임 전송
-			MultipartFile thumbnail = ffmpegUtils.sendGuideVodToKafka(guide.getId(), request.getVideo());
+			MultipartFile thumbnail = ffmpegUtils.sendVodToKafka(guide.getId(), "guide", request.getVideo());
 			// 영상 업로드
 			String url = s3Service.upload(
 				request.getVideo(),
@@ -119,7 +120,8 @@ public class GuideServiceImpl implements GuideService{
 	@Async
 	@Transactional
 	@Override
-	public CompletableFuture<FeedbackResponse> createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest guideFeedbackCreateRequest) {
+	public CompletableFuture<FeedbackResponse> createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest request) {
+		log.info("GuideServiceImpl:guideUploadFile : request = " + request.toString());
 		// find guide & user
 		Guide guide = guideRepository.findById(guideId)
 			.orElseThrow(() -> new NotFoundException("GuideServiceImpl:createGuideFeedback", GUIDE_NOT_FOUND));
@@ -127,7 +129,7 @@ public class GuideServiceImpl implements GuideService{
 
 		// create & save feedback
 		Feedback feedback = Feedback.builder()
-			.videoUrl(guideFeedbackCreateRequest.videoUrl())
+			.videoUrl(null)
 			.score(0.0)
 			.thumbnailImgUrl(null)
 			.guide(guide)
@@ -135,18 +137,24 @@ public class GuideServiceImpl implements GuideService{
 			.build();
 		Feedback savedFeedback = feedbackRepository.save(feedback);
 
-		// create message & send to ai server
-		FeedbackMessageRequest feedbackMessageRequest = FeedbackMessageRequest.builder()
-			.id(savedFeedback.getId())
-			.startAt(guideFeedbackCreateRequest.startAt())
-			.endAt(guideFeedbackCreateRequest.endAt())
-			.videoUrl(guideFeedbackCreateRequest.videoUrl())
-			.guideUrl(guide.getVideoUrl())
-			.highlightSectionStartAt(guide.getHighlightSectionStartAt())
-			.highlightSectionEndAt(guide.getHighlightSectionEndAt())
-			.build();
-		aiServerService.publish(feedbackMessageRequest);
+		try {
+			MultipartFile thumnail = ffmpegUtils.sendVodToKafka(savedFeedback.getId(), "feedback", request.getVideo());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 
+		// create message & send to ai server
+		// FeedbackMessageRequest feedbackMessageRequest = FeedbackMessageRequest.builder()
+		// 	.id(savedFeedback.getId())
+		// 	.startAt(request.getStartAt())
+		// 	.endAt(request.getEndAt())
+		// 	.videoUrl(request.videoUrl())
+		// 	.guideUrl(guide.getVideoUrl())
+		// 	.highlightSectionStartAt(guide.getHighlightSectionStartAt())
+		// 	.highlightSectionEndAt(guide.getHighlightSectionEndAt())
+		// 	.build();
+		// aiServerService.publish(feedbackMessageRequest);
+		//
 		// create & return
 		return CompletableFuture.completedFuture(new FeedbackResponse(savedFeedback.getId()));
 	}
@@ -162,7 +170,8 @@ public class GuideServiceImpl implements GuideService{
 
 		// create & save feedback
 		Feedback feedback = Feedback.builder()
-			.videoUrl(guideFeedbackCreateRequest.videoUrl())
+			// .videoUrl(guideFeedbackCreateRequest.videoUrl())
+			.videoUrl(null)
 			.score(0.0)
 			.thumbnailImgUrl(null)
 			.guide(guide)
@@ -173,9 +182,12 @@ public class GuideServiceImpl implements GuideService{
 		// create message & send to ai server
 		FeedbackMessageRequest feedbackMessageRequest = FeedbackMessageRequest.builder()
 			.id(savedFeedback.getId())
-			.startAt(guideFeedbackCreateRequest.startAt())
-			.endAt(guideFeedbackCreateRequest.endAt())
-			.videoUrl(guideFeedbackCreateRequest.videoUrl())
+			.startAt(null)
+			.endAt(null)
+			.videoUrl(null)
+			// .startAt(guideFeedbackCreateRequest.startAt())
+			// .endAt(guideFeedbackCreateRequest.endAt())
+			// .videoUrl(guideFeedbackCreateRequest.videoUrl())
 			.guideUrl(guide.getVideoUrl())
 			.highlightSectionStartAt(guide.getHighlightSectionStartAt())
 			.highlightSectionEndAt(guide.getHighlightSectionEndAt())

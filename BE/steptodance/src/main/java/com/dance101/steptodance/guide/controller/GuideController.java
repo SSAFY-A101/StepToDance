@@ -47,13 +47,14 @@ public class GuideController {
 		return ApiResponse.toResponse(OK, SUCCESS_GUIDE_LIST, response);
 	}
 
+	// TODO: 경로 매핑이 문제없이 되는 지 확인 필요
 	@PostMapping(value = "/file", consumes = "multipart/form-data")
 	public ResponseEntity<ApiResponse<Void>> uploadGuideFile(
 		@AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute GuideUploadMultipartRequest request
 	) {
 		// TODO: 토큰을 사용하도록 변경
-		// guideService.guideUploadFile(securityUser.getId(), file);
+		// guideService.guideUploadFile(securityUser.getId(), request);
 		guideService.guideUploadFile(2L, request);
 		return ApiResponse.toEmptyResponse(CREATED, CREATED_GUIDE);
 	}
@@ -65,11 +66,11 @@ public class GuideController {
 		return ApiResponse.toResponse(OK, SUCCESS_GUIDE_ONE, response);
 	}
 
-	@PostMapping("/{guide_id}")
+	@PostMapping(value = "/{guide_id}", consumes = "multipart/form-data")
 	public ResponseEntity<ApiResponse<FeedbackResponse>> createGuideFeedback(
 		@AuthenticationPrincipal SecurityUser securityUser,
 		@PathVariable("guide_id") long guideId,
-		@RequestBody GuideFeedbackCreateRequest guideFeedbackCreateRequest
+		@ModelAttribute GuideFeedbackCreateRequest guideFeedbackCreateRequest
 	) throws ExecutionException, InterruptedException {
 		// TODO: 토큰에서 정보를 받도록 변경
 		// long userId = securityUser.getId();
