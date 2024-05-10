@@ -45,4 +45,9 @@ public class Shortform extends BaseEntity {
 		this.user = user;
 		this.guide = guide;
 	}
+
+	public void addUrl(String url) {
+		this.videoUrl = url;
+	}
+
 }
