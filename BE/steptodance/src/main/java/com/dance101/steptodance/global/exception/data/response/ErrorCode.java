@@ -13,6 +13,7 @@ public enum ErrorCode {
     UNDEFINED_USER(404, "회원을 찾을 수 없습니다."),
     // GUIDE
     GUIDE_NOT_FOUND(404, "가이드를 찾을 수 없습니다."),
+    GUIDE_BODY_NOT_FOUND(404, "가이드모델을 찾을 수 없습니다."),
     GUIDE_UPLOAD_FAILED(404, "가이드 업로드에 실패했습니다."),
     // KAFKA
     KAFKA_INVALID_TOPIC(403, "존재하지 않는 kafka 토픽입니다."),
@@ -20,6 +21,7 @@ public enum ErrorCode {
     GENRE_NOT_FOUND(404, "장르를 찾을 수 없습니다."),
     // FEEDBACK
     FEEDBACK_NOT_FOUND(404, "피드백을 찾을 수 없습니다."),
+    FEEDBACK_BODY_NOT_FOUND(404, "피드백모델을 찾을 수 없습니다."),
     //SHORTFORM
     SHORTFORM_NOT_FOUND(404,"숏폼을 찾을 수 없습니다."),
     SHORTFORM_UPLOAD_FAILED(404,"숏폼 업로드에 실패했습니다."),
