@@ -59,9 +59,9 @@ public class CaffeGraderUtils implements GraderUtils{
 
 		double dotProduct = vector1X * vector2X + vector1Y * vector2Y;
 		double vector1Length = Math.sqrt(vector1X * vector1X + vector1Y * vector1Y);
-		vector1Length = vector1Length == 0? 0.00000001 : vector1Length;
+		vector1Length = vector1Length == 0? 0.0001 : vector1Length;
 		double vector2Length = Math.sqrt(vector2X * vector2X + vector2Y * vector2Y);
-		vector2Length = vector2Length == 0? 0.00000001 : vector2Length;
+		vector2Length = vector2Length == 0? 0.0001 : vector2Length;
 
 		// 라디안 각도를 반환
 		return Math.acos(dotProduct / (vector1Length * vector2Length));
