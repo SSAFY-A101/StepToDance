@@ -14,6 +14,7 @@ import com.dance101.steptodance.feedback.service.FeedbackService;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.ForbiddenException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.global.utils.grader.CaffeGraderUtils;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.request.MessageRequest;
@@ -45,6 +46,7 @@ public class KafkaService implements AIServerService {
     private final GuideBodyRepository guideBodyRepository;
     private final FeedbackBodyRepository feedbackBodyRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final CaffeGraderUtils graderUtils;
     @Value(value = "${message.topic.feedback.name}")
     private String feedbackTopicName;
     @Value(value = "${message.topic.guide.name}")
@@ -152,20 +154,10 @@ public class KafkaService implements AIServerService {
         GuideBodyModel guideBodyModel = guideBodyRepository.findByGuideId(guide.getId())
             .orElseThrow(() -> new NotFoundException("consumeFeedbackCompletion:저장된 가이드 모델이 없습니다.", GUIDE_BODY_NOT_FOUND));
         // 모델 비교하기
-        double score = rateFeedback(model.getModels(), guideBodyModel.getModels());
+        double score = graderUtils.getScore(0, model.getModels().size(),
+            guideBodyModel.getModels(), model.getModels());
         // 점수를 피드백으로 업데이트하기
-    }
-
-    private double rateFeedback(List<List<List<Integer>>> feedbacks, List<List<List<Integer>>> guides) {
-        double score = 100.0;
-        for (int frame = 0; frame < feedbacks.size(); frame++) {
-            score -= deductCaffeModel(feedbacks.get(frame), guides.get(frame));
-        }
-        return Math.max(score, 0.0);
-    }
-
-    private double deductCaffeModel(List<List<Integer>> feedback, List<List<Integer>> guide) {
-        return 100.0;
+        feedback.update(score);
     }
 
     private GuideBodyModel makeGuideModelOutOfFrameList(String message, List<Frame> frameList) {
