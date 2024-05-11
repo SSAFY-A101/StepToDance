@@ -51,6 +51,17 @@ public class CaffeGraderUtils implements GraderUtils{
 		double x2 = body.get(gradingCriteria.get(ci).get(1)).get(1);
 		double y3 = body.get(gradingCriteria.get(ci).get(2)).get(0);
 		double x3 = body.get(gradingCriteria.get(ci).get(2)).get(1);
-		return ((y2 - y1) / (x2 - x1)) - ((y3 - y2) / (x3 - x2));
+
+		double vector1X = x2 - x1;
+		double vector1Y = y2 - y1;
+		double vector2X = x3 - x2;
+		double vector2Y = y3 - y2;
+
+		double dotProduct = vector1X * vector2X + vector1Y * vector2Y;
+		double vector1Length = Math.sqrt(vector1X * vector1X + vector1Y * vector1Y);
+		double vector2Length = Math.sqrt(vector2X * vector2X + vector2Y * vector2Y);
+
+		// 라디안 각도를 반환
+		return Math.acos(dotProduct / (vector1Length * vector2Length));
 	}
 }
