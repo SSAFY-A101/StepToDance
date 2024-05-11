@@ -64,6 +64,12 @@ public class CaffeGraderUtils implements GraderUtils{
 		vector2Length = vector2Length == 0? 0.0001 : vector2Length;
 
 		// 라디안 각도를 반환
-		return Math.acos(dotProduct / (vector1Length * vector2Length));
+		double acos = Math.acos(dotProduct / (vector1Length * vector2Length));
+		log.info("getAngle: dotProduct= " + dotProduct);
+		log.info("getAngle: vector1Length= " + vector1Length);
+		log.info("getAngle: vector2Length= " + vector2Length);
+		log.info("getAngle: (vector1Length * vector2Length)= " + (vector1Length * vector2Length));
+		log.info("getAngle: dotProduct / (vector1Length * vector2Length)= " + dotProduct / (vector1Length * vector2Length));
+		return acos;
 	}
 }
