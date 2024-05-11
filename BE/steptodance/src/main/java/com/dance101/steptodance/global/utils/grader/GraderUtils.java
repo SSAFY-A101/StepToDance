@@ -6,7 +6,7 @@ public interface GraderUtils {
 	double getDeduct(List<List<Integer>> guide, List<List<Integer>> feedback);
 
 	default double getScore(int start, int end, List<List<List<Integer>>> guide, List<List<List<Integer>>> feedback) {
-		double ans = 0;
+		double ans = 100;
 		for (int i = start; i < end; i++) {
 			ans -= getDeduct(guide.get(i), feedback.get(i));
 		}
