@@ -180,8 +180,7 @@ export const WebcamStreamCapture = () => {
             mirrored={true}
             videoConstraints={{
               facingMode: "environment",
-              width: widthSize,
-              height: heightSize * 0.8
+              aspectRatio: 1.77778
             }}
           />
           <input
