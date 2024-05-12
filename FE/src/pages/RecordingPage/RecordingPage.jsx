@@ -147,6 +147,8 @@ export const WebcamStreamCapture = () => {
         </>
       ) : (
         <>
+              <div style={{ width: "100%" }}> 
+
           <ReactPlayer
             ref={videoRef}
             url={videoUrl}
@@ -178,7 +180,8 @@ export const WebcamStreamCapture = () => {
             mirrored={true}
             videoConstraints={{
               facingMode: "environment",
-              aspectRatio: widthSize / (heightSize * 0.8),
+              width: widthSize,
+              height: heightSize * 0.8
             }}
           />
           <input
@@ -214,6 +217,7 @@ export const WebcamStreamCapture = () => {
               </button>
             </article>
           )}
+        </div>
         </>
       )}
     </section>
