@@ -2,9 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./RecordingPage.module.css";
 import { useLocation } from "react-router-dom";
-import RecordRTC from 'recordrtc';
-import ReactPlayer from 'react-player';
-
+import RecordRTC from "recordrtc";
+import ReactPlayer from "react-player";
+import { AspectRatio } from "@mui/icons-material";
 
 export const WebcamStreamCapture = () => {
   const [widthSize, setWidthSize] = useState(window.innerWidth);
@@ -20,7 +20,7 @@ export const WebcamStreamCapture = () => {
   const videoUrl = location.state?.videoUrl;
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [showVideo, setShowVideo] = useState(true);  // Set it true for testing
+  const [showVideo, setShowVideo] = useState(true); // Set it true for testing
   const [isRecording, setIsRecording] = useState(false); // New state for recording status
 
   useEffect(() => {
@@ -46,21 +46,22 @@ export const WebcamStreamCapture = () => {
   }, []);
 
   const startRecording = () => {
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then(function(stream) {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(function (stream) {
         if (webcamRef.current) {
           webcamRef.current.srcObject = stream;
         }
         const recorder = new RecordRTC(stream, {
-          type: 'video'
+          type: "video",
         });
         recorder.startRecording();
         setRecordRTC(recorder);
-      }).catch(function(error) {
-        console.error('Error accessing the media devices.', error);
+      })
+      .catch(function (error) {
+        console.error("Error accessing the media devices.", error);
       });
   };
-  
 
   const handleStartCaptureClick = useCallback(() => {
     setIsRecording(true);
@@ -68,16 +69,14 @@ export const WebcamStreamCapture = () => {
       setCapturing(true);
       const videoStream = webcamRef.current.stream;
       const options = {
-        type: 'video',
-        mimeType: 'video/webm',
+        type: "video",
+        mimeType: "video/webm",
       };
       const recorder = new RecordRTC(videoStream, options);
       recorder.startRecording();
       setRecordRTC(recorder);
     }
   }, [webcamRef.current, setIsRecording]); // Added dependency to ensure it re-evaluates if necessary
-  
-  
 
   const handleDataAvailable = useCallback(
     ({ data }) => {
@@ -99,9 +98,9 @@ export const WebcamStreamCapture = () => {
   }, [recordedChunks]);
 
   useEffect(() => {
-    console.log("Video URL:", videoUrl);  // Check if the URL is correct
+    console.log("Video URL:", videoUrl); // Check if the URL is correct
   }, [videoUrl]);
-  
+
   const handleStopCaptureClick = useCallback(() => {
     setIsRecording(false);
     if (recordRTC) {
@@ -114,10 +113,12 @@ export const WebcamStreamCapture = () => {
       });
     }
   }, [recordRTC, setIsRecording]);
-  
+
   return (
     <section className={styles["record-page"]}>
-      <button className={`${styles.glowingBtn} ${isRecording ? styles.active : ""}`}>
+      <button
+        className={`${styles.glowingBtn} ${isRecording ? styles.active : ""}`}
+      >
         <span className={styles.glowingTxt}>ON AIR</span>
       </button>
       {recordVideo ? (
@@ -166,18 +167,25 @@ export const WebcamStreamCapture = () => {
             screenshotFormat="image/jpeg"
             width={widthSize}
             height={heightSize * 0.8}
-            videoConstraints={{ width: widthSize, height: heightSize * 0.8, facingMode: "user" }}
-            style={{ opacity: 1 }}  // Always visible
+            videoConstraints={{
+              facingMode: "user",
+              aspectRatio: widthSize / heightSize,
+            }}
           />
-           <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={playerOpacity}
-              onChange={e => setPlayerOpacity(e.target.value)}
-              style={{ position: "absolute", zIndex: 2, left: "10px", top: "10px" }}
-            />
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={playerOpacity}
+            onChange={(e) => setPlayerOpacity(e.target.value)}
+            style={{
+              position: "absolute",
+              zIndex: 2,
+              left: "10px",
+              top: "10px",
+            }}
+          />
           {capturing ? (
             <article className={styles["record-btn"]}>
               <button
