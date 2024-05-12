@@ -1,6 +1,7 @@
 package com.dance101.steptodance.global.utils.grader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -65,6 +66,8 @@ public class CaffeGraderUtils implements GraderUtils{
 
 		if (dotProduct / (vector1Length * vector2Length) > 1.0 || dotProduct / (vector1Length * vector2Length) < -1.0) {
 			log.info("================================ problem occurred! ================================");
+			log.info("{y1, x1, y2, x2, y3, x3} : " + Arrays.toString(new double[] {y1, x1, y2, x2, y3, x3}));
+			log.info("{vector1Y, vector1X, vector2Y, vector2X} : " + Arrays.toString(new double[] {vector1Y, vector1X, vector2Y, vector2X}));
 			log.info("getAngle: dotProduct= " + dotProduct);
 			log.info("getAngle: vector1Length= " + vector1Length);
 			log.info("getAngle: vector2Length= " + vector2Length);
