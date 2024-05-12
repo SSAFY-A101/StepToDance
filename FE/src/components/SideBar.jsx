@@ -29,7 +29,7 @@ const SideBar = () => {
         { name: 'Services', path: '/services' },
         { name: 'Contact', path: '/contact' },
         { name: 'My Page', path: '/mypage' },
-        { name: 'Video List', path: '/videoList' },
+        { name: 'Video List', path: '/guideDetail' },
         { name: 'Upload Guide', path: '/guideUpload' },
     ];
     const handleMenuItemClick = (path) => {
@@ -42,16 +42,16 @@ const SideBar = () => {
         setIsOpen(!isOpen);
     };
     return (
-    
         <div className={`${styles.mobileMenu} ${styles.hide}`}>
             <div className={styles.sideMenu} style={{ width: isOpen ? '220px' : '0px' }}>
                 <div className={styles.toggleMenu} onClick={toggleSidebar}>
-                <FontAwesomeIcon icon={isOpen ? faXmark : faBars} style={{ color: "black" }} />
+                    <FontAwesomeIcon icon={isOpen ? faXmark : faBars} style={{ color: "black" }} />
                 </div>
-                    <img
+                <img
                     src={user.profileImgUrl}
+                    alt="profile"
                     style={{
-                        height: '8vh',
+                        height: '10vh',
                         width: '20vw',
                         display: 'flex',
                         marginLeft: '5vw',
@@ -60,25 +60,29 @@ const SideBar = () => {
                         justifyContent: 'center',
                         alignItems: 'center'
                     }}
-                    />
+                />
                 <div className={styles.userName}>
                     <span className={styles.userNickname}>"{user.nickname}"</span> 님 안녕하세요!
                 </div>
                 <ul className={styles.mobileSide}>
                     {MenuList.map((item, index) => (
                         <li key={index} onClick={() => handleMenuItemClick(item.path)}>
-                            <a href="#">{item.name}</a></li>
+                            <a href="#">{item.name}</a>
+                        </li>
                     ))}
                 </ul>
+                <div className={styles.withdrawLink} onClick={() => navigate('/withdraw')}>
+                    회원 탈퇴
+                </div>
             </div>
             <div className={styles.menuOpen} onClick={toggleSidebar}>
                 {isOpen ? '' : <FontAwesomeIcon icon={faBars} style={{ color: "#f9f9f9" }} />}
             </div>
             <div className={styles.loginButton}>
-                {/* Login Button Placeholder */}
             </div>
         </div>
     );
+    
 }
 
 export default SideBar;
