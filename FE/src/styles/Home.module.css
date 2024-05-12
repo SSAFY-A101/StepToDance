@@ -5,4 +5,43 @@
   right: 0;
   bottom: 22vw;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+/* 전체 페이지의 스크롤바 스타일 */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+  opacity: 0; /* 기본적으로 투명 */
+  transition: opacity 0.3s; /* 투명도 변경에 애니메이션 효과 적용 */
+}
+
+/* 스크롤바 트랙 */
+::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #0a0f2a 0%, #1d4a8c 100%);
+  border-radius: 4px;
+}
+
+/* 스크롤바 핸들 */
+::-webkit-scrollbar-thumb {
+  background-color: var(--glow1-color); 
+  box-shadow: 0 0 10px var(--glow1-color);
+  border-radius: 4px;
+}
+
+/* 스크롤바 핸들:hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(186, 45%, 26%);
+  box-shadow: 0 0 15px hsl(186, 100%, 75%);
+}
+
+/* 스크롤바 핸들:active */
+::-webkit-scrollbar-thumb:active {
+  background-color: hsl(186, 100%, 80%);
+  box-shadow: 0 0 20px hsl(186, 100%, 80%);
+}
+
+/* 스크롤이 활성화 되었을 때 스크롤바 표시 */
+.homeContainer:hover::-webkit-scrollbar,
+.homeContainer:active::-webkit-scrollbar {
+  opacity: 1; /* 스크롤바 표시 */
 }

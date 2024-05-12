@@ -5,6 +5,7 @@ import GuideList from "../components/guide/GuideList";
 import styles from "../styles/Home.module.css";
 
 function Home() {
+  
   return (
     <div>
       <SearchBar />
