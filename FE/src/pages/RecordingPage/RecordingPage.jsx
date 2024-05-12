@@ -137,7 +137,8 @@ export const WebcamStreamCapture = () => {
           <article className={styles["record-button"]}>
             <button
               className={styles["record-button__cancle"]}
-              onClick={() => reRecord()}
+              onClick={reRecord()}
+              onTouchEnd={reRecord()}
             >
               다시촬영
             </button>
