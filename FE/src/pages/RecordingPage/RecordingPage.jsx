@@ -114,6 +114,10 @@ export const WebcamStreamCapture = () => {
     }
   }, [recordRTC, setIsRecording]);
 
+  const reRecord = () => {
+    setRecordVideo("");
+  };
+
   return (
     <section className={styles["record-page"]}>
       <button
@@ -131,7 +135,10 @@ export const WebcamStreamCapture = () => {
             height={heightSize * 0.9}
           />
           <article className={styles["record-button"]}>
-            <button className={styles["record-button__cancle"]}>
+            <button
+              className={styles["record-button__cancle"]}
+              onClick={() => reRecord()}
+            >
               다시촬영
             </button>
             <button className={styles["record-button__save"]}>평가하기</button>
@@ -169,7 +176,7 @@ export const WebcamStreamCapture = () => {
             height={heightSize * 0.8}
             videoConstraints={{
               facingMode: "user",
-              aspectRatio: widthSize / heightSize,
+              aspectRatio: widthSize / (heightSize * 0.8),
             }}
           />
           <input
