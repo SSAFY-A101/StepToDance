@@ -55,3 +55,25 @@ export const postFeedback = async (guideId, feedbackData) => {
     throw error;
   }
 };
+
+export const uploadGuide = async (songName, singer, highlightStartAt, highlightEndAt, video) => {
+  try {
+    const formData = new FormData(); 
+    formData.append('song_name', songName); 
+    formData.append('singer', singer); 
+    formData.append('highlight_section_start_at', highlightStartAt); 
+    formData.append('highlight_section_end_at', highlightEndAt); 
+    formData.append('video', video); 
+
+    const response = await customAxios.post(`guides/file`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading guide:', error);
+    throw error;
+  }
+};
