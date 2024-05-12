@@ -175,8 +175,9 @@ export const WebcamStreamCapture = () => {
             screenshotFormat="image/jpeg"
             width={widthSize}
             height={heightSize * 0.8}
+            mirrored={true}
             videoConstraints={{
-              facingMode: "user",
+              facingMode: "environment",
               aspectRatio: widthSize / (heightSize * 0.8),
             }}
           />
