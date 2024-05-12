@@ -6,6 +6,7 @@ import 'nouislider/distribute/nouislider.css';
 import styles from "../styles/VideoEditor.module.css";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
+import { uploadShortform } from '../api/ShortformApis';
 
 let ffmpeg; 
 function VideoEditor() {
@@ -176,9 +177,16 @@ function VideoEditor() {
     }
   };
 
-  const createShortform = () => {
-
-  }
+  const createShortform = async () => {
+    try {
+      console.log('파일 업로드하자:',videoTrimmed);
+      const response = await uploadShortform(1,videoTrimmed);
+      console.log('Shortform created successfully:', response);
+    } catch (error) {
+      // 업로드 과정에서 발생한 에러를 처리합니다.
+      console.error('Error creating shortform:', error);
+    }
+  };
 
   return (
     <div className={styles.homeContainer}>
