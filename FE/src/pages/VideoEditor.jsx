@@ -17,6 +17,7 @@ function VideoEditor() {
   const [videoFileValue, setVideoFileValue] = useState('');
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
   const [videoTrimmedUrl, setVideoTrimmedUrl] = useState('');
+  const [videoTrimmed, setVideoTrimmed] = useState();
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef();
   let initialSliderValue = 0;
@@ -169,9 +170,15 @@ function VideoEditor() {
         new Blob([data.buffer], { type: videoFileValue.type }),
       );
       setVideoTrimmedUrl(url);
-      console.log(videoTrimmedUrl);
+      console.log("url",videoTrimmedUrl);
+      setVideoTrimmed(new File([videoTrimmedUrl], "shortform.mp4", {type:'video/mp4'}));
+      console.log("video",videoTrimmed);
     }
   };
+
+  const createShortform = () => {
+
+  }
 
   return (
     <div className={styles.homeContainer}>
@@ -213,7 +220,7 @@ function VideoEditor() {
                 <source src={videoTrimmedUrl} type={videoFileValue.type} />
               </video>
               <Link to={{ pathname:'/shortsShare', state:[{videourl: videoTrimmedUrl},{videoFileValue: videoFileValue.type}]}}>
-                <div style={{color:"white"}}>완성</div>
+                <div style={{color:"white"}} onClick={createShortform}>완성</div>
               </Link>
             </div>
           )}
