@@ -2,7 +2,6 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import "./App.css";
 import { useSelector } from "react-redux";
 import Home from "./pages/Home";
-import GuideUpload from "./pages/GuideUpload";
 import VideoEditor from "./pages/VideoEditor";
 import GuideDetail from "./pages/VideoPage/GuideDetail";
 import MyPage from "./pages/MyPage/MyPage";
@@ -17,6 +16,7 @@ import LandingPage from "./pages/LandingPage/LandingPage";
 import RankingPage from "./pages/Ranking/RankingPage";
 import SearchResult from "./pages/SearchResult";
 import ShortsShare from "./pages/ShortsShare";
+import GuideUploadPage from "./pages/GuideUploadPage/GuideUploadPage";
 
 function App() {
   const user = useSelector(userLoggedInSelector);
@@ -45,7 +45,7 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/home" element={<Home />} />
-          <Route path="/guideUpload" element={<GuideUpload />} />
+          <Route path="/guideUpload" element={<GuideUploadPage />} />
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/videoEditor" element={<VideoEditor />} />
           <Route path="/guideDetail" element={<GuideDetail />} />

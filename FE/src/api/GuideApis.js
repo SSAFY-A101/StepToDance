@@ -10,6 +10,21 @@ export const getGuideList = async () => {
   }
 };
 
+export const guideUpload = async (formData) => {
+  delete customAxios.defaults.headers["Content-Type"];
+  try {
+    const response = await customAxios.post(
+      `guides/file`,
+
+      formData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching guide list:", error);
+    throw error;
+  }
+};
+
 export const getGuideDetail = async (guideId) => {
   try {
     const response = await customAxios.get(`guides/${guideId}`, {});
