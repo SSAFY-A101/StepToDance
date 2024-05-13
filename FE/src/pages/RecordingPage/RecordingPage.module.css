@@ -130,18 +130,18 @@
   outline: none;
   border: none;
   border-radius: 500px;
-  width: 400px;
-  max-width: 100%;
+  width: 95vw;
+  max-width: 98vw;
   margin: 24px 0 16px;
   transition: box-shadow 0.2s ease-in-out;
   -webkit-appearance: none;
   background-color: #ddd;
   overflow: hidden;
-  height: 20px;  
+  height: 1.5vh;  
 }
 
 .rangeSlider::-webkit-slider-runnable-track {
-  height: 20px;  
+  height: 1.5vh;  
   -webkit-appearance: none;
   color: #444;
   transition: box-shadow 0.2s ease-in-out;
@@ -150,9 +150,9 @@
 
 
 .rangeSlider::-webkit-slider-thumb {
-  width: 20px;  
+  width: 7vw;  
   -webkit-appearance: none;
-  height: 20px;  
+  height: 1.5vh;  
   cursor: ew-resize;
   background: #fff;
   box-shadow: -320px 0 0 300px #1597ff, inset 0 0 0 20px #fff;
