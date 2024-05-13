@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class Frame {
+public class Frame<BodyType> {
 	String name;
-	List<List<Integer>> model;
+	List<List<BodyType>> model;
 }
