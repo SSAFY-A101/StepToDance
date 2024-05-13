@@ -4,7 +4,8 @@ import styles from "./RecordingPage.module.css";
 import { useLocation } from "react-router-dom";
 import RecordRTC from "recordrtc";
 import ReactPlayer from "react-player";
-import { AspectRatio } from "@mui/icons-material";
+import VideocamIcon from '@mui/icons-material/Videocam';
+import CheckIcon from '@mui/icons-material/Check';
 
 export const WebcamStreamCapture = () => {
   const [widthSize, setWidthSize] = useState(window.innerWidth);
@@ -12,7 +13,6 @@ export const WebcamStreamCapture = () => {
   const webcamRef = useRef(null);
   const [recordRTC, setRecordRTC] = useState(null);
   const [playerOpacity, setPlayerOpacity] = useState(1);
-  const mediaRecorderRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const [recordVideo, setRecordVideo] = useState("");
@@ -23,6 +23,7 @@ export const WebcamStreamCapture = () => {
   const [showVideo, setShowVideo] = useState(true); // Set it true for testing
   const [isRecording, setIsRecording] = useState(false); // New state for recording status
 
+  
   useEffect(() => {
     const handleResize = () => {
       const currentWidth = window.innerWidth;
@@ -45,47 +46,51 @@ export const WebcamStreamCapture = () => {
     };
   }, []);
 
-  const startRecording = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then(function (stream) {
-        if (webcamRef.current) {
-          webcamRef.current.srcObject = stream;
-        }
-        const recorder = new RecordRTC(stream, {
-          type: "video",
-        });
-        recorder.startRecording();
-        setRecordRTC(recorder);
-      })
-      .catch(function (error) {
-        console.error("Error accessing the media devices.", error);
-      });
-  };
+  // const startRecording = () => {
+  //   navigator.mediaDevices
+  //     .getUserMedia({ video: true })
+  //     .then(function (stream) {
+  //       if (webcamRef.current) {
+  //         webcamRef.current.srcObject = stream;
+  //       }
+  //       const recorder = new RecordRTC(stream, {
+  //         type: "video",
+  //       });
+  //       recorder.startRecording();
+  //       setRecordRTC(recorder);
+  //     })
+  //     .catch(function (error) {
+  //       console.error("Error accessing the media devices.", error);
+  //     });
+  // };
 
   const handleStartCaptureClick = useCallback(() => {
     setIsRecording(true);
-    if (webcamRef.current && webcamRef.current.stream) {
-      setCapturing(true);
-      const videoStream = webcamRef.current.stream;
-      const options = {
-        type: "video",
-        mimeType: "video/webm",
-      };
-      const recorder = new RecordRTC(videoStream, options);
-      recorder.startRecording();
-      setRecordRTC(recorder);
-    }
-  }, [webcamRef.current, setIsRecording]); // Added dependency to ensure it re-evaluates if necessary
+    setCapturing(true);
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        if (webcamRef.current) {
+          webcamRef.current.srcObject = stream;
+        }
+        const options = { type: 'video', mimeType: 'video/webm' };
+        const recorder = new RecordRTC(stream, options);
+        recorder.startRecording();
+        setRecordRTC(recorder);
+      })
+      .catch((error) => {
+        console.error("Error accessing the media devices.", error);
+      });
+  }, [setIsRecording]);
 
-  const handleDataAvailable = useCallback(
-    ({ data }) => {
-      if (data.size > 0) {
-        setRecordedChunks((prev) => prev.concat(data));
-      }
-    },
-    [setRecordedChunks]
-  );
+
+  // const handleDataAvailable = useCallback(
+  //   ({ data }) => {
+  //     if (data.size > 0) {
+  //       setRecordedChunks((prev) => prev.concat(data));
+  //     }
+  //   },
+  //   [setRecordedChunks]
+  // );
 
   useEffect(() => {
     if (recordedChunks.length) {
@@ -102,21 +107,22 @@ export const WebcamStreamCapture = () => {
   }, [videoUrl]);
 
   const handleStopCaptureClick = useCallback(() => {
-    setIsRecording(false);
     if (recordRTC) {
       recordRTC.stopRecording(() => {
         const videoUrl = recordRTC.toURL();
         setRecordVideo(videoUrl);
         setCapturing(false);
+        setIsRecording(false);
         recordRTC.destroy();
         setRecordRTC(null);
       });
     }
   }, [recordRTC, setIsRecording]);
 
-  const reRecord = () => {
+  const reRecord = useCallback(() => {
     setRecordVideo("");
-  };
+  }, []);
+
 
   return (
     <section className={styles["record-page"]}>
@@ -127,28 +133,34 @@ export const WebcamStreamCapture = () => {
       </button>
       {recordVideo ? (
         <>
-          <video
+           <video
             controls
             src={recordVideo}
             type="video/mp4"
             width={widthSize}
             height={heightSize * 0.9}
+            autoPlay
           />
           <article className={styles["record-button"]}>
-            <button
+            
+            <div
               className={styles["record-button__cancle"]}
-              onClick={reRecord()}
-              onTouchEnd={reRecord()}
+              onClick={reRecord}
+              onTouchEnd={reRecord}
             >
+              <VideocamIcon/>
               다시촬영
-            </button>
-            <button className={styles["record-button__save"]}>평가하기</button>
+            </div>
+            <div 
+            className={styles["record-button__save"]}>
+              <CheckIcon/>
+              평가하기
+              </div>
           </article>
         </>
       ) : (
         <>
-              <div style={{ width: "100%" }}> 
-
+        <div style={{ width: "100%" }}> 
           <ReactPlayer
             ref={videoRef}
             url={videoUrl}
@@ -172,14 +184,14 @@ export const WebcamStreamCapture = () => {
           />
           {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
           <Webcam
-            audio={true}
+            audio={false}
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             width={widthSize}
             height={heightSize * 0.8}
             mirrored={true}
             videoConstraints={{
-              facingMode: "environment",
+              facingMode: "user",
               aspectRatio: 1.77778
             }}
           />
