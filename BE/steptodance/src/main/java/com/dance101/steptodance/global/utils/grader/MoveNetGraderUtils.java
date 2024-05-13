@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.lang.Double;
 
 import org.springframework.stereotype.Component;
 
@@ -13,34 +13,30 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class CaffeGraderUtils implements GraderUtils<Integer>{
+public class MoveNetGraderUtils implements GraderUtils<Double>{
+
 	private List<List<Integer>> gradingCriteria;
-	private final int SIZE_OF_CRITERIA = 13;
+	private final int SIZE_OF_CRITERIA = 10;
 	private final MathContext mc = new MathContext(7, RoundingMode.HALF_UP);
 
-	public CaffeGraderUtils() {
-		gradingCriteria = new ArrayList<>();
-		gradingCriteria.add(List.of(0, 1, 14)); // neck
+	public MoveNetGraderUtils() {
+		this.gradingCriteria = new ArrayList<>();
+		gradingCriteria.add(List.of(8, 6, 12)); // right shoulder
+		gradingCriteria.add(List.of(6, 8, 10)); // right elbow
+		gradingCriteria.add(List.of(7, 5, 11)); // left shoulder
+		gradingCriteria.add(List.of(5, 7, 9)); // left elbow
 
-		gradingCriteria.add(List.of(2, 1, 14)); // right shoulder
-		gradingCriteria.add(List.of(1, 2, 3)); // right elbow
-		gradingCriteria.add(List.of(2, 3, 4)); // right wrist
+		gradingCriteria.add(List.of(5, 6, 12)); // right shoulder - shoulder - hip
+		gradingCriteria.add(List.of(6, 5, 11)); // left shoulder - shoulder - hip
+		gradingCriteria.add(List.of(11, 12, 14)); // right hip - hip - knee
+		gradingCriteria.add(List.of(12, 11, 13)); // left hip - hip - knee
 
-		gradingCriteria.add(List.of(5, 1, 14)); // left shoulder
-		gradingCriteria.add(List.of(1, 5, 6)); // left elbow
-		gradingCriteria.add(List.of(5, 6, 7)); // left wrist
-
-		gradingCriteria.add(List.of(1, 14, 8)); // right hip
-		gradingCriteria.add(List.of(14, 8, 9)); // right knee
-		gradingCriteria.add(List.of(8, 9, 10)); // right ankle
-
-		gradingCriteria.add(List.of(1, 14, 11)); // left hip
-		gradingCriteria.add(List.of(14, 11, 12)); // left knee
-		gradingCriteria.add(List.of(11, 12, 13)); // left ankle
+		gradingCriteria.add(List.of(12, 14, 16)); // right knee
+		gradingCriteria.add(List.of(11, 13, 15)); // left knee
 	}
 
 	@Override
-	public double getDeduct(List<List<Integer>> guide, List<List<Integer>> feedback) {
+	public double getDeduct(List<List<Double>> guide, List<List<Double>> feedback) {
 		double sum = 0.0;
 		for (int i = 0; i < SIZE_OF_CRITERIA; i++) {
 			sum += Math.abs(getAngle(i, guide) - getAngle(i, feedback)) / 100;
@@ -49,20 +45,20 @@ public class CaffeGraderUtils implements GraderUtils<Integer>{
 		return sum;
 	}
 
-	private double getAngle(int ci, List<List<Integer>> body) {
-		int y1 = body.get(gradingCriteria.get(ci).get(0)).get(0);
-		int x1 = body.get(gradingCriteria.get(ci).get(0)).get(1);
-		int y2 = body.get(gradingCriteria.get(ci).get(1)).get(0);
-		int x2 = body.get(gradingCriteria.get(ci).get(1)).get(1);
-		int y3 = body.get(gradingCriteria.get(ci).get(2)).get(0);
-		int x3 = body.get(gradingCriteria.get(ci).get(2)).get(1);
+	private double getAngle(int ci, List<List<Double>> body) {
+		BigDecimal y1 = BigDecimal.valueOf(body.get(gradingCriteria.get(ci).get(0)).get(0));
+		BigDecimal x1 = BigDecimal.valueOf(body.get(gradingCriteria.get(ci).get(0)).get(1));
+		BigDecimal y2 = BigDecimal.valueOf(body.get(gradingCriteria.get(ci).get(1)).get(0));
+		BigDecimal x2 = BigDecimal.valueOf(body.get(gradingCriteria.get(ci).get(1)).get(1));
+		BigDecimal y3 = BigDecimal.valueOf(body.get(gradingCriteria.get(ci).get(2)).get(0));
+		BigDecimal x3 = BigDecimal.valueOf(body.get(gradingCriteria.get(ci).get(2)).get(1));
 
-		BigDecimal vector1X = new BigDecimal(x2 - x1);
-		BigDecimal vector1Y = new BigDecimal(y2 - y1);
-		BigDecimal vector2X = new BigDecimal(x3 - x2);
-		BigDecimal vector2Y = new BigDecimal(y3 - y2);
+		BigDecimal vector1X = x2.subtract(x1);
+		BigDecimal vector1Y = y2.subtract(y1);
+		BigDecimal vector2X = x3.subtract(x2);
+		BigDecimal vector2Y = y3.subtract(y2);
 
-		BigDecimal dotProduct = vector1X.multiply(vector2X ).add(vector1Y.multiply(vector2Y));
+		BigDecimal dotProduct = vector1X.multiply(vector2X).add(vector1Y.multiply(vector2Y));
 		BigDecimal vector1Length = vector1X.multiply(vector1X).add(vector1Y.multiply(vector1Y)).sqrt(mc);
 		vector1Length = vector1Length.doubleValue() == 0.0 ? new BigDecimal("0.0000001") : vector1Length;
 		BigDecimal vector2Length = vector2X.multiply(vector2X).add(vector2Y.multiply(vector2Y)).sqrt(mc);
