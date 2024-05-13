@@ -3,13 +3,15 @@ from data.GuideRequest import GuideUpdateRequest
 from data.GuideUpdateMsg import GuideUpdateMsg
 from data.FeedbackUpdateMsg import FeedbackUpdateMsg
 import util.CaffeAiUtil as CaffeAiUtil
+import util.MoveNetAiUtil as MoveNetAiUtil
 import core.redis_config as redis_config
 from kafka_producer import send_data_to_kafka
 from json import *
 
 async def guideFrame(msgInstance: dict):
     guide = GuideUpdateMsg(msgInstance)
-    bodyModel = CaffeAiUtil.imgToBodyModel(guide.image)
+    # bodyModel = CaffeAiUtil.imgToBodyModel(guide.image)
+    bodyModel = MoveNetAiUtil.imgToBodyModel(guide.image)
     redis = redis_config.get_redis()
     if redis == None:
         redis = redis_config.redis_config()
@@ -26,7 +28,8 @@ async def guideFrame(msgInstance: dict):
 
 async def feedbackFrame(msgInstance: dict):
     feedback = FeedbackUpdateMsg(msgInstance)
-    bodyModel = CaffeAiUtil.imgToBodyModel(feedback.image)
+    # bodyModel = CaffeAiUtil.imgToBodyModel(feedback.image)
+    bodyModel = MoveNetAiUtil.imgToBodyModel(feedback.image)
     redis = redis_config.get_redis()
     if redis == None:
         redis = redis_config.redis_config()
