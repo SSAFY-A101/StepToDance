@@ -9,7 +9,7 @@ from json import *
 
 async def guideFrame(msgInstance: dict):
     guide = GuideUpdateMsg(msgInstance)
-    bodyModel = CaffeAiUtil.imgToBodyModelCaffe(guide.image)
+    bodyModel = CaffeAiUtil.imgToBodyModel(guide.image)
     redis = redis_config.get_redis()
     if redis == None:
         redis = redis_config.redis_config()
@@ -26,7 +26,7 @@ async def guideFrame(msgInstance: dict):
 
 async def feedbackFrame(msgInstance: dict):
     feedback = FeedbackUpdateMsg(msgInstance)
-    bodyModel = CaffeAiUtil.imgToBodyModelCaffe(feedback.image)
+    bodyModel = CaffeAiUtil.imgToBodyModel(feedback.image)
     redis = redis_config.get_redis()
     if redis == None:
         redis = redis_config.redis_config()
