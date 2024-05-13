@@ -1,6 +1,5 @@
 import tensorflow as tf
 import tensorflow_hub as hub
-from tensorflow_docs.vis import embed
 import numpy as np
 import cv2
 import base64
