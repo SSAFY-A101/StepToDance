@@ -24,6 +24,12 @@ export const WebcamStreamCapture = () => {
   const [isRecording, setIsRecording] = useState(false); // New state for recording status
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleSliderChange = (e) => {
+    const newOpacity = e.target.value;
+    setPlayerOpacity(newOpacity);
+    const hueRotation = newOpacity * 360; // Adjust the rotation scale if necessary
+    document.documentElement.style.setProperty('--slider-hue', `${hueRotation}deg`);
+  };
   
   useEffect(() => {
     const handleResize = () => {
@@ -47,23 +53,23 @@ export const WebcamStreamCapture = () => {
     };
   }, []);
 
-  const startRecording = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then(function (stream) {
-        if (webcamRef.current) {
-          webcamRef.current.srcObject = stream;
-        }
-        const recorder = new RecordRTC(stream, {
-          type: "video",
-        });
-        recorder.startRecording();
-        setRecordRTC(recorder);
-      })
-      .catch(function (error) {
-        console.error("Error accessing the media devices.", error);
-      });
-  };
+  // const startRecording = () => {
+  //   navigator.mediaDevices
+  //     .getUserMedia({ video: true })
+  //     .then(function (stream) {
+  //       if (webcamRef.current) {
+  //         webcamRef.current.srcObject = stream;
+  //       }
+  //       const recorder = new RecordRTC(stream, {
+  //         type: "video",
+  //       });
+  //       recorder.startRecording();
+  //       setRecordRTC(recorder);
+  //     })
+  //     .catch(function (error) {
+  //       console.error("Error accessing the media devices.", error);
+  //     });
+  // };
 
   const handleStartCaptureClick = useCallback(() => {
     setIsRecording(true);
@@ -84,14 +90,14 @@ export const WebcamStreamCapture = () => {
   }, [setIsRecording]);
 
 
-  const handleDataAvailable = useCallback(
-    ({ data }) => {
-      if (data.size > 0) {
-        setRecordedChunks((prev) => prev.concat(data));
-      }
-    },
-    [setRecordedChunks]
-  );
+  // const handleDataAvailable = useCallback(
+  //   ({ data }) => {
+  //     if (data.size > 0) {
+  //       setRecordedChunks((prev) => prev.concat(data));
+  //     }
+  //   },
+  //   [setRecordedChunks]
+  // );
 
   useEffect(() => {
     if (recordedChunks.length) {
@@ -168,7 +174,7 @@ export const WebcamStreamCapture = () => {
             muted
             controls
             width={widthSize}
-            height={heightSize * 0.8}
+            height={heightSize * 0.75}
             autoPlay
             style={{
               position: "absolute",
@@ -188,7 +194,7 @@ export const WebcamStreamCapture = () => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             width={widthSize}
-            height={heightSize * 0.8}
+            height={heightSize * 0.75}
             mirrored={true}
             videoConstraints={{
               facingMode: "user",
@@ -201,13 +207,14 @@ export const WebcamStreamCapture = () => {
             max="1"
             step="0.1"
             value={playerOpacity}
-            onChange={(e) => setPlayerOpacity(e.target.value)}
+            onChange={handleSliderChange}
+            className={styles.rangeSlider}
             style={{
               position: "absolute",
               zIndex: 2,
               left: "10px",
               top: "10px",
-            }}
+              filter: `hue-rotate(${playerOpacity * 360}deg)`              }}
           />
           {capturing ? (
             <article className={styles["record-btn"]}>
