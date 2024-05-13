@@ -9,7 +9,7 @@
 .header {
   position: relative;
   padding: 1rem;
-  height: fit-content;
+  height: 6rem;
   display: flex;
   justify-content: space-between;
 }
@@ -24,6 +24,7 @@
 
 .mainContent {
   flex-grow: 1; /* Ensures it takes the remaining space */
+  height: calc(100vh - 11.5rem);
 }
 
 .logoimg {

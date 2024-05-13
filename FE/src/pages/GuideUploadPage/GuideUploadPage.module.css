@@ -1,0 +1,34 @@
+.guide_upload-page {
+  width: 100vw;
+  height: 100%;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.guide-select {
+}
+
+.guide-video {
+  cursor: pointer;
+  height: 70%;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+}
+
+.guide-play {
+  height: 100%;
+  width: 100%;
+}
+
+.guide-video > input {
+  display: none;
+}
+
+.guide-submit {
+}
