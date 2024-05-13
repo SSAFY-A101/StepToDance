@@ -58,10 +58,9 @@ const KakaoLogin = () => {
     <section className={styles.layout}>
       <div className="loginHandler">
         <div className="notice">
-          {error && <p className="error">{error}</p>}
-          <p>로그인 중입니다. 잠시만 기다려주세요.</p>
           <div className="spinner">
             <Models />
+          <p>로그인 중입니다. 잠시만 기다려주세요.</p>
           </div>
         </div>
       </div>

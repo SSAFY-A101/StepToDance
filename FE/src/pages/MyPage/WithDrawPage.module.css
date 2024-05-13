@@ -61,14 +61,18 @@
 }
 
 .withdrawButton {
-  background-color: #f44336; /* 빨간색 배경 */
-  color: white;
+  appearance: none;
   border: none;
-  padding: 10px 20px;
-  margin-top: 20px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 1rem;
+  font-size: inherit;
+  border-radius: 2em;
+  padding: 0.75em 1em;
+  background: var(--glow-color);;
+  border: 0.15em solid var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  cursor: wait;
 }
 
 /* 기타 스타일 정의... */
