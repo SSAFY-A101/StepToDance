@@ -59,6 +59,5 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "vite": "^5.2.0",
     "vite-plugin-pwa": "^0.19.8"
-  },
-  "proxy": "https://k10a101.p.ssafy.io"
+  }
 }
