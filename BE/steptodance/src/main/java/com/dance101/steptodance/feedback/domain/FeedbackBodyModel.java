@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "feedback_body_model")
-public class FeedbackBodyModel {
+public class FeedbackBodyModel<T> {
 	@Field("feedbackId")
 	private long feedbackId;
 
@@ -23,10 +23,10 @@ public class FeedbackBodyModel {
 	private String id;
 
 	@Field("model")
-	List<List<List<Integer>>> models;
+	List<List<List<T>>> models;
 
 	@Builder
-	public FeedbackBodyModel(long feedbackId, List<List<List<Integer>>> models) {
+	public FeedbackBodyModel(long feedbackId, List<List<List<T>>> models) {
 		this.feedbackId = feedbackId;
 		this.models = models;
 	}
