@@ -10,11 +10,10 @@ import com.dance101.steptodance.feedback.domain.Feedback;
 import com.dance101.steptodance.feedback.domain.FeedbackBodyModel;
 import com.dance101.steptodance.feedback.repository.FeedbackBodyRepository;
 import com.dance101.steptodance.feedback.repository.FeedbackRepository;
-import com.dance101.steptodance.feedback.service.FeedbackService;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.ForbiddenException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
-import com.dance101.steptodance.global.utils.grader.CaffeGraderUtils;
+import com.dance101.steptodance.global.utils.grader.MoveNetGraderUtils;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.request.MessageRequest;
@@ -25,6 +24,7 @@ import com.dance101.steptodance.guide.repository.GuideBodyRepository;
 import com.dance101.steptodance.guide.repository.GuideRepository;
 import com.dance101.steptodance.guide.service.AIServerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,8 @@ public class KafkaService implements AIServerService {
     private final GuideBodyRepository guideBodyRepository;
     private final FeedbackBodyRepository feedbackBodyRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final CaffeGraderUtils graderUtils;
+    // private final CaffeGraderUtils graderUtils;
+    private final MoveNetGraderUtils graderUtils;
     @Value(value = "${message.topic.feedback.name}")
     private String feedbackTopicName;
     @Value(value = "${message.topic.guide.name}")
@@ -55,6 +56,7 @@ public class KafkaService implements AIServerService {
     private final ObjectMapper objectMapper;
     private final StringRedisTemplate redisTemplate;
     private final List<Integer> zeroList = List.of(0, 0);
+    private final List<Double> zeroDoubleList = List.of(0.0, 0.0);
 
     @Override
     public void publish(MessageRequest messageRequest, String type) {
@@ -99,7 +101,7 @@ public class KafkaService implements AIServerService {
         log.info("consumeGuideCompletion: size= " + list.size());
         log.info("consumeGuideCompletion: an Item = " + list.get(0));
 
-        List<Frame> frameList = getFrameListFromString(list);
+        List<Frame<Double>> frameList = getFrameListFromString(list);
         log.info("consumeGuideCompletion: json mapped to object");
 
         frameList.sort((item1, item2) -> item1.getName().compareTo(item2.getName()));
@@ -109,7 +111,7 @@ public class KafkaService implements AIServerService {
         log.info("consumeGuideCompletion: filled all empty frames");
 
         // update & save result
-        GuideBodyModel model = makeGuideModelOutOfFrameList(message, frameList);
+        GuideBodyModel<Double> model = makeGuideModelOutOfFrameList(message, frameList);
         guideBodyRepository.save(model);
         log.info("consumeGuideCompletion: stored in MongoDB");
 
@@ -127,7 +129,7 @@ public class KafkaService implements AIServerService {
         log.info("consumeFeedbackCompletion: size= " + list.size());
         log.info("consumeFeedbackCompletion: an Item = " + list.get(0));
 
-        List<Frame> frameList = getFrameListFromString(list);
+        List<Frame<Double>> frameList = getFrameListFromString(list);
         log.info("consumeFeedbackCompletion: json mapped to object");
 
         frameList.sort((item1, item2) -> item1.getName().compareTo(item2.getName()));
@@ -137,7 +139,7 @@ public class KafkaService implements AIServerService {
         log.info("consumeFeedbackCompletion: filled all empty frames");
 
         // update & save result
-        FeedbackBodyModel model = makeFeedbackModelOutOfFrameList(message, frameList);
+        FeedbackBodyModel<Double> model = makeFeedbackModelOutOfFrameList(message, frameList);
         feedbackBodyRepository.save(model);
         log.info("consumeFeedbackCompletion: stored in MongoDB");
 
@@ -151,7 +153,7 @@ public class KafkaService implements AIServerService {
         // 가이드 아이디 가져오기
         Guide guide = feedback.getGuide();
         // 가이드 아이디로 모델 가져오기
-        GuideBodyModel guideBodyModel = guideBodyRepository.findByGuideId(guide.getId())
+        GuideBodyModel<Double> guideBodyModel = guideBodyRepository.findByGuideId(guide.getId())
             .orElseThrow(() -> new NotFoundException("consumeFeedbackCompletion:저장된 가이드 모델이 없습니다.", GUIDE_BODY_NOT_FOUND));
         // 모델 비교하기
         double score = graderUtils.getScore(0, model.getModels().size(),
@@ -160,8 +162,8 @@ public class KafkaService implements AIServerService {
         feedback.update(score);
     }
 
-    private GuideBodyModel makeGuideModelOutOfFrameList(String message, List<Frame> frameList) {
-        return GuideBodyModel.builder()
+    private GuideBodyModel<Double> makeGuideModelOutOfFrameList(String message, List<Frame<Double>> frameList) {
+        return GuideBodyModel.<Double>builder()
             .guideId(Long.parseLong(message))
             .models(
                 frameList.stream()
@@ -171,8 +173,8 @@ public class KafkaService implements AIServerService {
             .build();
     }
 
-    private FeedbackBodyModel makeFeedbackModelOutOfFrameList(String message, List<Frame> frameList) {
-        return FeedbackBodyModel.builder()
+    private FeedbackBodyModel<Double> makeFeedbackModelOutOfFrameList(String message, List<Frame<Double>> frameList) {
+        return FeedbackBodyModel.<Double>builder()
             .feedbackId(Long.parseLong(message))
             .models(
                 frameList.stream()
@@ -182,19 +184,19 @@ public class KafkaService implements AIServerService {
             .build();
     }
 
-    private List<Frame> getFrameListFromString(List<String> list) {
+    private List<Frame<Double>> getFrameListFromString(List<String> list) {
         return new ArrayList<>(list.parallelStream().map(item -> {
             try {
-                return objectMapper.readValue(item, Frame.class);
+                return objectMapper.readValue(item, new TypeReference<Frame<Double>>() {});
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
         }).toList());
     }
 
-    private List<Frame> fillEmptyFrames(List<Frame> frameList) {
+    private List<Frame<Double>> fillEmptyFrames(List<Frame<Double>> frameList) {
         // 첫 프레임 채우기
-        Frame frame = frameList.get(0);
+        Frame<Double> frame = frameList.get(0);
         for (int i = 0; i < frame.getModel().size(); i++) {
             if (frame.getModel().get(i) == null) {
                 dfsBothEnd(i, 0, '+', frameList);
@@ -224,7 +226,7 @@ public class KafkaService implements AIServerService {
         return frameList;
     }
 
-    private void fillFrame(int joint, int frameIndex, List<Frame> frameList) {
+    private void fillFrame(int joint, int frameIndex, List<Frame<Double>> frameList) {
         int startFrameIndex = frameIndex - 1;
         int endFrameIndex = frameIndex;
         while (frameList.get(endFrameIndex).getModel().get(joint) == null) {
@@ -233,19 +235,19 @@ public class KafkaService implements AIServerService {
         // 끝날때 까지 비어있다면
         if (endFrameIndex == frameList.size()) {
             for (int i = frameIndex; i < endFrameIndex; i++) {
-                frameList.get(i).getModel().set(joint, zeroList);
+                frameList.get(i).getModel().set(joint, zeroDoubleList);
             }
             return;
         }
-        int diffY = frameList.get(endFrameIndex).getModel().get(joint).get(0)
+        double diffY = frameList.get(endFrameIndex).getModel().get(joint).get(0)
             - frameList.get(startFrameIndex).getModel().get(joint).get(0);
         diffY /= endFrameIndex - startFrameIndex;
-        int diffX = frameList.get(endFrameIndex).getModel().get(joint).get(1)
+        double diffX = frameList.get(endFrameIndex).getModel().get(joint).get(1)
             - frameList.get(startFrameIndex).getModel().get(joint).get(1);
         diffX /= endFrameIndex - startFrameIndex;
 
-        List<Integer> last = frameList.get(startFrameIndex).getModel().get(joint);
-        List<Integer> curr;
+        List<Double> last = frameList.get(startFrameIndex).getModel().get(joint);
+        List<Double> curr;
         startFrameIndex++;
         for (int i = startFrameIndex; i < endFrameIndex; i++) {
             curr = List.of(last.get(0)+diffY, last.get(1)+diffX);
@@ -254,9 +256,10 @@ public class KafkaService implements AIServerService {
         }
     }
 
-    private List<Integer> dfsBothEnd(int joint, int frameIndex, char cmd, List<Frame> frameList) {
-        if (frameIndex >= frameList.size() || frameIndex < 0) return zeroList;
-        List<Integer> thisFrame = frameList.get(frameIndex).getModel().get(joint);
+    private List<Double> dfsBothEnd(int joint, int frameIndex, char cmd, List<Frame<Double>> frameList) {
+        if (frameIndex >= frameList.size() || frameIndex < 0) return zeroDoubleList;
+        // List<Integer> thisFrame = frameList.get(frameIndex).getModel().get(joint);
+        List<Double> thisFrame = frameList.get(frameIndex).getModel().get(joint);
         if (thisFrame != null) {
             return thisFrame;
         } else {
