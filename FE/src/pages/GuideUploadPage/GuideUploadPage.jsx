@@ -1,29 +1,36 @@
 import { useRef, useState } from "react";
 import { guideUpload } from "../../api/GuideApis";
 import styles from "./GuideUploadPage.module.css";
+import UploadIcon from "@mui/icons-material/Upload";
 
 const GuideUploadPage = () => {
   const [selectVideo, setSelectVideo] = useState(null);
   const [selectTitle, setSelectTitle] = useState("");
+  const [videoDuration, setVideoDuration] = useState('00:00');
+  const [artistName, setArtistName] = useState("");
   const videoRef = useRef(null);
-  const [selectedOption, setSelectedOption] = useState('a');
+  
+
   
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
+  
   const changeHandler = (e) => {
-    setSelectTitle(e.target.files[0].name);
-    setSelectVideo(e.target.files[0]);
-    const reader = new FileReader();
+    const file = e.target.files[0];
+    if (file) {
+      setSelectTitle(file.name);
+      setSelectVideo(file);
+      const reader = new FileReader();
+      reader.onload = event => videoRef.current.src = event.target.result;
+      reader.readAsDataURL(file);
+      setVideoDuration('00:00'); // Reset duration initially
+    }
+  };
 
-    reader.onload = function (event) {
-      console.log(event.target);
-      videoRef.current.src = event.target.result;
-    };
-
-
-    
-    reader.readAsDataURL(e.target.files[0]);
+  const handleLoadedMetadata = () => {
+    const duration = videoRef.current.duration;
+    setVideoDuration(formatTime(new Date(duration * 1000)));
   };
 
   function formatTime(date) {
@@ -64,67 +71,29 @@ const GuideUploadPage = () => {
 
   return (
     <section className={styles["guide_upload-page"]}>
-      {/* <select className={styles["guide-select"]} name="genre" id="genre-select">
-        <option className={styles["track-item"]} value="1">K-pop</option>
-        <option className={styles["track-item"]} value="2">B-boying</option>
-        <option className={styles["track-item"]} value="3">Hip-hop</option>
-        <option className={styles["track-item"]} value="4">Popping</option>
-        <option className={styles["track-item"]} value="5">Traditional</option>
-      </select> */}
-      <input
-        className={styles["track-item"]}
-        id="a"
-        type="radio"
-        name="dummy"
-        value="a"
-        checked={selectedOption === 'a'}
-        onChange={handleOptionChange}
-      />
-      <label className={styles["track-label"]} htmlFor="a">A</label>
-
-      <input
-        className={styles["track-item"]}
-        id="b"
-        type="radio"
-        name="dummy"
-        value="b"
-        checked={selectedOption === 'b'}
-        onChange={handleOptionChange}
-      />
-      <label className={styles["track-label"]} htmlFor="b">B</label>
-
-      <input
-        className={styles["track-item"]}
-        id="c"
-        type="radio"
-        name="dummy"
-        value="c"
-        checked={selectedOption === 'c'}
-        onChange={handleOptionChange}
-      />
-      <input className={styles["track-item"]} id="d" type="radio" name="dummy" value="d" checked={selectedOption === 'd'} onChange={handleOptionChange}/>
-      <label className={styles["track-label"]} htmlFor="d">D</label>
-
-      <input className={styles["track-item"]} id="e" type="radio" name="dummy" value="e" checked={selectedOption === 'e'} onChange={handleOptionChange}/>
-      <label className={styles["track-label"]} htmlFor="e">E</label>
-
-      <label className={styles["track-label"]} htmlFor="c">C</label>
-          <div className={styles["track"]}>
-          <div className={styles["track__inner"]}>
-            <div className={styles["track__ball-hole"]}>
-              <div className={styles["track__ball"]}></div>
-            </div>
-            <span className={styles["track__separator"]}></span>
-            <div className={styles["track__ball-hole"]}>
-              <div className={styles["track__ball"]}></div>
-            </div>
-            <span className={styles["track__separator"]}></span>
-            <div className={styles["track__ball-hole"]}>
-              <div className={styles["track__ball"]}></div>
-            </div>
-            <div className={styles["track__ball"]}></div>
-          </div>
-        </div>
+      <form>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked /><span>K-pop</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="2" /><span>B-boying</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="3" /><span>Hip-hop</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="4" /><span>Popping</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="5" /><span>Traditional</span></label>
+      </form>
+      <div className={styles["input-section"]}>
+        <input
+          type="text"
+          placeholder="Enter song title"
+          value={selectTitle}
+          onChange={e => setSelectTitle(e.target.value)}
+          className={styles["text-input"]}
+        />
+        <input
+          type="text"
+          placeholder="Enter artist name"
+          value={artistName}
+          onChange={e => setArtistName(e.target.value)}
+          className={styles["text-input"]}
+        />
+      </div>
       <article className={styles["guide-video"]}>
         {selectVideo ? (
           <>
@@ -133,6 +102,7 @@ const GuideUploadPage = () => {
               ref={videoRef}
               controls
               autoPlay
+              onLoadedMetadata={handleLoadedMetadata}  // Get video duration when metadata is loaded
             ></video>
           </>
         ) : (
@@ -147,8 +117,24 @@ const GuideUploadPage = () => {
           </>
         )}
       </article>
+      <div className={styles["input-section"]}>
+        <input
+          type="text"
+          placeholder="Highlight start (default 00:00)"
+          value="00:00"
+          readOnly
+          className={styles["text-input"]}
+        />
+        <input
+          type="text"
+          placeholder="Highlight end (video end time)"
+          value={videoDuration}
+          readOnly
+          className={styles["text-input"]}
+        />
+      </div>
       <button className={styles["guide-submit"]} onClick={() => sendApi()}>
-        테스트
+        <UploadIcon />
       </button>
     </section>
   );
