@@ -37,7 +37,7 @@ def imgToBodyModel(image):
     print("Image shape:", image_tensor.shape)
 
     # Resize and pad the image to keep the aspect ratio and fit the expected size.
-    input_image = tf.expand_dims(image, axis=0)
+    input_image = tf.expand_dims(image_tensor, axis=0)
     input_image = tf.image.resize_with_pad(input_image, input_size, input_size)
 
     # Run model inference.
