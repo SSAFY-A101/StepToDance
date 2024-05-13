@@ -3,10 +3,13 @@
     display: flex;
     justify-content: center;
     margin-left: 27vw;
+    top: 5%; /* Adjust this value as needed to move the search bar up */
 }
 
 .searchBar {
-    padding : 3vw;
+    padding: 3vw;
     width: 50vw;
     border-radius: 4vw;
+    background-color: white; /* Set background color to white */
+    border: 1px solid #ccc; /* Optional: adds a subtle border around the input */
 }
