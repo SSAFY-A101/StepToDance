@@ -34,6 +34,7 @@ public class ShortformServiceImpl implements ShortformService {
 	private final UserRepository userRepository;
 	private final S3Service s3Service;
 
+	@Transactional
 	@Override
 	public void shortformUploadFile(long userId, ShortformUploadMultipartRequest request) {
 		User user = userRepository.findById(userId)
@@ -72,6 +73,7 @@ public class ShortformServiceImpl implements ShortformService {
 		return shortformFindResponses;
 	}
 
+	@Transactional
 	@Override
 	public void deleteShortForm(long shortformId) {
 		Shortform shortform = shortformRepository.findById(shortformId)
