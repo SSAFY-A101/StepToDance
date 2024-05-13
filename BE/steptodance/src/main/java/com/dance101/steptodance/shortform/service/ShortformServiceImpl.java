@@ -36,7 +36,7 @@ public class ShortformServiceImpl implements ShortformService {
 
 	@Transactional
 	@Override
-	public void shortformUploadFile(long userId, ShortformUploadMultipartRequest request) {
+	public Long shortformUploadFile(long userId, ShortformUploadMultipartRequest request) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(()->new NotFoundException("ShortformServiceImpl:shortformUploadFile", UNDEFINED_USER));
 		Guide guide = guideRepository.findById(request.getGuide_id())
@@ -53,6 +53,7 @@ public class ShortformServiceImpl implements ShortformService {
 				request.getVideo(),
 				"shortform/" + shortform.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
 			shortform.addUrl(url);
+			return shortform.getId();
 		} catch (Exception e) {
 			throw new ExternalServerException("ShortformServiceImpl:shortformUploadFile", SHORTFORM_UPLOAD_FAILED);
 		}
