@@ -13,6 +13,7 @@ import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.ForbiddenException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.global.utils.grader.MoveNetGraderEuclideanDistanceUtils;
 import com.dance101.steptodance.global.utils.grader.MoveNetGraderUtils;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.Frame;
@@ -47,7 +48,8 @@ public class KafkaService implements AIServerService {
     private final FeedbackBodyRepository feedbackBodyRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     // private final CaffeGraderUtils graderUtils;
-    private final MoveNetGraderUtils graderUtils;
+    // private final MoveNetGraderUtils graderUtils;
+    private final MoveNetGraderEuclideanDistanceUtils graderUtils;
     @Value(value = "${message.topic.feedback.name}")
     private String feedbackTopicName;
     @Value(value = "${message.topic.guide.name}")
