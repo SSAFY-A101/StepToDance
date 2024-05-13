@@ -4,6 +4,8 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setUserData } from "../../stores/UserSlice";
 import { setCookie } from "../../cookie";
+import styles from "../../styles/Layout.module.css";
+import Models from "../../components/Models/Models";
 
 const KakaoLogin = () => {
   const dispatch = useDispatch();
@@ -53,13 +55,18 @@ const KakaoLogin = () => {
   }, [code, dispatch, navigate]);
 
   return (
-    <div className="loginHandler">
-      <div className="notice">
-        {error && <p className="error">{error}</p>} // Display any error messages here
-        <p>로그인 중입니다. 잠시만 기다려주세요.</p>
-        <div className="spinner"></div>
+    <section className={styles.layout}>
+      <div className="loginHandler">
+        <div className="notice">
+          {error && <p className="error">{error}</p>}
+          <p>로그인 중입니다. 잠시만 기다려주세요.</p>
+          <div className="spinner">
+            <Models />
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
+
   );
 };
 
