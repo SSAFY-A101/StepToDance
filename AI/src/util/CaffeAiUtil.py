@@ -14,7 +14,7 @@ def aiUtilInit():
     net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
 
-def imgToBodyModelCaffe(image):
+def imgToBodyModel(image):
     global net
     print("imgToBodyModel: " , image[:10])
     # 이미지를 opencv 형식으로 변환
