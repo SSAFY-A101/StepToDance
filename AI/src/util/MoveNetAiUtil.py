@@ -16,8 +16,8 @@ input_size = 0
 def loadModel():
     global module, input_size, model
     print("loading module...")
-    module = hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
-    input_size = 192
+    module = hub.load("https://tfhub.dev/google/movenet/singlepose/thunder/4")
+    input_size = 256
     model = module.signatures['serving_default']
 
 
