@@ -8,6 +8,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import CheckIcon from '@mui/icons-material/Check';
 
 export const WebcamStreamCapture = () => {
+  const [layout, setLayout] = useState('overlay');
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
   const webcamRef = useRef(null);
