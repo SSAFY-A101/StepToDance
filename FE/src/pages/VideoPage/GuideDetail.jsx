@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef,useEffect, useState } from "react";
 import styles from "./GuideDetail.module.css";
 import ReactPlayer from 'react-player';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -6,10 +6,15 @@ import PauseIcon from '@mui/icons-material/Pause';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import SpeedIcon from '@mui/icons-material/Speed';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import VideocamIcon from '@mui/icons-material/Videocam';
+import { getGuideDetail } from "../../api/GuideApis";
 
 const GuideDetail = () => {
+  const location = useLocation();
+  const guideId = location.state?.id;
+
+  const [videoData, setVideoData] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [played, setPlayed] = useState(0);
@@ -25,20 +30,43 @@ const GuideDetail = () => {
   const [heightSize, setHeightSize] = useState(window.innerHeight);
   const navigate = useNavigate()
 
-  // 더미 데이터
-  const videoData = {
-    id: 1,
-    video_url: 'https://step-to-dance.s3.ap-northeast-2.amazonaws.com/blue_check.mp4',
-    thumbnail_img_url: 'src/assets/thumbnail.png',
-    song_title: '노래 제목',
-    singer: '가수',
-    genre: 'Kpop',
-    rank: 1,
-    uploader: 'user123',
-    count_feedback: 5,
-    created_at: '2024-04-15T08:00:00Z',
-  };
 
+  // 더미 데이터
+  // const videoData = {
+  //   id: 1,
+  //   video_url: 'https://step-to-dance.s3.ap-northeast-2.amazonaws.com/blue_check.mp4',
+  //   thumbnail_img_url: 'src/assets/thumbnail.png',
+  //   song_title: '노래 제목',
+  //   singer: '가수',
+  //   genre: 'Kpop',
+  //   rank: 1,
+  //   uploader: 'user123',
+  //   count_feedback: 5,
+  //   created_at: '2024-04-15T08:00:00Z',
+  // };
+  console.log(guideId)
+
+  useEffect(() => {
+    if (!guideId) {
+      setError('No Guide ID provided');
+      setLoading(false);
+      return;
+    }
+    const fetchData = async () => {
+      try {
+        const response = await getGuideDetail(guideId);
+        setVideoData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching guide detail:", error);
+        setError('Failed to load guide details');
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [guideId]);
+  
   const handlePlayPause = () => {
     if (ended) {
       playerRef.current.seekTo(0);
