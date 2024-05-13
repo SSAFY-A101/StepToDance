@@ -36,3 +36,9 @@
   width: 20vw;
   margin-top: 5vw;
 }
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+}
