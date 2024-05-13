@@ -131,38 +131,37 @@
   outline: none;
   border: none;
   border-radius: 500px;
-  width: 300px;
+  width: 100%;
   max-width: 100%;
-  margin: 12px 0 16px;
+  margin: 24px 0 16px;
   transition: box-shadow 0.2s ease-in-out;
   -webkit-appearance: none;
   background-color: #ddd;
   overflow: hidden;
-  height: 7px;
+  height: 5px;
 }
 
 .rangeSlider::-webkit-slider-runnable-track {
-  height: 40px;
+  height: 100%;
   -webkit-appearance: none;
   color: #444;
   transition: box-shadow 0.2s ease-in-out;
 }
 
 .rangeSlider::-webkit-slider-thumb {
-  width: 40px;
+  width: 10px;
   -webkit-appearance: none;
-  height: 40px;
+  height: 5px;
   cursor: ew-resize;
   background: #fff;
-  box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 40px #1597ff;
-  border-radius: 50%;
+  box-shadow: -400px 0 0 320px #1597ff, inset 0 0 0 40px #1597ff;
   transition: box-shadow 0.2s ease-in-out;
   position: relative;
 }
 
 .rangeSlider:active::-webkit-slider-thumb {
   background: #fff;
-  box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 3px #1597ff;
+  box-shadow: -400px 0 0 320px #1597ff, inset 0 0 0 3px #1597ff;
 }
 
 .rangeSlider::-moz-range-progress {
