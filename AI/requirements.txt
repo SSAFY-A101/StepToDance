@@ -13,6 +13,7 @@ python-dotenv
 python-multipart
 redis
 tensorflow
+tensorflow-docs
 tensorflow_hub
 matplotlib
 opencv-python
