@@ -9,13 +9,29 @@
 }
 
 .text-input {
-  width: 30%;
+  width: 35vw;
+	height: 2.5vh;
   padding: 5px;
   margin: 5px 5px;
   border-radius: 20px;
-  /* border: 0.05em solid ; */
-	background-color: #ffffff;
-	/* background-color: linear-gradient(#ffffff 33%,#414751 58%,#837b52,#c5baa1,#c3adaa); */
+  border: 0.05em solid black ;
+	/* background-image: linear-gradient(#ffffff 10%,#414751 34%,#c3adaa); */
+	background-color: #414751;
+  border: 0.15em solid #414751;
+	color: white;
+
+	-webkit-box-shadow: inset 0px 0px 0.5em 0px #414751,
+    0px 0px 0.5em 0px #414751;
+  -moz-box-shadow: inset 0px 0px 0.5em 0px #414751,
+    0px 0px 0.5em 0px #414751;
+  box-shadow: inset 0px 0px 0.5em 0px #414751,
+    0px 0px 0.5em 0px #414751;
+  animation: border-flicker 2s linear infinite;
+}
+
+.text-input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+	color: white;
+	opacity: 1; /* Firefox */
 }
 
 .input-section {
@@ -24,7 +40,6 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
-	
 }
 
 .guide-select {
@@ -56,7 +71,7 @@
 }
 
 .guide-submit {
-  padding: 10px 15px;
+  padding: 15px 15px;
 	background-color: #414751;
   border: 0.15em solid #414751;
 	border-radius: 30px;
@@ -110,6 +125,7 @@
 form {
 	display: flex;
 }
+
 
 label:first-child input {
 	border-radius: 0.5em 0 0 0.5em;
@@ -178,6 +194,7 @@ label:last-child input:checked {
 	-moz-appearance: none;
 	appearance: none;
 }
+
 .bar:checked {
 	background-image: linear-gradient(#ffffff 33%,#414751 58%,#827a7b,#c0b6ac,#c3adaa);
 	box-shadow:
@@ -196,6 +213,6 @@ label:last-child input:checked {
 	outline: transparent;
 }
 .bar + span {
-	opacity: 0.65;
+	opacity: 0.45;
 	transition: opacity var(--transDur) ease-in-out;
 }
