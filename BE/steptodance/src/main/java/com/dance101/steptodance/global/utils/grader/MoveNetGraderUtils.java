@@ -39,7 +39,7 @@ public class MoveNetGraderUtils implements GraderUtils<Double>{
 	public double getDeduct(List<List<Double>> guide, List<List<Double>> feedback) {
 		double sum = 0.0;
 		for (int i = 0; i < SIZE_OF_CRITERIA; i++) {
-			sum += Math.abs(getAngle(i, guide) - getAngle(i, feedback)) / 100;
+			sum += Math.abs(getAngle(i, guide) - getAngle(i, feedback)) / 2;
 		}
 		log.info("getDeduct: deduct( " + sum + " )");
 		return sum;

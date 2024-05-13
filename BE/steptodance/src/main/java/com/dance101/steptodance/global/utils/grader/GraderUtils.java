@@ -6,10 +6,10 @@ public interface GraderUtils<BodyType> {
 	double getDeduct(List<List<BodyType>> guide, List<List<BodyType>> feedback);
 
 	default double getScore(int start, int end, List<List<List<BodyType>>> guide, List<List<List<BodyType>>> feedback) {
-		double ans = 100;
+		double ans = 0;
 		for (int i = start; i < end; i++) {
-			ans -= getDeduct(guide.get(i), feedback.get(i));
+			ans += getDeduct(guide.get(i), feedback.get(i));
 		}
-		return Math.max(0, ans);
+		return Math.max(0, 100.0 - ans / (end - start));
 	}
 }
