@@ -8,6 +8,7 @@ const GuideUploadPage = () => {
   const [selectTitle, setSelectTitle] = useState("");
   const [videoDuration, setVideoDuration] = useState('00:00');
   const [artistName, setArtistName] = useState("");
+  const [selectedOption, setSelectedOption] = useState('1');  
   const videoRef = useRef(null);
   
 
@@ -24,7 +25,7 @@ const GuideUploadPage = () => {
       const reader = new FileReader();
       reader.onload = event => videoRef.current.src = event.target.result;
       reader.readAsDataURL(file);
-      setVideoDuration('00:00'); // Reset duration initially
+      setVideoDuration('00:00'); 
     }
   };
 
@@ -72,23 +73,23 @@ const GuideUploadPage = () => {
   return (
     <section className={styles["guide_upload-page"]}>
       <form>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked /><span>K-pop</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="2" /><span>B-boying</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="3" /><span>Hip-hop</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="4" /><span>Popping</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="5" /><span>Traditional</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked={selectedOption === '1'} onChange={handleOptionChange} /><span>K-pop</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="2" checked={selectedOption === '2'} onChange={handleOptionChange}/><span>B-boying</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="3" checked={selectedOption === '3'} onChange={handleOptionChange}/><span>Hip-hop</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="4" checked={selectedOption === '4'} onChange={handleOptionChange}/><span>Popping</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="5" checked={selectedOption === '5'} onChange={handleOptionChange}/><span>Traditional</span></label>
       </form>
       <div className={styles["input-section"]}>
         <input
           type="text"
-          placeholder="Enter song title"
+          placeholder="노래 제목"
           value={selectTitle}
           onChange={e => setSelectTitle(e.target.value)}
           className={styles["text-input"]}
         />
         <input
           type="text"
-          placeholder="Enter artist name"
+          placeholder="가수 이름"
           value={artistName}
           onChange={e => setArtistName(e.target.value)}
           className={styles["text-input"]}
@@ -134,7 +135,9 @@ const GuideUploadPage = () => {
         />
       </div>
       <button className={styles["guide-submit"]} onClick={() => sendApi()}>
-        <UploadIcon />
+        <UploadIcon 
+        style={{ color: "white" }}
+        />
       </button>
     </section>
   );
