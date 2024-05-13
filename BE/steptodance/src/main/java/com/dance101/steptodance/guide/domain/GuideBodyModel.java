@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "guide_body_model")
-public class GuideBodyModel {
+public class GuideBodyModel<T> {
 	@Field("guideId")
 	private long guideId;
 
@@ -23,10 +23,10 @@ public class GuideBodyModel {
 	private String id;
 
 	@Field("model")
-	List<List<List<Integer>>> models;
+	List<List<List<T>>> models;
 
 	@Builder
-	public GuideBodyModel(long guideId, List<List<List<Integer>>> models) {
+	public GuideBodyModel(long guideId, List<List<List<T>>> models) {
 		this.guideId = guideId;
 		this.models = models;
 	}
