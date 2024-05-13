@@ -137,11 +137,11 @@
   -webkit-appearance: none;
   background-color: #ddd;
   overflow: hidden;
-  height: 1.5vh;  
+  height: 2.5vh;
 }
 
 .rangeSlider::-webkit-slider-runnable-track {
-  height: 1.5vh;  
+  height: 2.5vh;
   -webkit-appearance: none;
   color: #444;
   transition: box-shadow 0.2s ease-in-out;
@@ -150,9 +150,9 @@
 
 
 .rangeSlider::-webkit-slider-thumb {
-  width: 7vw;  
+  width: 9vw;  
   -webkit-appearance: none;
-  height: 1.5vh;  
+  height: 2.5vh;  
   cursor: ew-resize;
   background: #fff;
   box-shadow: -320px 0 0 300px #1597ff, inset 0 0 0 20px #fff;
