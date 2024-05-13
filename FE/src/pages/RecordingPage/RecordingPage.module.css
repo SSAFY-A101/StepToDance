@@ -14,7 +14,7 @@
   position: absolute;
   border: 4px solid red;
   border-radius: 100%;
-  bottom: 1%;
+  bottom: 3%;
   left: 50%;
   transform: translateX(-50%);
   width: 3rem;
@@ -48,7 +48,7 @@
   width: 100%;
   height: 10vh;
   display: flex;
-  top: 10vh;
+  top: 20vh;
   position: absolute;
   justify-content: space-around;
   align-items: center;
@@ -126,6 +126,60 @@
   }
 }
 
+
+.rangeSlider {
+  outline: none;
+  border: none;
+  border-radius: 500px;
+  width: 300px;
+  max-width: 100%;
+  margin: 12px 0 16px;
+  transition: box-shadow 0.2s ease-in-out;
+  -webkit-appearance: none;
+  background-color: #ddd;
+  overflow: hidden;
+  height: 7px;
+}
+
+.rangeSlider::-webkit-slider-runnable-track {
+  height: 40px;
+  -webkit-appearance: none;
+  color: #444;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.rangeSlider::-webkit-slider-thumb {
+  width: 40px;
+  -webkit-appearance: none;
+  height: 40px;
+  cursor: ew-resize;
+  background: #fff;
+  box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 40px #1597ff;
+  border-radius: 50%;
+  transition: box-shadow 0.2s ease-in-out;
+  position: relative;
+}
+
+.rangeSlider:active::-webkit-slider-thumb {
+  background: #fff;
+  box-shadow: -340px 0 0 320px #1597ff, inset 0 0 0 3px #1597ff;
+}
+
+.rangeSlider::-moz-range-progress {
+  background-color: #43e5f7;
+}
+
+.rangeSlider::-moz-range-track {
+  background-color: #9a905d;
+}
+
+.rangeSlider::-ms-fill-lower {
+  background-color: #43e5f7;
+}
+
+.rangeSlider::-ms-fill-upper {
+  background-color: #9a905d;
+}
 
 .record-page {
   position: relative;
