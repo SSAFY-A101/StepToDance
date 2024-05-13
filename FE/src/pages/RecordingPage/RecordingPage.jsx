@@ -22,6 +22,7 @@ export const WebcamStreamCapture = () => {
   const canvasRef = useRef(null);
   const [showVideo, setShowVideo] = useState(true); // Set it true for testing
   const [isRecording, setIsRecording] = useState(false); // New state for recording status
+  const [isLoading, setIsLoading] = useState(false);
 
   
   useEffect(() => {
@@ -46,23 +47,23 @@ export const WebcamStreamCapture = () => {
     };
   }, []);
 
-  // const startRecording = () => {
-  //   navigator.mediaDevices
-  //     .getUserMedia({ video: true })
-  //     .then(function (stream) {
-  //       if (webcamRef.current) {
-  //         webcamRef.current.srcObject = stream;
-  //       }
-  //       const recorder = new RecordRTC(stream, {
-  //         type: "video",
-  //       });
-  //       recorder.startRecording();
-  //       setRecordRTC(recorder);
-  //     })
-  //     .catch(function (error) {
-  //       console.error("Error accessing the media devices.", error);
-  //     });
-  // };
+  const startRecording = () => {
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(function (stream) {
+        if (webcamRef.current) {
+          webcamRef.current.srcObject = stream;
+        }
+        const recorder = new RecordRTC(stream, {
+          type: "video",
+        });
+        recorder.startRecording();
+        setRecordRTC(recorder);
+      })
+      .catch(function (error) {
+        console.error("Error accessing the media devices.", error);
+      });
+  };
 
   const handleStartCaptureClick = useCallback(() => {
     setIsRecording(true);
@@ -83,14 +84,14 @@ export const WebcamStreamCapture = () => {
   }, [setIsRecording]);
 
 
-  // const handleDataAvailable = useCallback(
-  //   ({ data }) => {
-  //     if (data.size > 0) {
-  //       setRecordedChunks((prev) => prev.concat(data));
-  //     }
-  //   },
-  //   [setRecordedChunks]
-  // );
+  const handleDataAvailable = useCallback(
+    ({ data }) => {
+      if (data.size > 0) {
+        setRecordedChunks((prev) => prev.concat(data));
+      }
+    },
+    [setRecordedChunks]
+  );
 
   useEffect(() => {
     if (recordedChunks.length) {
@@ -142,20 +143,19 @@ export const WebcamStreamCapture = () => {
             autoPlay
           />
           <article className={styles["record-button"]}>
-            
             <div
               className={styles["record-button__cancle"]}
               onClick={reRecord}
               onTouchEnd={reRecord}
             >
-              <VideocamIcon/>
+              <VideocamIcon />
               다시촬영
             </div>
-            <div 
-            className={styles["record-button__save"]}>
-              <CheckIcon/>
+            <div className={styles["record-button__save"]} onClick={() => setIsLoading(!isLoading)}>
+              { !isLoading && <CheckIcon /> }
+              { isLoading && <div className={styles.spinner}></div> }
               평가하기
-              </div>
+            </div>
           </article>
         </>
       ) : (

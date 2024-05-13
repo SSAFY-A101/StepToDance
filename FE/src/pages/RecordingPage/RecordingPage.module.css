@@ -48,7 +48,7 @@
   width: 100%;
   height: 10vh;
   display: flex;
-  top: vh;
+  top: 10vh;
   position: absolute;
   justify-content: space-around;
   align-items: center;
@@ -65,15 +65,67 @@
 }
 
 .record-button__cancle {
-  background-color: #f44336;
-
+  appearance: none;
+  border: none;
+  font-size: inherit;
+  border-radius: 2em;
+  padding: 0.75em 1em;
+  background: var(--glow-color);;
+  border: 0.15em solid var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  cursor: wait;
 }
 
 .record-button__save {
-  background-color: #4caf50;
-
-
+  appearance: none;
+  border: none;
+  font-size: inherit;
+  border-radius: 2em;
+  padding: 0.75em 1em;
+  background: var(--glow1-color);;
+  border: 0.15em solid var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  cursor: wait;
 }
+
+.spinner {
+  position: relative;
+  display: inline-flex;
+  height: 1.25em; /* Adjusted for CSS */
+  width: 1.25em; 
+  margin-top: calc(1.25em * -0.5);
+  margin-right: calc(1.25em * -1); /* Adjusted for CSS */
+  margin-bottom: calc(1.25em * -0.5);
+  margin-left: 0; /* Adjusted for CSS */
+  box-sizing: border-box;
+  border: 0.125em solid rgba(255, 255, 255, 0.333);
+  border-top-color: white;
+  border-radius: 50%;
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.25s, margin-right 0.25s, margin-left 0.25s;
+}
+
+.record-button__save:hover .spinner,
+.record-button__save:focus .spinner,
+.record-button__save:active .spinner {
+  margin-right: 0.333em;
+  margin-left: 0.3em;
+  opacity: 1;
+  animation: spin 0.666s infinite linear;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 
 .record-page {
   position: relative;
