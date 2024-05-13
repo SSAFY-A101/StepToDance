@@ -54,7 +54,7 @@ function App() {
           <Route path="/shortsShare" element={<ShortsShare />} />
           <Route path="/withdraw" element={<WithDrawPage />} />
         </Route>
-        <Route path="/guideDetail" element={<GuideDetail />} />
+        <Route path="/guideDetail/:id" element={<GuideDetail />} />
         <Route path="/record" element={<WebcamStreamCapture />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
