@@ -2,14 +2,14 @@ import boto3
 from data.GuideRequest import GuideUpdateRequest
 from data.GuideUpdateMsg import GuideUpdateMsg
 from data.FeedbackUpdateMsg import FeedbackUpdateMsg
-import util.AiUtil as AiUtil
+import util.CaffeAiUtil as CaffeAiUtil
 import core.redis_config as redis_config
 from kafka_producer import send_data_to_kafka
 from json import *
 
 async def guideFrame(msgInstance: dict):
     guide = GuideUpdateMsg(msgInstance)
-    bodyModel = AiUtil.imgToBodyModelCaffe(guide.image)
+    bodyModel = CaffeAiUtil.imgToBodyModelCaffe(guide.image)
     redis = redis_config.get_redis()
     if redis == None:
         redis = redis_config.redis_config()
@@ -26,7 +26,7 @@ async def guideFrame(msgInstance: dict):
 
 async def feedbackFrame(msgInstance: dict):
     feedback = FeedbackUpdateMsg(msgInstance)
-    bodyModel = AiUtil.imgToBodyModelCaffe(feedback.image)
+    bodyModel = CaffeAiUtil.imgToBodyModelCaffe(feedback.image)
     redis = redis_config.get_redis()
     if redis == None:
         redis = redis_config.redis_config()
