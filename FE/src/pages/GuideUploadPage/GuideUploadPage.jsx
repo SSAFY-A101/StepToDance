@@ -6,7 +6,11 @@ const GuideUploadPage = () => {
   const [selectVideo, setSelectVideo] = useState(null);
   const [selectTitle, setSelectTitle] = useState("");
   const videoRef = useRef(null);
-
+  const [selectedOption, setSelectedOption] = useState('a');
+  
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+  };
   const changeHandler = (e) => {
     setSelectTitle(e.target.files[0].name);
     setSelectVideo(e.target.files[0]);
@@ -17,6 +21,8 @@ const GuideUploadPage = () => {
       videoRef.current.src = event.target.result;
     };
 
+
+    
     reader.readAsDataURL(e.target.files[0]);
   };
 
@@ -58,13 +64,67 @@ const GuideUploadPage = () => {
 
   return (
     <section className={styles["guide_upload-page"]}>
-      <select className={styles["guide-select"]} name="gen" id="">
-        <option value="1">K-pop</option>
-        <option value="2">B-boying</option>
-        <option value="3">Hip-hop</option>
-        <option value="4">Popping</option>
-        <option value="5">Korean dance</option>
-      </select>
+      {/* <select className={styles["guide-select"]} name="genre" id="genre-select">
+        <option className={styles["track-item"]} value="1">K-pop</option>
+        <option className={styles["track-item"]} value="2">B-boying</option>
+        <option className={styles["track-item"]} value="3">Hip-hop</option>
+        <option className={styles["track-item"]} value="4">Popping</option>
+        <option className={styles["track-item"]} value="5">Traditional</option>
+      </select> */}
+      <input
+        className={styles["track-item"]}
+        id="a"
+        type="radio"
+        name="dummy"
+        value="a"
+        checked={selectedOption === 'a'}
+        onChange={handleOptionChange}
+      />
+      <label className={styles["track-label"]} htmlFor="a">A</label>
+
+      <input
+        className={styles["track-item"]}
+        id="b"
+        type="radio"
+        name="dummy"
+        value="b"
+        checked={selectedOption === 'b'}
+        onChange={handleOptionChange}
+      />
+      <label className={styles["track-label"]} htmlFor="b">B</label>
+
+      <input
+        className={styles["track-item"]}
+        id="c"
+        type="radio"
+        name="dummy"
+        value="c"
+        checked={selectedOption === 'c'}
+        onChange={handleOptionChange}
+      />
+      <input className={styles["track-item"]} id="d" type="radio" name="dummy" value="d" checked={selectedOption === 'd'} onChange={handleOptionChange}/>
+      <label className={styles["track-label"]} htmlFor="d">D</label>
+
+      <input className={styles["track-item"]} id="e" type="radio" name="dummy" value="e" checked={selectedOption === 'e'} onChange={handleOptionChange}/>
+      <label className={styles["track-label"]} htmlFor="e">E</label>
+
+      <label className={styles["track-label"]} htmlFor="c">C</label>
+          <div className={styles["track"]}>
+          <div className={styles["track__inner"]}>
+            <div className={styles["track__ball-hole"]}>
+              <div className={styles["track__ball"]}></div>
+            </div>
+            <span className={styles["track__separator"]}></span>
+            <div className={styles["track__ball-hole"]}>
+              <div className={styles["track__ball"]}></div>
+            </div>
+            <span className={styles["track__separator"]}></span>
+            <div className={styles["track__ball-hole"]}>
+              <div className={styles["track__ball"]}></div>
+            </div>
+            <div className={styles["track__ball"]}></div>
+          </div>
+        </div>
       <article className={styles["guide-video"]}>
         {selectVideo ? (
           <>
