@@ -7,7 +7,7 @@ import com.dance101.steptodance.shortform.data.request.ShortformUploadMultipartR
 import com.dance101.steptodance.shortform.data.response.ShortformFindResponse;
 
 public interface ShortformService {
-	void shortformUploadFile(long userId, ShortformUploadMultipartRequest request);
+	Long shortformUploadFile(long userId, ShortformUploadMultipartRequest request);
 
 	ShortformFindResponse findShortform(long shortformId);
 
