@@ -8,6 +8,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 import CheckIcon from '@mui/icons-material/Check';
 
 export const WebcamStreamCapture = () => {
+  const [layout, setLayout] = useState('overlay');
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
   const webcamRef = useRef(null);
@@ -22,7 +23,14 @@ export const WebcamStreamCapture = () => {
   const canvasRef = useRef(null);
   const [showVideo, setShowVideo] = useState(true); // Set it true for testing
   const [isRecording, setIsRecording] = useState(false); // New state for recording status
+  const [isLoading, setIsLoading] = useState(false);
 
+  const handleSliderChange = (e) => {
+    const newOpacity = e.target.value;
+    setPlayerOpacity(newOpacity);
+    const hueRotation = newOpacity * 360; // Adjust the rotation scale if necessary
+    document.documentElement.style.setProperty('--slider-hue', `${hueRotation}deg`);
+  };
   
   useEffect(() => {
     const handleResize = () => {
@@ -142,20 +150,19 @@ export const WebcamStreamCapture = () => {
             autoPlay
           />
           <article className={styles["record-button"]}>
-            
             <div
               className={styles["record-button__cancle"]}
               onClick={reRecord}
               onTouchEnd={reRecord}
             >
-              <VideocamIcon/>
+              <VideocamIcon />
               다시촬영
             </div>
-            <div 
-            className={styles["record-button__save"]}>
-              <CheckIcon/>
+            <div className={styles["record-button__save"]} onClick={() => setIsLoading(!isLoading)}>
+              { !isLoading && <CheckIcon /> }
+              { isLoading && <div className={styles.spinner}></div> }
               평가하기
-              </div>
+            </div>
           </article>
         </>
       ) : (
@@ -168,7 +175,7 @@ export const WebcamStreamCapture = () => {
             muted
             controls
             width={widthSize}
-            height={heightSize * 0.8}
+            height={heightSize * 0.75}
             autoPlay
             style={{
               position: "absolute",
@@ -188,7 +195,7 @@ export const WebcamStreamCapture = () => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             width={widthSize}
-            height={heightSize * 0.8}
+            height={heightSize * 0.75}
             mirrored={true}
             videoConstraints={{
               facingMode: "user",
@@ -201,13 +208,14 @@ export const WebcamStreamCapture = () => {
             max="1"
             step="0.1"
             value={playerOpacity}
-            onChange={(e) => setPlayerOpacity(e.target.value)}
+            onChange={handleSliderChange}
+            className={styles.rangeSlider}
             style={{
               position: "absolute",
               zIndex: 2,
               left: "10px",
               top: "10px",
-            }}
+              filter: `hue-rotate(${playerOpacity * 360}deg)`              }}
           />
           {capturing ? (
             <article className={styles["record-btn"]}>

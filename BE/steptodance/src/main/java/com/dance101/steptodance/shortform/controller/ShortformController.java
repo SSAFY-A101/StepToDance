@@ -51,7 +51,7 @@ public class ShortformController {
 		// @AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute ShortformUploadMultipartRequest request
 	){
-		// shortformService.shortformUploadFile(securityUser, request);
+		// Long response = shortformService.shortformUploadFile(securityUser, request);
 		Long response = shortformService.shortformUploadFile(2L, request);
 		return ApiResponse.toResponse(CREATED, SUCCESS_SHORTS_CREATION, response);
 	}

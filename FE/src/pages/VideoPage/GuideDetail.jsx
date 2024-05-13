@@ -8,8 +8,10 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import ReplayIcon from '@mui/icons-material/Replay';
 import { useNavigate } from "react-router-dom";
 import VideocamIcon from '@mui/icons-material/Videocam';
+import { getGuideDetail } from "../../api/GuideApis";
 
 const GuideDetail = () => {
+  
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [played, setPlayed] = useState(0);

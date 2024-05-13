@@ -1,6 +1,3 @@
-# import tensorflow as tf
-# import numpy as np
-# from matplotlib import pyplot as plt
 import cv2
 import boto3
 import os
@@ -16,17 +13,8 @@ def aiUtilInit():
     global protoFile, weightsFile, net
     net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 
-    
 
-def get_s3_client():
-    s3 = boto3.client('s3',
-                      aws_access_key_id=os.environ['S3_ACCESS_KEY'],
-                      aws_secret_access_key=os.environ['S3_SECRET_ACCESS_KEY'],
-                      region_name='ap-northeast-2'
-                      )
-    return s3
-
-def imgToBodyModelCaffe(image):
+def imgToBodyModel(image):
     global net
     print("imgToBodyModel: " , image[:10])
     # 이미지를 opencv 형식으로 변환

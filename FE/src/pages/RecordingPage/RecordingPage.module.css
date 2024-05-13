@@ -14,7 +14,7 @@
   position: absolute;
   border: 4px solid red;
   border-radius: 100%;
-  bottom: 1%;
+  bottom: 3%;
   left: 50%;
   transform: translateX(-50%);
   width: 3rem;
@@ -48,7 +48,7 @@
   width: 100%;
   height: 10vh;
   display: flex;
-  top: vh;
+  top: 20vh;
   position: absolute;
   justify-content: space-around;
   align-items: center;
@@ -65,15 +65,123 @@
 }
 
 .record-button__cancle {
-  background-color: #f44336;
-
+  appearance: none;
+  border: none;
+  font-size: inherit;
+  border-radius: 2em;
+  padding: 0.75em 1em;
+  background: var(--glow-color);;
+  border: 0.15em solid var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  cursor: wait;
 }
 
 .record-button__save {
-  background-color: #4caf50;
-
-
+  appearance: none;
+  border: none;
+  font-size: inherit;
+  border-radius: 2em;
+  padding: 0.75em 1em;
+  background: var(--glow1-color);;
+  border: 0.15em solid var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  cursor: wait;
 }
+
+.spinner {
+  position: relative;
+  display: inline-flex;
+  height: 1.25em; /* Adjusted for CSS */
+  width: 1.25em; 
+  margin-top: calc(1.25em * -0.5);
+  margin-right: calc(1.25em * -1); /* Adjusted for CSS */
+  margin-bottom: calc(1.25em * -0.5);
+  margin-left: 0; /* Adjusted for CSS */
+  box-sizing: border-box;
+  border: 0.125em solid rgba(255, 255, 255, 0.333);
+  border-top-color: white;
+  border-radius: 50%;
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.25s, margin-right 0.25s, margin-left 0.25s;
+}
+
+.record-button__save:hover .spinner,
+.record-button__save:focus .spinner,
+.record-button__save:active .spinner {
+  margin-right: 0.333em;
+  margin-left: 0.3em;
+  opacity: 1;
+  animation: spin 0.666s infinite linear;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.rangeSlider {
+  outline: none;
+  border: none;
+  border-radius: 500px;
+  width: 95vw;
+  max-width: 98vw;
+  margin: 24px 0 16px;
+  transition: box-shadow 0.2s ease-in-out;
+  -webkit-appearance: none;
+  background-color: #ddd;
+  overflow: hidden;
+  height: 2.5vh;
+}
+
+.rangeSlider::-webkit-slider-runnable-track {
+  height: 2.5vh;
+  -webkit-appearance: none;
+  color: #444;
+  transition: box-shadow 0.2s ease-in-out;
+  background-color: #ccc; 
+}
+
+
+.rangeSlider::-webkit-slider-thumb {
+  width: 9vw;  
+  -webkit-appearance: none;
+  height: 2.5vh;  
+  cursor: ew-resize;
+  background: #fff;
+  box-shadow: -320px 0 0 300px #1597ff, inset 0 0 0 20px #fff;
+  border-radius: 50%;
+  transition: box-shadow 0.5s ease-in-out;
+  position: relative;
+}
+
+.rangeSlider:active::-webkit-slider-thumb {
+  background: #fff;
+  box-shadow: -320px 0 0 300px #1597ff, inset 0 0 0 3px #1597ff; 
+}
+
+.rangeSlider::-moz-range-progress {
+  background-color: #43e5f7; 
+}
+
+.rangeSlider::-moz-range-track {
+  background-color: #9a905d; 
+}
+
+.rangeSlider::-ms-fill-lower {
+  background-color: #43e5f7; 
+}
+
+.rangeSlider::-ms-fill-upper {
+  background-color: #9a905d; 
+}
+
 
 .record-page {
   position: relative;
