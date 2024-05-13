@@ -13,11 +13,18 @@ export const getGuideList = async () => {
 export const guideUpload = async (formData) => {
   delete customAxios.defaults.headers["Content-Type"];
   try {
-    const response = await customAxios.post(
-      `guides/file`,
+    const response = await customAxios.post(`guides/file`, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching guide list:", error);
+    throw error;
+  }
+};
 
-      formData
-    );
+export const guideResult = async (formData) => {
+  delete customAxios.defaults.headers["Content-Type"];
+  try {
+    const response = await customAxios.post(`guides/142`, formData);
     return response.data;
   } catch (error) {
     console.error("Error fetching guide list:", error);

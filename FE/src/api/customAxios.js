@@ -11,10 +11,13 @@ const customAxios = axios.create({
     "Content-Type": "application/json",
   },
 });
+customAxios.defaults.headers.common[
+  "Authorization"
+] = `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkIjoxNzE1NTU5OTAyNDExLCJpZCI6NCwiZXhwaXJlc0luIjoyNTkyMDAwMDAwLCJhdXRoIjoiQVVUSE9SSVRZIiwiZXhwIjoxNzE4MTUxOTAyfQ.Jzxuz-tI-ChOfupC1XdjE-gLgOC0BuTnTNQQ9HbHdTs`;
 
-if (accessToken) {
-  customAxios.defaults.headers.common["Authorization"] =
-    `Bearer ` + accessToken;
-}
+// if (accessToken) {
+//   customAxios.defaults.headers.common["Authorization"] =
+//     `Bearer ` + accessToken;
+// }
 
 export { customAxios };
