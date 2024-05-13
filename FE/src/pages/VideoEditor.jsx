@@ -7,6 +7,8 @@ import styles from "../styles/VideoEditor.module.css";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import { uploadShortform } from '../api/ShortformApis';
+import { useNavigate } from "react-router-dom"
+import { bool } from 'prop-types';
 
 let ffmpeg; 
 function VideoEditor() {
@@ -22,6 +24,7 @@ function VideoEditor() {
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef();
   let initialSliderValue = 0;
+  const navigate = useNavigate();
 
   const reset = () => {
     setStartTime(0);
@@ -153,6 +156,7 @@ function VideoEditor() {
         await window.FFmpeg.fetchFile(videoFileValue),
       );
       const videoFileType = type.split('/')[1];
+      console.log("비디오타입:",videoFileType);
       await ffmpeg.run(
         '-i',
         name,
@@ -166,22 +170,44 @@ function VideoEditor() {
         'copy',
         `out.${videoFileType}`,
       );
+
       const data = ffmpeg.FS('readFile', `out.${videoFileType}`);
-      const url = URL.createObjectURL(
-        new Blob([data.buffer], { type: videoFileValue.type }),
-      );
-      setVideoTrimmedUrl(url);
-      console.log("url",videoTrimmedUrl);
-      setVideoTrimmed(new File([videoTrimmedUrl], "shortform.mp4", {type:'video/mp4'}));
-      console.log("video",videoTrimmed);
+      const blob = new Blob([data.buffer], { type: `video/${videoFileType}` });
+
+      setVideoTrimmed(blob);
+      setVideoTrimmedUrl(URL.createObjectURL(blob));
+
+      // console.log("data", data);
+      // console.log("videoTrimmed",videoTrimmed);
+      // console.log("videoTrimmedUrl",videoTrimmedUrl,"아아");
     }
   };
 
+  // const createShortform = () => {
+  //   // videoTrimmedUrl이 존재하는지 확인
+  //   if (videoTrimmedUrl) {
+  //     // <a> 엘리먼트를 생성하여 다운로드
+  //     const a = document.createElement('a');
+  //     a.href = videoTrimmedUrl;
+  //     a.download = 'test.mp4'; // 파일명 설정
+  //     document.body.appendChild(a);
+  //     a.click(); // 클릭 이벤트를 발생시켜 다운로드
+  //     // <a> 엘리먼트 제거
+  //     document.body.removeChild(a);
+  //   }
+  // };
+  
+  
+
   const createShortform = async () => {
     try {
-      console.log('파일 업로드하자:',videoTrimmed);
+      
       const response = await uploadShortform(1,videoTrimmed);
       console.log('Shortform created successfully:', response);
+      navigate(`/shortsShare?id=${response.data}`);
+
+      console.log("videoTrimmed",videoTrimmed);
+      console.log("videoTrimmedUrl",videoTrimmedUrl);
     } catch (error) {
       // 업로드 과정에서 발생한 에러를 처리합니다.
       console.error('Error creating shortform:', error);
@@ -227,9 +253,8 @@ function VideoEditor() {
               <video style={{maxWidth:'100%', height:'auto'}} controls>
                 <source src={videoTrimmedUrl} type={videoFileValue.type} />
               </video>
-              <Link to={{ pathname:'/shortsShare', state:[{videourl: videoTrimmedUrl},{videoFileValue: videoFileValue.type}]}}>
                 <div style={{color:"white"}} onClick={createShortform}>완성</div>
-              </Link>
+
             </div>
           )}
         </React.Fragment>
