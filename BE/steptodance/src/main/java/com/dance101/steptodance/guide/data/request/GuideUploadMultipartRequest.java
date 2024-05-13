@@ -13,7 +13,7 @@ import lombok.Data;
 public class GuideUploadMultipartRequest implements Serializable {
 	private long genre_id;
 
-	private String song_name;
+	private String song_title;
 
 	private String singer;
 

@@ -85,7 +85,7 @@ public class GuideServiceImpl implements GuideService{
 		Guide guide = Guide.builder()
 			.genre(genre)
 			.singer(request.getSinger())
-			.songTitle(request.getSong_name())
+			.songTitle(request.getSong_title())
 			.highlightSectionStartAt(request.getHighlight_section_start_at())
 			.highlightSectionEndAt(request.getHighlight_section_end_at())
 			.user(user)
