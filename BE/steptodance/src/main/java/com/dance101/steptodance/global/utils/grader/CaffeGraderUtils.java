@@ -43,7 +43,7 @@ public class CaffeGraderUtils implements GraderUtils{
 	public double getDeduct(List<List<Integer>> guide, List<List<Integer>> feedback) {
 		double sum = 0.0;
 		for (int i = 0; i < SIZE_OF_CRITERIA; i++) {
-			sum += Math.abs(getAngle(i, guide) - getAngle(i, feedback)) / 2;
+			sum += Math.abs(getAngle(i, guide) - getAngle(i, feedback)) / 100;
 		}
 		log.info("getDeduct: deduct( " + sum + " )");
 		return sum;
