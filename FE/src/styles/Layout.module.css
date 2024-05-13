@@ -38,10 +38,6 @@
 
 .spinner {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   position: absolute;
-  left: 1.5%;
-  top: 3%;
-  width: 20vw;
-  margin-top: 5vw;
 }
