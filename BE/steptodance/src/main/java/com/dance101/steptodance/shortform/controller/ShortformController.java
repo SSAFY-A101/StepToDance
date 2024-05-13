@@ -47,13 +47,13 @@ public class ShortformController {
 	}
 
 	@PostMapping(value="/file", consumes = "multipart/form-data")
-	public ResponseEntity<ApiResponse<Void>> uploadShortform(
+	public ResponseEntity<ApiResponse<Long>> uploadShortform(
 		// @AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute ShortformUploadMultipartRequest request
 	){
 		// shortformService.shortformUploadFile(securityUser, request);
-		shortformService.shortformUploadFile(2L, request);
-		return ApiResponse.toEmptyResponse(CREATED, SUCCESS_SHORTS_CREATION);
+		Long response = shortformService.shortformUploadFile(2L, request);
+		return ApiResponse.toResponse(CREATED, SUCCESS_SHORTS_CREATION, response);
 	}
 
 	@DeleteMapping("/{shortform_id}")
