@@ -13,9 +13,7 @@ const GuideUploadPage = () => {
   const [selectedOption, setSelectedOption] = useState('1');  
   const [highlights, setHighlights] = useState([{ start: '00:00', end: '00:00' }]);
   const videoRef = useRef(null);
-  
 
-  
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
@@ -44,7 +42,6 @@ const GuideUploadPage = () => {
     return `${minutes}:${seconds}`;
   }
 
-
   const handleHighlightChange = (index, field, value) => {
     const newHighlights = highlights.map((highlight, i) => {
       if (i === index) {
@@ -55,47 +52,88 @@ const GuideUploadPage = () => {
     setHighlights(newHighlights);
   };
 
-
   const sendApi = async () => {
-    let start_time_str = "11:22";
-    let end_time_str = "12:22";
-
-    // 시간을 포함한 현재 날짜를 생성
-    let current_date = new Date();
-
-    // 시작 시간 설정
-    let start_time_parts = start_time_str.split(":");
-    current_date.setHours(parseInt(start_time_parts[0]));
-    current_date.setMinutes(parseInt(start_time_parts[1]));
-    let start_time = current_date;
-
-    // 종료 시간 설정
-    let end_time_parts = end_time_str.split(":");
-    current_date.setHours(parseInt(end_time_parts[0]));
-    current_date.setMinutes(parseInt(end_time_parts[1]));
-    let end_time = current_date;
-
     const formData = new FormData();
     formData.append("genre_id", selectedOption);
     formData.append("song_title", selectTitle);
     formData.append("singer", artistName);
-    highlights.forEach((highlight, index) => {
-      formData.append(`highlight_${index}_start`, highlight.start);
-      formData.append(`highlight_${index}_end`, highlight.end);
+    highlights.forEach((highlight) => {
+      formData.append(`highlight_section_start`, highlight.start);
+      formData.append(`highlight_section_end`, highlight.end);
     });
     formData.append("video", selectVideo);
-    const response = await guideUpload(formData);
-    console.log(response);
+
+    try {
+      const response = await guideUpload(formData);
+      console.log(response);
+      if (response.status === 201) {
+        alert("가이드 업로드 성공!");
+        window.location.reload(); // Reload the page
+      }
+    } catch (error) {
+      console.error("Error uploading guide:", error);
+      alert("가이드 업로드 실패!");
+    }
   };
 
   return (
     <section className={styles["guide_upload-page"]}>
       <form>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked={selectedOption === '1'} onChange={handleOptionChange} /><span>케이팝</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="2" checked={selectedOption === '2'} onChange={handleOptionChange}/><span>비보잉</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="3" checked={selectedOption === '3'} onChange={handleOptionChange}/><span>힙합</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="4" checked={selectedOption === '4'} onChange={handleOptionChange}/><span>팝핑</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="5" checked={selectedOption === '5'} onChange={handleOptionChange}/><span>전통무용</span></label>
+        <label>
+          <input
+            className={styles["bar"]}
+            type="radio"
+            name="genre"
+            value="1"
+            checked={selectedOption === '1'}
+            onChange={handleOptionChange}
+          />
+          <span>케이팝</span>
+        </label>
+        <label>
+          <input
+            className={styles["bar"]}
+            type="radio"
+            name="genre"
+            value="2"
+            checked={selectedOption === '2'}
+            onChange={handleOptionChange}
+          />
+          <span>비보잉</span>
+        </label>
+        <label>
+          <input
+            className={styles["bar"]}
+            type="radio"
+            name="genre"
+            value="3"
+            checked={selectedOption === '3'}
+            onChange={handleOptionChange}
+          />
+          <span>힙합</span>
+        </label>
+        <label>
+          <input
+            className={styles["bar"]}
+            type="radio"
+            name="genre"
+            value="4"
+            checked={selectedOption === '4'}
+            onChange={handleOptionChange}
+          />
+          <span>팝핑</span>
+        </label>
+        <label>
+          <input
+            className={styles["bar"]}
+            type="radio"
+            name="genre"
+            value="5"
+            checked={selectedOption === '5'}
+            onChange={handleOptionChange}
+          />
+          <span>전통무용</span>
+        </label>
       </form>
       <div className={styles["input-section"]}>
         <input
@@ -121,7 +159,7 @@ const GuideUploadPage = () => {
               ref={videoRef}
               controls
               autoPlay
-              onLoadedMetadata={handleLoadedMetadata}  // Get video duration when metadata is loaded
+              onLoadedMetadata={handleLoadedMetadata}
             ></video>
           </>
         ) : (
@@ -154,10 +192,12 @@ const GuideUploadPage = () => {
           />
         </div>
       ))}
-      <button className={styles["guide-submit"]} onClick={() => sendApi()}>
-        <UploadIcon 
-        style={{ color: "white" }}
-        />
+      <button
+        type="button"
+        className={styles["guide-submit"]}
+        onClick={sendApi}
+      >
+        <UploadIcon style={{ color: "white" }} />
       </button>
     </section>
   );
