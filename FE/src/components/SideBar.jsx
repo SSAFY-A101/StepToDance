@@ -25,7 +25,7 @@ const SideBar = () => {
 
   const MenuList = [
     { name: "Home", path: "/home" },
-    { name: "Video Editer", path: "/videoeditor" },
+    { name: "Video Editor", path: "/videoeditor" },
     { name: "ShortForm", path: "/showShortForm" },
     { name: "Ranking", path: "/ranking" },
     { name: "My Page", path: "/mypage" },
