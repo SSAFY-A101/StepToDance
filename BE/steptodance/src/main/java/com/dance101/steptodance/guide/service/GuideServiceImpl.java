@@ -111,6 +111,7 @@ public class GuideServiceImpl implements GuideService{
 			guide.addThumbnail(url);
 		} catch (Exception e) {
 			guideRepository.delete(guide);
+			e.printStackTrace();
 			throw new ExternalServerException("GuideServiceImpl:guidUpload", GUIDE_UPLOAD_FAILED);
 		}
 
