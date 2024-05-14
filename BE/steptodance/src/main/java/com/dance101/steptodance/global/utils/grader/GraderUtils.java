@@ -12,6 +12,6 @@ public interface GraderUtils<BodyType> {
 		}
 		System.out.println("totalDeduct = " + ans);
 		System.out.println("totalDeduct / size = " + ans / (end - start));
-		return Math.max(0, 100.0 - ans / (end - start));
+		return ans / (end - start) * 100;
 	}
 }
