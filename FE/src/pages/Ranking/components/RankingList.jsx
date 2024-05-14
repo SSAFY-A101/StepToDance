@@ -6,10 +6,10 @@ const RankingList = ({ id, ranking, name, score }) => {
 
   const handleClick = (index) => {
     navigate(`/userPage/${index}`);
-    }
+  };
 
   return (
-    <div className={styles["ranking"]} onClick={handleClick(id)}>
+    <div className={styles["ranking"]} onClick={() => handleClick(id)}>
       <span className={styles["ranking-rank"]}>{ranking}등</span>
       <span className={styles["ranking-name"]}>{name}</span>
       <span className={styles["ranking-score"]}>{score}점</span>
