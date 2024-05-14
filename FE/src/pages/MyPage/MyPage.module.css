@@ -1,15 +1,22 @@
+.safeArea {
+  height: calc(100vh - 11.5rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .title {
   color: white;
   display: flex;
   justify-content: center;
-  margin-top: 15vh;
+  font-size: 2rem;
+  font-family: "esamanru-Bold";
 }
 
 .mainView {
+  margin-top: 3vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem 0 0.75rem;
   z-index: 2;
 }
 
@@ -17,12 +24,11 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 1.25rem;
 }
 
 .profileImage {
   width: 10vw; /* 150px */
-  height: 5vh; /* 100px */
+  height: 10vw;  /* 100px */
   border-radius: 50%;
 }
 
@@ -40,7 +46,7 @@
   font-size: 1.5rem;
   font-weight: bold;
   color: #fff;
-  margin-top: 6.875rem; /* 110px */
+  margin-top: 3rem;
 }
 
 .rankAndPoints {
@@ -49,23 +55,109 @@
   text-align: center;
 }
 
+.subtitle {
+  color: var(--glow1-color);
+  position: relative;
+  font-size: 1.4rem;
+  font-family: "esamanru-Medium";
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 2vh;
+  /* border: 0.15em solid var(--glow1-color); */
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+}
+
+.subtitle_shorts {
+  color: var(--glow-color);
+  position: relative;
+  font-size: 1.4rem;
+  font-family: "esamanru-Medium";
+  border-radius: 10px;
+  padding: 10px;
+  /* border: 0.15em solid var(--glow1-color); */
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  margin-top: 5vh;
+}
+
+
+.feedbackList, .shortsList {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.feedbackItem {
+  border: 0.15em solid var(--glow1-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  background-color: hsl(212, 100%, 64%);
+  border-radius: 10px;
+  padding: 0.5rem;
+  margin-left: 7px;
+  margin-right: 7px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shortsItem{
+  border: 0.15em solid var(--glow-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  background-color: var(--glow-color);
+  border-radius: 10px;
+  padding: 0.5rem;
+  margin-left: 7px;
+  margin-right: 7px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.guideDetail {
+  font-size: 1rem;
+  color:black;
+  font-family: "esamanru-Medium";
+}
+
+.videoDate {
+  font-size: 0.8rem;
+  margin-bottom: 0.8vh;
+}
+.thumbnailImage, .videoThumbnail {
+  width: 120%;
+  margin-bottom: 0.5rem;
+}
+
 /* Media Queries */
 
 /* Smaller devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
   .profileImage {
-    width: 7.5rem; /* 120px */
-    height: 7.5rem; /* 120px */
+    width: 7.5rem; 
+    height: 7.5rem;
   }
 
   .username {
-    font-size: 1.2rem; /* Slightly smaller font size */
-    margin-top: 5rem; /* Less margin */
+    font-size: 1.5rem;
+    margin-top: 5vh;
+    margin-bottom: 1vh;
   }
 
   .logoutButton {
-    padding: 0.5rem 1rem; /* Smaller padding */
-    font-size: 0.9rem; /* Smaller font size */
+    padding: 0.5rem 1rem; 
+    font-size: 0.9rem;
+    font-family: "WavvePADO-Regular";
   }
 
   .mainView {
