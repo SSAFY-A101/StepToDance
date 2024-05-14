@@ -6,6 +6,7 @@ import styles from "./MyPage.module.css"; // Import CSS module
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUserDatas } from "../../api/UserApis";
+import { getFeedbackDetail } from "../../api/FeedbackApis";
 import ReactPlayer from "react-player";
 
 const MyPage = () => {
@@ -16,16 +17,19 @@ const MyPage = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [shortsList, setShortsList] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
+  const [loading, setLoading] = useState(false);
+  const [feedbackPage, setFeedbackPage] = useState(0);
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
 
-  const limit = 5;
-  const offset = 0;
+  const limit = 3;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getUserDatas(limit, offset);
+        const data = await getUserDatas(limit, 0);
         setProfile(data.data.user || {});
-        setFeedbackList(data.data.feedback_list.slice(0, 3) || []);
+        setFeedbackList(data.data.feedback_list || []);
+        console.log(data.data.shortform_list[0])
         setShortsList(data.data.shortform_list.slice(0, 3) || []);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -34,6 +38,29 @@ const MyPage = () => {
 
     fetchData();
   }, []);
+
+  const fetchMoreFeedbacks = async () => {
+    try {
+      setLoading(true);
+      const data = await getUserDatas(limit, (feedbackPage + 1) * limit);
+      setFeedbackList((prevFeedback) => [...prevFeedback, ...data.data.feedback_list]);
+      setFeedbackPage((prevPage) => prevPage + 1);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching more feedbacks:", error);
+      setLoading(false);
+    }
+  };
+
+  const fetchFeedbackDetail = async (feedbackId) => {
+    try {
+      const data = await getFeedbackDetail(feedbackId);
+      setSelectedFeedback(data.data.feedback);
+      console.log(data)
+    } catch (error) {
+      console.error("Error fetching feedback detail:", error);
+    }
+  };
 
   const signOut = async () => {
     try {
@@ -81,6 +108,24 @@ const MyPage = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop !==
+          document.documentElement.offsetHeight ||
+        loading
+      ) {
+        return;
+      }
+      if (activeTab === "feedback") {
+        fetchMoreFeedbacks();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loading, activeTab]);
+
   return (
     <div className={styles.safeArea}>
       <div className={styles.title}>MYPAGE</div>
@@ -103,51 +148,86 @@ const MyPage = () => {
       <nav className={styles.nav} id="js-nav">
         <div id="js-pointer" className={styles.nav__pointer}></div>
         <ul className={styles.nav__list}>
-          <li><a href="#" onClick={() => setActiveTab("home")}>Home</a></li>
-          <li><a href="#" onClick={() => setActiveTab("feedback")}>Feedback</a></li>
-          <li><a href="#" onClick={() => setActiveTab("shorts")}>Shorts</a></li>
+          <li>
+            <a href="#" onClick={() => setActiveTab("home")}>
+              Home
+            </a>
+          </li>
+          <li>
+            <a href="#" onClick={() => setActiveTab("feedback")}>
+              Feedback
+            </a>
+          </li>
+          <li>
+            <a href="#" onClick={() => setActiveTab("shorts")}>
+              Shorts
+            </a>
+          </li>
         </ul>
       </nav>
       <div className={styles.card}>
         <section className={styles.content}>
           {activeTab === "home" && (
             <div className={styles.item}>
-              <h2 className={`${styles.tabTitle} ${styles.tabPrimary}`}>Home</h2>
+              <h2 className={`${styles.tabTitle} ${styles.tabPrimary}`}>
+                Home
+              </h2>
               <p>Welcome to your profile!</p>
             </div>
           )}
           {activeTab === "feedback" && (
             <div className={styles.item}>
-              <h2 className={`${styles.tabTitle} ${styles.tabSuccess}`}>Feedbacks</h2>
+              <h2 className={`${styles.tabTitle} ${styles.tabSuccess}`}>
+                피드백 영상
+              </h2>
               <div className={styles.feedbackList}>
                 {feedbackList.length > 0 ? (
                   feedbackList.map((feedback) => (
-                    <div key={feedback.id} className={styles.feedbackItem}>
-                      <div className={styles.videoDate}>{new Date(feedback.created_at).toLocaleDateString()}</div>
-                      <img src={feedback.thumbnail_img_url} alt="Thumbnail" className={styles.thumbnailImage} />
-                      <div className={styles.guideDetail}>{feedback.guide_title} - {feedback.guide_singer}</div>
+                    <div 
+                      key={feedback.id} 
+                      className={styles.feedbackItem}
+                      onClick={() => fetchFeedbackDetail(feedback.id)}
+                    >
+                      <div className={styles.videoDate}>
+                        {new Date(feedback.created_at).toLocaleDateString()}
+                      </div>
+                      <img
+                        src={feedback.thumbnail_img_url}
+                        alt="Thumbnail"
+                        className={styles.thumbnailImage}
+                      />
+                      <div className={styles.guideDetail}>
+                        {feedback.guide_title} - {feedback.guide_singer}
+                      </div>
                     </div>
                   ))
                 ) : (
                   <p>피드백이 존재하지 않습니다.</p>
                 )}
               </div>
+              {loading && <p>Loading more feedbacks...</p>}
             </div>
           )}
           {activeTab === "shorts" && (
             <div className={styles.item}>
-              <h2 className={`${styles.tabTitle} ${styles.tabDefault}`}>Shorts</h2>
+              <h2 className={`${styles.tabTitle} ${styles.tabDefault}`}>
+                Shorts
+              </h2>
               <div className={styles.shortsList}>
                 {shortsList.length > 0 ? (
                   shortsList.map((shorts) => (
                     <div key={shorts.id} className={styles.shortsItem}>
-                      <div className={styles.videoDate}>{new Date(shorts.created_at).toLocaleDateString()}</div>
-                      <ReactPlayer 
-                        className={styles.videoThumbnail} 
-                        url={shorts.video_url} 
-                        controls 
+                      <div className={styles.videoDate}>
+                        {new Date(shorts.created_at).toLocaleDateString()}
+                      </div>
+                      <ReactPlayer
+                        className={styles.videoThumbnail}
+                        url={shorts.video_url}
+                        controls
                       />
-                      <div className={styles.guideDetail}>{shorts.song_title} - {shorts.singer}</div>
+                      <div className={styles.guideDetail}>
+                        {shorts.song_title} - {shorts.singer}
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -157,6 +237,29 @@ const MyPage = () => {
             </div>
           )}
         </section>
+        {selectedFeedback && (
+          <div className={styles.feedbackDetailModal}>
+            <h2>피드백 상세 정보</h2>
+            <p>Score: {selectedFeedback.score}</p>
+            <ReactPlayer url={selectedFeedback.video_url} controls />
+            <p>Guide Video:</p>
+            <ReactPlayer url={selectedFeedback.guide_url} controls />
+            <p>
+              Highlight Section: {selectedFeedback.highlight_section_start_at} - {selectedFeedback.highlight_section_end_at}
+            </p>
+            <h3>Incorrect Sections</h3>
+            <ul>
+              {selectedFeedback.incorrect_section_list ? (
+                selectedFeedback.incorrect_section_list.map((section, index) => (
+                  <li key={index}>Start at: {section.start_at}</li>
+                ))
+              ) : (
+                <li>No incorrect sections</li>
+              )}
+            </ul>
+            <button onClick={() => setSelectedFeedback(null)}>Close</button>
+          </div>
+        )}
       </div>
     </div>
   );
