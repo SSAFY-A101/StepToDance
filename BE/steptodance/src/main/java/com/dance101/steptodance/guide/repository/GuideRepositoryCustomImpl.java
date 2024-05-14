@@ -49,11 +49,10 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
             guide.createdAt))
             .from(guide).leftJoin(feedback).on(feedback.guide.id.eq(guide.id))
             .where(
-                categorySearch(searchConditions.getCategory(), userId),
-                titleSearch(searchConditions.getTitle()),
-                singerSearch(searchConditions.getSinger()),
-                uploaderSearch(searchConditions.getUploader())
-            )
+                categorySearch(searchConditions.getCategory(), userId)
+                    .or(titleSearch(searchConditions.getTitle()))
+                    .or(singerSearch(searchConditions.getSinger()))
+                    .or(uploaderSearch(searchConditions.getUploader())))
             .groupBy(guide.id)
             .limit(searchConditions.getLimit())
             .offset(searchConditions.getOffset())
