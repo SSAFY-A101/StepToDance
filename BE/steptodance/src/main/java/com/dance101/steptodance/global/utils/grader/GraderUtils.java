@@ -10,6 +10,8 @@ public interface GraderUtils<BodyType> {
 		for (int i = start; i < end; i++) {
 			ans += getDeduct(guide.get(i), feedback.get(i));
 		}
-		return Math.max(0, 100.0 - ans / (end - start));
+		System.out.println("totalDeduct = " + ans);
+		System.out.println("totalDeduct / size = " + ans / (end - start));
+		return ans / (end - start) * 100;
 	}
 }

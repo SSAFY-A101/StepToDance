@@ -18,10 +18,9 @@ public class MoveNetGraderEuclideanDistanceUtils implements GraderUtils<Double>{
 
 	@Override
 	public double getDeduct(List<List<Double>> guide, List<List<Double>> feedback) {
-		double sum = 100.0;
 		double similarity = compareModels(guide, feedback);
 		log.info("similarity: ================" + similarity + "================");
-		return sum;
+		return similarity;
 	}
 
 	private double compareModels(List<List<Double>> guide, List<List<Double>> feedback) {

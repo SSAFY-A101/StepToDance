@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { guideUpload } from "../../api/GuideApis";
 import styles from "./GuideUploadPage.module.css";
 import UploadIcon from "@mui/icons-material/Upload";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import IconButton from '@mui/material/IconButton';
 
 const GuideUploadPage = () => {
   const [selectVideo, setSelectVideo] = useState(null);
