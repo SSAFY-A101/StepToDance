@@ -22,18 +22,18 @@ spring:
   mvc:
     servlet:
       path: /api/v1
-  kafka:
-    bootstrap-servers: kafka1:${KAFKA1_BINDING_PORT}, kafka2:${KAFKA1_BINDING_PORT}, kafka3:${KAFKA1_BINDING_PORT}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: step-to-dance
-      auto-offset-reset: earliest
-    properties:
-      max.request.size: 20971520
+#  kafka:
+#    bootstrap-servers: kafka1:${KAFKA1_BINDING_PORT}, kafka2:${KAFKA1_BINDING_PORT}, kafka3:${KAFKA1_BINDING_PORT}
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+#    consumer:
+#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#      group-id: step-to-dance
+#      auto-offset-reset: earliest
+#    properties:
+#      max.request.size: 20971520
 logging:
   level:
     org.hibernate.sql: debug
