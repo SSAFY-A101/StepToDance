@@ -5,6 +5,7 @@ import com.dance101.steptodance.feedback.domain.Feedback;
 import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
 import com.dance101.steptodance.global.utils.FFmpegUtils;
+import com.dance101.steptodance.global.utils.FileUtil;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.GuideFeedbackCreateRequest;
 import com.dance101.steptodance.guide.data.request.GuideUploadMultipartRequest;
@@ -31,6 +32,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -92,11 +94,15 @@ public class GuideServiceImpl implements GuideService{
 			.build();
 		guideRepository.save(guide);
 		try {
+			// 멀티파트 영상을 임시로 로컬에 저장한다.
+			Path path = ffmpegUtils.saveInTmpLocal(request.getVideo());
+			path = ffmpegUtils.setVodFrame30(path);
 			// kafka를 통해 비디오 프레임 전송
-			MultipartFile thumbnail = ffmpegUtils.sendVodToKafka(guide.getId(), "guide", request.getVideo());
+			MultipartFile thumbnail = ffmpegUtils.sendVodToKafkaGuide(guide.getId(), path);
+
 			// 영상 업로드
 			String url = s3Service.upload(
-				request.getVideo(),
+				FileUtil.convertToMultipartFile(path.toFile()),
 				"guide/" + guide.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
 			guide.addUrl(url);
 			// 썸네일 업로드
@@ -138,7 +144,7 @@ public class GuideServiceImpl implements GuideService{
 
 		try {
 			// kafka를 통해 비디오 프레임 전송
-			MultipartFile thumbnail = ffmpegUtils.sendVodToKafka(savedFeedback.getId(), "feedback", request.getVideo());
+			MultipartFile thumbnail = ffmpegUtils.sendVodToKafkaFeedback(savedFeedback.getId(), request.getVideo());
 			// 영상 업로드
 			String url = s3Service.upload(
 				request.getVideo(),
@@ -154,44 +160,5 @@ public class GuideServiceImpl implements GuideService{
 
 		// create & return
 		return new FeedbackResponse(savedFeedback.getId());
-	}
-	@Async
-	@Transactional
-	@Override
-	public CompletableFuture<FeedbackResponse> createGuideFeedbackBackUp(long userId, long guideId,
-		GuideFeedbackCreateRequest guideFeedbackCreateRequest) {
-		// find guide & user
-		Guide guide = guideRepository.findById(guideId)
-			.orElseThrow(() -> new NotFoundException("GuideServiceImpl:createGuideFeedback", GUIDE_NOT_FOUND));
-		User user = UserUtils.findUserById(userRepository, userId);
-
-		// create & save feedback
-		Feedback feedback = Feedback.builder()
-			// .videoUrl(guideFeedbackCreateRequest.videoUrl())
-			.videoUrl(null)
-			.score(0.0)
-			.thumbnailImgUrl(null)
-			.guide(guide)
-			.user(user)
-			.build();
-		Feedback savedFeedback = feedbackRepository.save(feedback);
-
-		// create message & send to ai server
-		FeedbackMessageRequest feedbackMessageRequest = FeedbackMessageRequest.builder()
-			.id(savedFeedback.getId())
-			.startAt(null)
-			.endAt(null)
-			.videoUrl(null)
-			// .startAt(guideFeedbackCreateRequest.startAt())
-			// .endAt(guideFeedbackCreateRequest.endAt())
-			// .videoUrl(guideFeedbackCreateRequest.videoUrl())
-			.guideUrl(guide.getVideoUrl())
-			.highlightSectionStartAt(guide.getHighlightSectionStartAt())
-			.highlightSectionEndAt(guide.getHighlightSectionEndAt())
-			.build();
-		aiServerService.publish(feedbackMessageRequest);
-
-		// create & return
-		return CompletableFuture.completedFuture(new FeedbackResponse(savedFeedback.getId()));
 	}
 }
