@@ -4,7 +4,9 @@
 .title {
     font-size: 2rem;
     color: white;
+    margin-top: 1vh;
     text-align:center;
+    font-family: "esamanru-Bold";
 }
 
 .text {
