@@ -19,6 +19,7 @@ import ShortsShare from "./pages/ShortsShare";
 import GuideUploadPage from "./pages/GuideUploadPage/GuideUploadPage";
 import WithDrawPage from "./pages/MyPage/WithDrawPage";
 import ShowShortForm from "./pages/ShortFormPage/ShowShortForm";
+import UserPage from "./pages/UserPage";
 
 function App() {
   const user = useSelector(userLoggedInSelector);
@@ -55,6 +56,7 @@ function App() {
           <Route path="/shortsShare" element={<ShortsShare />} />
           <Route path="/withdraw" element={<WithDrawPage />} />
           <Route path="/showShortForm" element={<ShowShortForm />} />
+          <Route path="/userPage/:id" element={<UserPage />} />
         </Route>
         <Route path="/guideDetail/:id" element={<GuideDetail />} />
         <Route path="/record" element={<WebcamStreamCapture />} />
