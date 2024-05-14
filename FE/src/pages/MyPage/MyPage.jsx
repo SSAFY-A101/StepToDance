@@ -24,8 +24,60 @@ const MyPage = () => {
         const data = await getUserDatas(limit, offset);
         setProfile(data.data.user || {});
         console.log(data.data);
-        setFeedbackList(data.data.feedback_list || []);
-        setShortsList(data.data.shorts_list || []);
+        // setFeedbackList(data.data.feedback_list.slice(0, 3) || []);
+        // setShortsList(data.data.shorts_list.slice(0, 3) || []);
+        const dummyFeedbackList = [
+          {
+            id: 1,
+            thumbnail_img_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d0d802c93619d330c11a6b36e3d6ff9e8575ab8dfa07e52cc8d66e9572f88d6?",
+            guide_title: "Guide 1",
+            guide_singer: "Singer 1",
+            created_at: "2022-01-01"
+          },
+          {
+            id: 2,
+            thumbnail_img_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d0d802c93619d330c11a6b36e3d6ff9e8575ab8dfa07e52cc8d66e9572f88d6?",
+            guide_title: "Guide 2",
+            guide_singer: "Singer 2",
+            created_at: "2022-01-02"
+          },
+          {
+            id: 3,
+            thumbnail_img_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d0d802c93619d330c11a6b36e3d6ff9e8575ab8dfa07e52cc8d66e9572f88d6?",
+            guide_title: "Guide 3",
+            guide_singer: "Singer 3",
+            created_at: "2022-01-03"
+          }
+        ];
+        
+        const dummyShortsList = [
+          {
+            id: 1,
+            video_url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+            song_title: "Song 1",
+            singer: "Singer 1",
+            uploader: "Uploader 1",
+            created_at: "2022-01-01"
+          },
+          {
+            id: 2,
+            video_url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+            song_title: "Song 2",
+            singer: "Singer 2",
+            uploader: "Uploader 2",
+            created_at: "2022-01-02"
+          },
+          {
+            id: 3,
+            video_url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+            song_title: "Song 3",
+            singer: "Singer 3",
+            uploader: "Uploader 3",
+            created_at: "2022-01-03"
+          }
+        ];
+        setFeedbackList(dummyFeedbackList);
+        setShortsList(dummyShortsList);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -60,54 +112,53 @@ const MyPage = () => {
       );
     }
   };
-  
+
   return (
     <div className={styles.safeArea}>
       <div className={styles.title}>MYPAGE</div>
       <div className={styles.mainView}>
-          <img
-            src={profile.profile_img_url}
-            alt="Profile"
-            className={styles.profileImage}
-          />
+        <img
+          src={profile.profile_img_url}
+          alt="Profile"
+          className={styles.profileImage}
+        />
         <button onClick={signOut} className={styles.logoutButton}>
           로그아웃
         </button>
         <div className={styles.headerView}>
-          <h1 className={styles.username}>{profile.nickname || "No Name"}</h1>
+          <div className={styles.username}>{profile.nickname || "No Name"}</div>
           <p className={styles.rankAndPoints}>
             RANK {profile.user_rank || 9999}
           </p>
         </div>
         {/* Feedback List */}
+        <div className={styles.subtitle}>Feedbacks</div>
         <div className={styles.feedbackList}>
-          <h2>Feedbacks</h2>
           {feedbackList.length > 0 ? (
             feedbackList.map((feedback) => (
               <div key={feedback.id} className={styles.feedbackItem}>
-                <img src={feedback.thumbnail_img_url} alt="Thumbnail" />
-                <p>{feedback.guide_title} - {feedback.guide_singer}</p>
-                <p>Created at: {new Date(feedback.created_at).toLocaleDateString()}</p>
+                <div className={styles.videoDate}>{new Date(feedback.created_at).toLocaleDateString()}</div>
+                <img src={feedback.thumbnail_img_url} alt="Thumbnail" className={styles.thumbnailImage} />
+                <div className={styles.guideDetail}>{feedback.guide_title} - {feedback.guide_singer}</div>
               </div>
             ))
           ) : (
-            <p>No feedbacks available</p>
+            <p>피드백이 존재하지 않습니다.</p>
           )}
         </div>
-        {/* Shorts List */}
+        <div className={styles.subtitle_shorts}>Shorts</div>
         <div className={styles.shortsList}>
-          <h2>Shorts</h2>
           {shortsList.length > 0 ? (
             shortsList.map((shorts) => (
               <div key={shorts.id} className={styles.shortsItem}>
-                <video src={shorts.video_url} controls />
-                <p>{shorts.song_title} - {shorts.singer}</p>
-                <p>Uploaded by: {shorts.uploader}</p>
-                <p>Created at: {new Date(shorts.created_at).toLocaleDateString()}</p>
+                <div className={styles.videoDate}> {new Date(shorts.created_at).toLocaleDateString()}</div>
+                <video src={shorts.video_url} controls className={styles.videoThumbnail} />
+                <div className={styles.guideDetail}>{shorts.song_title} - {shorts.singer}</div>                
+                {/* <p>Uploaded by: {shorts.uploader}</p> */}
               </div>
             ))
           ) : (
-            <p>No shorts available</p>
+            <p>생성한 숏츠가 존재하지 않습니다.</p>
           )}
         </div>
       </div>
