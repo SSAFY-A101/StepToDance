@@ -25,6 +25,4 @@ public interface GuideService {
 	GuideFindResponse findGuide(long guideId);
 
 	FeedbackResponse createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest guideFeedbackCreateRequest);
-
-	CompletableFuture<FeedbackResponse> createGuideFeedbackBackUp(long userId, long guideId, GuideFeedbackCreateRequest guideFeedbackCreateRequest);
 }

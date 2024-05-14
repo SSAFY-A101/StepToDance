@@ -45,15 +45,101 @@ public class FFmpegUtils {
 		ffprobe = new FFprobe(this.ffprobePath);
 	}
 
+	public Path saveInTmpLocal(MultipartFile video) throws IOException {
+		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		video.transferTo(tempFilePath);
+		return tempFilePath;
+	}
+
+	public Path setVodFrame30(Path path) throws IOException {
+		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+
+		FFmpegBuilder builder = new FFmpegBuilder()
+			.setInput(path.toString())
+			.addOutput(tempFilePath.toString())
+			.setVideoFrameRate(30, 1)
+			.done();
+
+		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+		executor.createJob(builder).run();
+
+		Files.delete(path);
+
+		return tempFilePath;
+	}
+
+
 	/**
 	 *
 	 * @param id
-	 * @param type
+	 * @param vodPath
+	 * @return 멀티파트 이미지 파일. 썸네일로 사용
+	 * @throws IOException
+	 */
+	public MultipartFile sendVodToKafkaGuide(long id, Path vodPath) throws IOException {
+		String type = "guide";
+		Files.createDirectories(Path.of(outputDirPath + type + id));
+
+		// 동영상 파일 -> 0.5초마다의 프레임 이미지
+		FFmpegBuilder builder = new FFmpegBuilder()
+			.setInput(vodPath.toString())
+			.addOutput(outputDirPath+type+id+"/frame_%05d.png")
+			.setVideoFrameRate(30, 1) // 1초에 2프레임 추출
+			.done();
+
+		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+		executor.createJob(builder).run();
+		// 파일 갯수 세기
+		File[] fileList = new File(outputDirPath+type+id).listFiles();
+		int size = fileList.length;
+
+		// ai 서버로 전송
+		try (Stream<Path> paths = Files.walk(Path.of(outputDirPath+type+id))) {
+			paths.filter(Files::isRegularFile)
+				.forEach(path -> {
+					try {
+						aiServerService.publish(
+							MessageRequest.builder()
+								.type(type)
+								.id(id)
+								.name(String.valueOf(path.getFileName()))
+								.image(Files.readAllBytes(path))
+								.size(size)
+								.build(),
+							type
+						);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				});
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		log.info("============== Sending " + type + " Vod Done ==============");
+		log.info(type + " id: " + id + ", frame amount: " + size);
+
+		MultipartFile ret = FileUtil.convertToMultipartFile(
+			new File(outputDirPath + type + id + "/frame_0090.png"));
+
+		// 이미지파일 삭제
+		Files.walk(Path.of(outputDirPath + type + id))
+			.map(Path::toFile)
+			.forEach(File::delete);
+		Files.delete(Path.of(outputDirPath + type + id));
+		// 영상파일 삭제
+		Files.delete(vodPath);
+
+		return ret;
+	}
+	/**
+	 *
+	 * @param id
 	 * @param video
 	 * @return 멀티파트 이미지 파일. 썸네일로 사용
 	 * @throws IOException
 	 */
-	public MultipartFile sendVodToKafka(long id, String type, MultipartFile video) throws IOException {
+	public MultipartFile sendVodToKafkaFeedback(long id, MultipartFile video) throws IOException {
+		String type = "feedback";
 		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
 		video.transferTo(tempFilePath);
 
@@ -90,7 +176,7 @@ public class FFmpegUtils {
 					} catch (IOException e) {
 						throw new RuntimeException(e);
 					}
-			});
+				});
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -107,8 +193,9 @@ public class FFmpegUtils {
 		Files.delete(Path.of(outputDirPath + type + id));
 		// 영상파일 삭제
 		Files.delete(tempFilePath);
-		
+
 		return ret;
+
 	}
 
 	public MultipartFile editVideo(MultipartFile video, LocalTime startAt, LocalTime endAt) throws IOException {
