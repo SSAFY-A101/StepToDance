@@ -20,6 +20,8 @@ import GuideUploadPage from "./pages/GuideUploadPage/GuideUploadPage";
 import WithDrawPage from "./pages/MyPage/WithDrawPage";
 import ShowShortForm from "./pages/ShortFormPage/ShowShortForm";
 import UserPage from "./pages/UserPage";
+import FeedBackList from "./pages/FeedBackPage/FeedBackList";
+import DetailFeedback from "./pages/FeedBackPage/DetailFeedBack";
 
 function App() {
   const user = useSelector(userLoggedInSelector);
@@ -50,6 +52,8 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/guideUpload" element={<GuideUploadPage />} />
           <Route path="/mypage" element={<MyPage />} />
+          <Route path="/feedbacks" element={<FeedBackList />} />
+          <Route path="/feedback/:feedbackId" element={<DetailFeedback />} />
           <Route path="/videoEditor" element={<VideoEditor />} />
           <Route path="/searchResult" element={<SearchResult />} />
           <Route path="/ranking" element={<RankingPage />} />
