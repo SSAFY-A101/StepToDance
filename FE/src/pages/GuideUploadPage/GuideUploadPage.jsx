@@ -55,10 +55,6 @@ const GuideUploadPage = () => {
     setHighlights(newHighlights);
   };
 
-  const addHighlightSection = () => {
-    setHighlights([...highlights, { start: '00:00', end: videoDuration }]);
-  };
-
 
   const sendApi = async () => {
     let start_time_str = "11:22";
@@ -95,11 +91,11 @@ const GuideUploadPage = () => {
   return (
     <section className={styles["guide_upload-page"]}>
       <form>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked={selectedOption === '1'} onChange={handleOptionChange} /><span>K-pop</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="2" checked={selectedOption === '2'} onChange={handleOptionChange}/><span>B-boying</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="3" checked={selectedOption === '3'} onChange={handleOptionChange}/><span>Hip-hop</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="4" checked={selectedOption === '4'} onChange={handleOptionChange}/><span>Popping</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="5" checked={selectedOption === '5'} onChange={handleOptionChange}/><span>Traditional</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked={selectedOption === '1'} onChange={handleOptionChange} /><span>케이팝</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="2" checked={selectedOption === '2'} onChange={handleOptionChange}/><span>비보잉</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="3" checked={selectedOption === '3'} onChange={handleOptionChange}/><span>힙합</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="4" checked={selectedOption === '4'} onChange={handleOptionChange}/><span>팝핑</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="5" checked={selectedOption === '5'} onChange={handleOptionChange}/><span>전통무용</span></label>
       </form>
       <div className={styles["input-section"]}>
         <input
@@ -158,9 +154,6 @@ const GuideUploadPage = () => {
           />
         </div>
       ))}
-      <IconButton onClick={addHighlightSection} style={{ color: 'green' }}>
-        <AddCircleOutlineIcon />
-      </IconButton>
       <button className={styles["guide-submit"]} onClick={() => sendApi()}>
         <UploadIcon 
         style={{ color: "white" }}
