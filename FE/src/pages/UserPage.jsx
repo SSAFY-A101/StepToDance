@@ -20,12 +20,12 @@ function UserPage(){
 
     return (
         <div className={styles.safeArea}>
-        <div className={styles.title}>MYPAGE</div>
+        <div className={styles.title}>USERPAGE</div>
         <div className={styles.mainView}>
             <img src={userData.profile_img_url} alt="Profile" className={styles.profileImage} />
             <div className={styles.headerView}>
             <h1 className={styles.username}>{userData.nickname || "No Name"}</h1>
-            <p className={styles.rankAndPoints}>{userData.user_rank}{"\n"}{userData.score} point</p>
+            <p className={styles.rankAndPoints}> RANK {userData.user_rank}<br/>{userData.score} point</p>
             </div>
         </div>
         </div>
