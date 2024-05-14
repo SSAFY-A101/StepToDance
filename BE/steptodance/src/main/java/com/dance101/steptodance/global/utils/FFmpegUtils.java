@@ -84,7 +84,7 @@ public class FFmpegUtils {
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(vodPath.toString())
 			.addOutput(outputDirPath+type+id+"/frame_%05d.png")
-			.setVideoFrameRate(30, 1) // 1초에 2프레임 추출
+			.setVideoFrameRate(30, 1) // 1초에 30프레임 추출
 			.done();
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
@@ -126,8 +126,6 @@ public class FFmpegUtils {
 			.map(Path::toFile)
 			.forEach(File::delete);
 		Files.delete(Path.of(outputDirPath + type + id));
-		// 영상파일 삭제
-		Files.delete(vodPath);
 
 		return ret;
 	}

@@ -32,6 +32,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -105,6 +106,8 @@ public class GuideServiceImpl implements GuideService{
 				FileUtil.convertToMultipartFile(path.toFile()),
 				"guide/" + guide.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
 			guide.addUrl(url);
+			// 영상파일 삭제
+			Files.delete(path);
 			// 썸네일 업로드
 			url = s3Service.upload(
 				thumbnail, "guide/thumbnail/" + guide.getId() + "." + StringUtils.getFilenameExtension(thumbnail.getOriginalFilename()));
