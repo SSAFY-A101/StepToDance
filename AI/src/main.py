@@ -40,6 +40,7 @@ async def consume_messages():
         message = await current_loop.run_in_executor(None, consumer.poll, 1.0)
         if message is None:
             continue
+        print("메시지 로그:", message)
         msgInstance = json.loads(message.value())
         await methods[message.topic()](msgInstance)
 
