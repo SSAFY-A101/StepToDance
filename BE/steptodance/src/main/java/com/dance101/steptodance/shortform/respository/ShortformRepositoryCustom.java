@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.dance101.steptodance.shortform.data.response.ShortformFindResponse;
 
 public interface ShortformRepositoryCustom {
-	Page<ShortformFindResponse> findShortformList(Pageable pageable);
+	List<ShortformFindResponse> findShortformList(int count);
 
 	Optional<ShortformFindResponse> findShortformById(long shortformId);
 
