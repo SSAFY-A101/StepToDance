@@ -1,14 +1,3 @@
-/* Base styles */
-
-.safeArea {
-  background: linear-gradient(180deg, #0b1238 0%, #286eca 100%);
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: calc(100vh - 11.5rem);
-  z-index: 2;
-}
-
 .title {
   color: white;
   display: flex;
