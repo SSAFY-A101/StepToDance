@@ -170,9 +170,9 @@ export const WebcamStreamCapture = () => {
       </button>
       {recordVideo ? (
         <>
-          <video
+          <ReactPlayer
             controls
-            src={recordVideo}
+            url={recordVideo}
             type="video/mp4"
             width={widthSize}
             height={heightSize * 0.9}
