@@ -49,11 +49,10 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
             guide.createdAt))
             .from(guide).leftJoin(feedback).on(feedback.guide.id.eq(guide.id))
             .where(
-                categorySearch(searchConditions.getCategory(), userId),
-                titleSearch(searchConditions.getTitle()),
-                singerSearch(searchConditions.getSinger()),
-                uploaderSearch(searchConditions.getUploader())
-            )
+                titleSearch(searchConditions.getTitle())
+                    .or(categorySearch(searchConditions.getCategory(), userId))
+                    .or(singerSearch(searchConditions.getSinger()))
+                    .or(uploaderSearch(searchConditions.getUploader())))
             .groupBy(guide.id)
             .limit(searchConditions.getLimit())
             .offset(searchConditions.getOffset())
@@ -118,9 +117,6 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
     }
 
     private BooleanExpression titleSearch(String title) {
-        if (StringUtil.isNullOrEmpty(title)) {
-            return null;
-        }
         return guide.songTitle.like("%" + title + "%");
     }
 
