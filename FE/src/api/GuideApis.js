@@ -2,7 +2,7 @@ import { customAxios } from "./customAxios";
 
 export const getGuideList = async () => {
   try {
-    const response = await customAxios.get(`guides?limit=10&offset=1`, {});
+    const response = await customAxios.get(`guides?limit=10&offset=1&title=&singer=`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching guide list:", error);
@@ -52,10 +52,10 @@ export const getGuideDetail = async (guideId) => {
   }
 };
 
-export const searchTitle = async (title) => {
+export const searchGuide = async (keyword) => {
   try {
     const response = await customAxios.get(
-      `guides?limit=10&offset=1&title=${title}`
+      `guides?limit=10&offset=1&title=${keyword}&singer=${keyword}`
     );
     return response.data;
   } catch (error) {
