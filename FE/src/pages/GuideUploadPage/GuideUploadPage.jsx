@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { guideUpload } from "../../api/GuideApis";
 import styles from "./GuideUploadPage.module.css";
 import UploadIcon from "@mui/icons-material/Upload";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import IconButton from '@mui/material/IconButton';
 
 const GuideUploadPage = () => {
   const [selectVideo, setSelectVideo] = useState(null);
@@ -9,6 +11,7 @@ const GuideUploadPage = () => {
   const [videoDuration, setVideoDuration] = useState('00:00');
   const [artistName, setArtistName] = useState("");
   const [selectedOption, setSelectedOption] = useState('1');  
+  const [highlights, setHighlights] = useState([{ start: '00:00', end: '00:00' }]);
   const videoRef = useRef(null);
   
 
@@ -30,8 +33,9 @@ const GuideUploadPage = () => {
   };
 
   const handleLoadedMetadata = () => {
-    const duration = videoRef.current.duration;
-    setVideoDuration(formatTime(new Date(duration * 1000)));
+    const duration = formatTime(new Date(videoRef.current.duration * 1000));
+    setVideoDuration(duration);
+    setHighlights([{ start: '00:00', end: duration }]);
   };
 
   function formatTime(date) {
@@ -39,6 +43,22 @@ const GuideUploadPage = () => {
     let seconds = date.getSeconds().toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   }
+
+
+  const handleHighlightChange = (index, field, value) => {
+    const newHighlights = highlights.map((highlight, i) => {
+      if (i === index) {
+        return { ...highlight, [field]: value };
+      }
+      return highlight;
+    });
+    setHighlights(newHighlights);
+  };
+
+  const addHighlightSection = () => {
+    setHighlights([...highlights, { start: '00:00', end: videoDuration }]);
+  };
+
 
   const sendApi = async () => {
     let start_time_str = "11:22";
@@ -60,11 +80,13 @@ const GuideUploadPage = () => {
     let end_time = current_date;
 
     const formData = new FormData();
-    formData.append("genre_id", 1);
+    formData.append("genre_id", selectedOption);
     formData.append("song_title", selectTitle);
-    formData.append("singer", "엄정화");
-    formData.append("highlight_section_start_at", formatTime(start_time));
-    formData.append("highlight_section_end_at", formatTime(end_time));
+    formData.append("singer", artistName);
+    highlights.forEach((highlight, index) => {
+      formData.append(`highlight_${index}_start`, highlight.start);
+      formData.append(`highlight_${index}_end`, highlight.end);
+    });
     formData.append("video", selectVideo);
     const response = await guideUpload(formData);
     console.log(response);
@@ -118,22 +140,27 @@ const GuideUploadPage = () => {
           </>
         )}
       </article>
-      <div className={styles["input-section"]}>
-        <input
-          type="text"
-          placeholder="Highlight start (default 00:00)"
-          value="00:00"
-          readOnly
-          className={styles["text-input"]}
-        />
-        <input
-          type="text"
-          placeholder="Highlight end (video end time)"
-          value={videoDuration}
-          readOnly
-          className={styles["text-input"]}
-        />
-      </div>
+      {highlights.map((highlight, index) => (
+        <div key={index} className={styles["input-section"]}>
+          <input
+            type="text"
+            placeholder="Highlight start (default 00:00)"
+            value={highlight.start}
+            onChange={(e) => handleHighlightChange(index, 'start', e.target.value)}
+            className={styles["text-input"]}
+          />
+          <input
+            type="text"
+            placeholder="Highlight end (video end time)"
+            value={highlight.end}
+            onChange={(e) => handleHighlightChange(index, 'end', e.target.value)}
+            className={styles["text-input"]}
+          />
+        </div>
+      ))}
+      <IconButton onClick={addHighlightSection} style={{ color: 'green' }}>
+        <AddCircleOutlineIcon />
+      </IconButton>
       <button className={styles["guide-submit"]} onClick={() => sendApi()}>
         <UploadIcon 
         style={{ color: "white" }}
