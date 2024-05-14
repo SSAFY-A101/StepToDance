@@ -46,6 +46,36 @@ public class ShortformRepositoryCustomImpl implements ShortformRepositoryCustom{
 	}
 
 	@Override
+	public Page<ShortformFindResponse> findUserShortformList(long userId, Pageable pageable) {
+		List<ShortformFindResponse> content = queryFactory
+			.select(Projections.constructor(ShortformFindResponse.class,
+				shortform.id,
+				guide.id,
+				user.id,
+				shortform.videoUrl,
+				guide.songTitle,
+				guide.singer,
+				user.nickname,
+				shortform.createdAt
+			))
+			.from(shortform)
+			.where(user.id.eq(userId))
+			.innerJoin(guide).on(guide.id.eq(shortform.guide.id))
+			.innerJoin(user).on(user.id.eq(shortform.user.id))
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+
+		Long count = queryFactory
+			.select(shortform.count())
+			.from(shortform)
+			.fetchOne();
+
+		return new PageImpl<>(content, pageable, count);
+	}
+
+
+	@Override
 	public Optional<ShortformFindResponse> findShortformById(long shortformId) {
 		return Optional.ofNullable(
 			queryFactory.select(Projections.constructor(ShortformFindResponse.class,

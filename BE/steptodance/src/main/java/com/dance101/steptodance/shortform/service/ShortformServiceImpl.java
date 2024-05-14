@@ -81,6 +81,13 @@ public class ShortformServiceImpl implements ShortformService {
 		return shortformFindResponses;
 	}
 
+	@Override
+	public Page<ShortformFindResponse> findUserShortformList(long userId, Pageable pageable) {
+		Page<ShortformFindResponse> shortformFindResponses = shortformRepository.findUserShortformList(userId, pageable);
+
+		return shortformFindResponses;
+	}
+
 	@Transactional
 	@Override
 	public void deleteShortForm(long shortformId) {
