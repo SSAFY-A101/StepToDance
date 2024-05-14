@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Nouislider from 'nouislider-react';
+import { Link } from 'react-router-dom';
+import { stepLabelClasses } from '@mui/material';
 import 'nouislider/distribute/nouislider.css';
 import styles from "../styles/VideoEditor.module.css";
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import { uploadShortform } from '../api/ShortformApis';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"
+import { bool } from 'prop-types';
 
-let ffmpeg;
-const VideoEditor = () => {
+let ffmpeg; 
+function VideoEditor() {
   const [videoDuration, setVideoDuration] = useState(0);
   const [endTime, setEndTime] = useState(0);
   const [startTime, setStartTime] = useState(0);
@@ -23,33 +26,27 @@ const VideoEditor = () => {
   let initialSliderValue = 0;
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const hasReloaded = localStorage.getItem('hasReloaded');
-    if (!hasReloaded) {
-      localStorage.setItem('hasReloaded', 'true');
-      window.location.reload();
-    }
-  }, []);
-
   const reset = () => {
     setStartTime(0);
   }
 
   const loadScript = (src) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((onFulfilled, _) => {
       const script = document.createElement('script');
-      let loaded = false;
-      script.async = true;
-      script.defer = true;
-      script.src = src;
-      script.onload = script.onreadystatechange = () => {
+      let loaded;
+      script.async = 'async';
+      script.defer = 'defer';
+      script.setAttribute('src', src);
+      script.onreadystatechange = script.onload = () => {
         if (!loaded) {
-          loaded = true;
-          resolve(script);
+          onFulfilled(script);
         }
+        loaded = true;
       };
-      script.onerror = () => reject(new Error(`Script load error for ${src}`));
-      document.head.appendChild(script);
+      script.onerror = function () {
+        console.log('Script failed to load');
+      };
+      document.getElementsByTagName('head')[0].appendChild(script);
     });
   };
 
@@ -60,56 +57,66 @@ const VideoEditor = () => {
     setVideoSrc(blobURL);
   };
 
+  // HHMMSS 형태로 바꾸기
   const convertToHHMMSS = (val) => {
     const secNum = parseInt(val, 10);
     let hours = Math.floor(secNum / 3600);
     let minutes = Math.floor((secNum - hours * 3600) / 60);
     let seconds = secNum - hours * 3600 - minutes * 60;
 
-    if (hours < 10) hours = '0' + hours;
-    if (minutes < 10) minutes = '0' + minutes;
-    if (seconds < 10) seconds = '0' + seconds;
-
-    return hours === '00' ? `${minutes}:${seconds}` : `${hours}:${minutes}:${seconds}`;
+    if (hours < 10) {
+      hours = '0' + hours;
+    }
+    if (minutes < 10) {
+      minutes = '0' + minutes;
+    }
+    if (seconds < 10) {
+      seconds = '0' + seconds;
+    }
+    let time;
+    if (hours === '00') {
+      time = minutes + ':' + seconds;
+    } else {
+      time = hours + ':' + minutes + ':' + seconds;
+    }
+    return time;
   };
 
   useEffect(() => {
-    loadScript('https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.2/dist/ffmpeg.min.js')
-      .then(() => {
-        if (typeof window !== 'undefined') {
-          ffmpeg = window.FFmpeg.createFFmpeg({ log: true });
-          if (!ffmpeg.isLoaded()) {
-            ffmpeg.load().then(() => {
-              setIsScriptLoaded(true);
-            });
-          } else {
-            setIsScriptLoaded(true);
-          }
-        }
-      })
-      .catch(error => {
-        console.error('Error loading ffmpeg script:', error);
-      });
+    loadScript(
+      'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.2/dist/ffmpeg.min.js',
+    ).then(() => {
+      if (typeof window !== 'undefined') {
+        ffmpeg = window.FFmpeg.createFFmpeg({ log: true });
+        ffmpeg.load();
+        setIsScriptLoaded(true);
+      }
+    });
   }, []);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.onloadedmetadata = () => {
-        setVideoDuration(videoRef.current.duration);
-        setEndTime(videoRef.current.duration);
+    if (videoRef && videoRef.current) {
+      const currentVideo = videoRef.current;
+      currentVideo.onloadedmetadata = () => {
+        setVideoDuration(currentVideo.duration);
+        setEndTime(currentVideo.duration);
       };
     }
   }, [videoSrc]);
 
   const updateOnSliderChange = (values, handle) => {
     setVideoTrimmedUrl('');
-    const readValue = values[handle] | 0;
+    let readValue;
     if (handle) {
-      if (endTime !== readValue) setEndTime(readValue);
+      readValue = values[handle] | 0;
+      if (endTime !== readValue) {
+        setEndTime(readValue);
+      }
     } else {
+      readValue = values[handle] | 0;
       if (initialSliderValue !== readValue) {
         initialSliderValue = readValue;
-        if (videoRef.current) {
+        if (videoRef && videoRef.current) {
           videoRef.current.currentTime = readValue;
           setStartTime(readValue);
         }
@@ -117,58 +124,92 @@ const VideoEditor = () => {
     }
   };
 
+  //영상 재생
   const handlePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        videoRef.current.play();
-        setIsPlaying(true);
-      }
+    if (videoRef && videoRef.current) {
+        if(isPlaying){
+            videoRef.current.pause();
+            setIsPlaying(false);
+        }
+        else{
+            videoRef.current.play();
+            setIsPlaying(true);
+        }
     }
   };
 
   const handlePauseVideo = (e) => {
     const currentTime = Math.floor(e.currentTarget.currentTime);
     setPlayTime(currentTime);
-    if (currentTime === endTime) e.currentTarget.pause();
+
+    if (currentTime === endTime) {
+      e.currentTarget.pause();
+    }
   };
 
   const handleTrim = async () => {
     if (isScriptLoaded) {
       const { name, type } = videoFileValue;
-      try {
-        ffmpeg.FS('writeFile', name, await window.FFmpeg.fetchFile(videoFileValue));
-        const videoFileType = type.split('/')[1];
-        await ffmpeg.run(
-          '-i', name,
-          '-ss', `${convertToHHMMSS(startTime)}`,
-          '-to', `${convertToHHMMSS(endTime)}`,
-          '-acodec', 'copy',
-          '-vcodec', 'copy',
-          `out.${videoFileType}`
-        );
+      ffmpeg.FS(
+        'writeFile',
+        name,
+        await window.FFmpeg.fetchFile(videoFileValue),
+      );
+      const videoFileType = type.split('/')[1];
+      console.log("비디오타입:",videoFileType);
+      await ffmpeg.run(
+        '-i',
+        name,
+        '-ss',
+        `${convertToHHMMSS(startTime)}`,
+        '-to',
+        `${convertToHHMMSS(endTime)}`,
+        '-acodec',
+        'copy',
+        '-vcodec',
+        'copy',
+        `out.${videoFileType}`,
+      );
 
-        const data = ffmpeg.FS('readFile', `out.${videoFileType}`);
-        const blob = new Blob([data.buffer], { type: `video/${videoFileType}` });
+      const data = ffmpeg.FS('readFile', `out.${videoFileType}`);
+      const blob = new Blob([data.buffer], { type: `video/${videoFileType}` });
 
-        setVideoTrimmed(blob);
-        setVideoTrimmedUrl(URL.createObjectURL(blob));
-      } catch (error) {
-        console.error('Error trimming video:', error);
-      }
+      setVideoTrimmed(blob);
+      setVideoTrimmedUrl(URL.createObjectURL(blob));
+
+      // console.log("data", data);
+      // console.log("videoTrimmed",videoTrimmed);
+      // console.log("videoTrimmedUrl",videoTrimmedUrl,"아아");
     }
   };
 
+  // const createShortform = () => {
+  //   // videoTrimmedUrl이 존재하는지 확인
+  //   if (videoTrimmedUrl) {
+  //     // <a> 엘리먼트를 생성하여 다운로드
+  //     const a = document.createElement('a');
+  //     a.href = videoTrimmedUrl;
+  //     a.download = 'test.mp4'; // 파일명 설정
+  //     document.body.appendChild(a);
+  //     a.click(); // 클릭 이벤트를 발생시켜 다운로드
+  //     // <a> 엘리먼트 제거
+  //     document.body.removeChild(a);
+  //   }
+  // };
+  
+  
+
   const createShortform = async () => {
     try {
-      const response = await uploadShortform(1, videoTrimmed);
+      
+      const response = await uploadShortform(1,videoTrimmed);
       console.log('Shortform created successfully:', response);
-      localStorage.removeItem('hasReloaded'); // Reset the flag before navigating away
       navigate(`/shortsShare?id=${response.data}`);
-      window.location.reload();
+
+      console.log("videoTrimmed",videoTrimmed);
+      console.log("videoTrimmedUrl",videoTrimmedUrl);
     } catch (error) {
+      // 업로드 과정에서 발생한 에러를 처리합니다.
       console.error('Error creating shortform:', error);
     }
   };
@@ -177,7 +218,7 @@ const VideoEditor = () => {
     <div className={styles.homeContainer}>
       <button onClick={reset}>원본으로 돌아가기</button>
       <button onClick={handleTrim}>완성</button>
-      <input style={{ color: "white" }} type="file" onChange={handleFileUpload} />
+      <input style={{color:"white"}} type="file" onChange={handleFileUpload} />
       <br />
       {videoSrc.length ? (
         <React.Fragment>
@@ -197,21 +238,23 @@ const VideoEditor = () => {
             onUpdate={updateOnSliderChange}
           />
           <br />
-          <div style={{ color: "white" }}>
-            Start duration: {convertToHHMMSS(startTime)} &nbsp; End duration: {convertToHHMMSS(endTime)} <br /> 현재 시간: {convertToHHMMSS(playTime)}
+          <div style={{color:"white"}}>
+          Start duration: {convertToHHMMSS(startTime)} &nbsp; End duration: {convertToHHMMSS(endTime)} <br/> 현재 시간: {convertToHHMMSS(playTime)}
           </div>
           <br />
           <div className={styles.playButton}>
-            {!isPlaying && (<PlayArrowIcon onClick={handlePlay} />)}
-            {isPlaying && (<PauseIcon onClick={handlePlay} />)} &nbsp;
+          {!isPlaying && (<PlayArrowIcon onClick={handlePlay}/>)}
+          {isPlaying && (<PauseIcon onClick={handlePlay}/>)} &nbsp;
           </div>
+          
           <br />
           {videoTrimmedUrl && (
             <div>
-              <video style={{ maxWidth: '100%', height: 'auto' }} controls>
+              <video style={{maxWidth:'100%', height:'auto'}} controls>
                 <source src={videoTrimmedUrl} type={videoFileValue.type} />
               </video>
-              <div style={{ color: "white" }} onClick={createShortform}>완성</div>
+                <div style={{color:"white"}} onClick={createShortform}>완성</div>
+
             </div>
           )}
         </React.Fragment>
@@ -223,3 +266,5 @@ const VideoEditor = () => {
 }
 
 export default VideoEditor;
+
+stepLabelClasses

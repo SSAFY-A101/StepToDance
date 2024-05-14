@@ -6,6 +6,7 @@ import styles from "./MyPage.module.css"; // Import CSS module
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUserDatas } from "../../api/UserApis";
+import ReactPlayer from "react-player";
 
 const MyPage = () => {
   const user = useSelector((state) => state.user);
@@ -14,6 +15,7 @@ const MyPage = () => {
   const [profile, setProfile] = useState({});
   const [feedbackList, setFeedbackList] = useState([]);
   const [shortsList, setShortsList] = useState([]);
+  const [activeTab, setActiveTab] = useState("home");
 
   const limit = 5;
   const offset = 0;
@@ -23,61 +25,8 @@ const MyPage = () => {
       try {
         const data = await getUserDatas(limit, offset);
         setProfile(data.data.user || {});
-        console.log(data.data);
-        // setFeedbackList(data.data.feedback_list.slice(0, 3) || []);
-        // setShortsList(data.data.shorts_list.slice(0, 3) || []);
-        const dummyFeedbackList = [
-          {
-            id: 1,
-            thumbnail_img_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d0d802c93619d330c11a6b36e3d6ff9e8575ab8dfa07e52cc8d66e9572f88d6?",
-            guide_title: "Guide 1",
-            guide_singer: "Singer 1",
-            created_at: "2022-01-01"
-          },
-          {
-            id: 2,
-            thumbnail_img_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d0d802c93619d330c11a6b36e3d6ff9e8575ab8dfa07e52cc8d66e9572f88d6?",
-            guide_title: "Guide 2",
-            guide_singer: "Singer 2",
-            created_at: "2022-01-02"
-          },
-          {
-            id: 3,
-            thumbnail_img_url: "https://cdn.builder.io/api/v1/image/assets/TEMP/6d0d802c93619d330c11a6b36e3d6ff9e8575ab8dfa07e52cc8d66e9572f88d6?",
-            guide_title: "Guide 3",
-            guide_singer: "Singer 3",
-            created_at: "2022-01-03"
-          }
-        ];
-        
-        const dummyShortsList = [
-          {
-            id: 1,
-            video_url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-            song_title: "Song 1",
-            singer: "Singer 1",
-            uploader: "Uploader 1",
-            created_at: "2022-01-01"
-          },
-          {
-            id: 2,
-            video_url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-            song_title: "Song 2",
-            singer: "Singer 2",
-            uploader: "Uploader 2",
-            created_at: "2022-01-02"
-          },
-          {
-            id: 3,
-            video_url: "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-            song_title: "Song 3",
-            singer: "Singer 3",
-            uploader: "Uploader 3",
-            created_at: "2022-01-03"
-          }
-        ];
-        setFeedbackList(dummyFeedbackList);
-        setShortsList(dummyShortsList);
+        setFeedbackList(data.data.feedback_list.slice(0, 3) || []);
+        setShortsList(data.data.shortform_list.slice(0, 3) || []);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -113,10 +62,29 @@ const MyPage = () => {
     }
   };
 
+  useEffect(() => {
+    const nav = document.getElementById("js-nav");
+    const pointer = document.getElementById("js-pointer");
+    const links = nav.getElementsByTagName("a");
+
+    pointer.style.width = `calc(100% / ${links.length} - 0.5em)`;
+
+    for (let i = 0; i < links.length; i++) {
+      const current = links[i];
+      current.dataset.order = i * 100 + "%";
+      current.addEventListener("click", movePointer);
+    }
+
+    function movePointer(e) {
+      const order = e.currentTarget.dataset.order;
+      pointer.style.transform = `translate3d(${order},0,0)`;
+    }
+  }, []);
+
   return (
     <div className={styles.safeArea}>
       <div className={styles.title}>MYPAGE</div>
-      <div className={styles.mainView}>
+      <div className={styles.profileView}>
         <img
           src={profile.profile_img_url}
           alt="Profile"
@@ -131,36 +99,64 @@ const MyPage = () => {
             RANK {profile.user_rank || 9999}
           </p>
         </div>
-        {/* Feedback List */}
-        <div className={styles.subtitle}>Feedbacks</div>
-        <div className={styles.feedbackList}>
-          {feedbackList.length > 0 ? (
-            feedbackList.map((feedback) => (
-              <div key={feedback.id} className={styles.feedbackItem}>
-                <div className={styles.videoDate}>{new Date(feedback.created_at).toLocaleDateString()}</div>
-                <img src={feedback.thumbnail_img_url} alt="Thumbnail" className={styles.thumbnailImage} />
-                <div className={styles.guideDetail}>{feedback.guide_title} - {feedback.guide_singer}</div>
-              </div>
-            ))
-          ) : (
-            <p>피드백이 존재하지 않습니다.</p>
+      </div>
+      <nav className={styles.nav} id="js-nav">
+        <div id="js-pointer" className={styles.nav__pointer}></div>
+        <ul className={styles.nav__list}>
+          <li><a href="#" onClick={() => setActiveTab("home")}>Home</a></li>
+          <li><a href="#" onClick={() => setActiveTab("feedback")}>Feedback</a></li>
+          <li><a href="#" onClick={() => setActiveTab("shorts")}>Shorts</a></li>
+        </ul>
+      </nav>
+      <div className={styles.card}>
+        <section className={styles.content}>
+          {activeTab === "home" && (
+            <div className={styles.item}>
+              <h2 className={`${styles.tabTitle} ${styles.tabPrimary}`}>Home</h2>
+              <p>Welcome to your profile!</p>
+            </div>
           )}
-        </div>
-        <div className={styles.subtitle_shorts}>Shorts</div>
-        <div className={styles.shortsList}>
-          {shortsList.length > 0 ? (
-            shortsList.map((shorts) => (
-              <div key={shorts.id} className={styles.shortsItem}>
-                <div className={styles.videoDate}> {new Date(shorts.created_at).toLocaleDateString()}</div>
-                <video src={shorts.video_url} controls className={styles.videoThumbnail} />
-                <div className={styles.guideDetail}>{shorts.song_title} - {shorts.singer}</div>                
-                {/* <p>Uploaded by: {shorts.uploader}</p> */}
+          {activeTab === "feedback" && (
+            <div className={styles.item}>
+              <h2 className={`${styles.tabTitle} ${styles.tabSuccess}`}>Feedbacks</h2>
+              <div className={styles.feedbackList}>
+                {feedbackList.length > 0 ? (
+                  feedbackList.map((feedback) => (
+                    <div key={feedback.id} className={styles.feedbackItem}>
+                      <div className={styles.videoDate}>{new Date(feedback.created_at).toLocaleDateString()}</div>
+                      <img src={feedback.thumbnail_img_url} alt="Thumbnail" className={styles.thumbnailImage} />
+                      <div className={styles.guideDetail}>{feedback.guide_title} - {feedback.guide_singer}</div>
+                    </div>
+                  ))
+                ) : (
+                  <p>피드백이 존재하지 않습니다.</p>
+                )}
               </div>
-            ))
-          ) : (
-            <p>생성한 숏츠가 존재하지 않습니다.</p>
+            </div>
           )}
-        </div>
+          {activeTab === "shorts" && (
+            <div className={styles.item}>
+              <h2 className={`${styles.tabTitle} ${styles.tabDefault}`}>Shorts</h2>
+              <div className={styles.shortsList}>
+                {shortsList.length > 0 ? (
+                  shortsList.map((shorts) => (
+                    <div key={shorts.id} className={styles.shortsItem}>
+                      <div className={styles.videoDate}>{new Date(shorts.created_at).toLocaleDateString()}</div>
+                      <ReactPlayer 
+                        className={styles.videoThumbnail} 
+                        url={shorts.video_url} 
+                        controls 
+                      />
+                      <div className={styles.guideDetail}>{shorts.song_title} - {shorts.singer}</div>
+                    </div>
+                  ))
+                ) : (
+                  <p>생성한 숏츠가 존재하지 않습니다.</p>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );
