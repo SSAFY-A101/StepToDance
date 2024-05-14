@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100vh;
+  height: calc(100vh - 11.5rem);
   z-index: 2;
 }
 
@@ -66,9 +66,10 @@
   font-size: inherit;
   border-radius: 2em;
   padding: 0.75em 1em;
-  background: var(--glow-color);;
+  background: var(--glow-color);
   border: 0.15em solid var(--glow-color);
-  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color),
+    0px 0px 0.5em 0px var(--glow-color);
   color: white;
   display: inline-flex;
   align-items: center;
@@ -76,7 +77,6 @@
 }
 
 /* 기타 스타일 정의... */
-
 
 /* Media Queries */
 
