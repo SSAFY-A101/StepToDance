@@ -115,10 +115,21 @@ a {
   color: #7f8c8d;
 }
 
-.feedbackList,
+.feedbackList
+ {
+  display: flex;
+  overflow-x: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
 .shortsList {
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 
 .feedbackItem,
@@ -130,8 +141,8 @@ a {
 
 .videoDate {
   flex-shrink: 0;
-  font-size: 0.5rem;
-  margin-right: 1em;
+  font-size: 0.7rem;
+  margin-bottom: 1em;
   color: gray;
 }
 
@@ -203,13 +214,7 @@ a {
 }
 
 
-.feedbackList, .shortsList {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  margin-top: 1.5rem;
-  justify-content: center;
-}
+
 
 .feedbackItem, .shortsItem {
 
@@ -228,10 +233,6 @@ a {
   font-family: "esamanru-Medium";
 }
 
-.videoDate {
-  font-size: 0.8rem;
-  margin-bottom: 0.8vh;
-}
 .thumbnailImage, .videoThumbnail {
   width: 120%;
   margin-bottom: 0.5rem;
