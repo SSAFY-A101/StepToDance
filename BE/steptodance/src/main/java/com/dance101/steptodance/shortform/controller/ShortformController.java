@@ -40,6 +40,14 @@ public class ShortformController {
 		return ApiResponse.toResponse(OK, StatusCode.SUCCESS_SHORTS_LIST, response);
 	}
 
+	@GetMapping("/user/{user_id}")
+	public ResponseEntity<ApiResponse<Page<ShortformFindResponse>>> findShortformList(@PathVariable("user_id") long userId,
+		@PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+	) {
+		Page<ShortformFindResponse> response = shortformService.findUserShortformList(userId, pageable);
+		return ApiResponse.toResponse(OK, StatusCode.SUCCESS_SHORTS_LIST, response);
+	}
+
 	@GetMapping("/{shortform_id}")
 	public ResponseEntity<ApiResponse<ShortformFindResponse>> findShortform(@PathVariable("shortform_id") long shortformId){
 		ShortformFindResponse response = shortformService.findShortform(shortformId);

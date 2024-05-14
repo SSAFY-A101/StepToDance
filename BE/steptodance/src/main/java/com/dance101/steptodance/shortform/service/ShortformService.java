@@ -15,6 +15,8 @@ public interface ShortformService {
 
 	List<ShortformFindResponse> findShortformList(int count);
 
+	Page<ShortformFindResponse> findUserShortformList(long userId, Pageable pageable);
+
 	void deleteShortForm(long shortformId);
 
 }
