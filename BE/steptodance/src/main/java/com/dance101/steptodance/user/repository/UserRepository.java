@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
 
     Optional<User> findByKakaoId(String kakaoId);
 
-    @Query("select new com.dance101.steptodance.user.data.response.MyRankResponse(sub.nickname, sub.profileImgUrl, sub.score, sub.ranking) " +
+    @Query("select new com.dance101.steptodance.user.data.response.MyRankResponse(sub.id, sub.nickname, sub.profileImgUrl, sub.score, sub.ranking) " +
         "from (select u.id as id, u.nickname as nickname, u.profileImgUrl as profileImgUrl, ifnull(sum(f.score), 0) as score, rank() over (order by sum(f.score) desc) as ranking " +
         "from User u left join Feedback f on u.id = f.user.id " +
         "group by u.id) as sub " +
