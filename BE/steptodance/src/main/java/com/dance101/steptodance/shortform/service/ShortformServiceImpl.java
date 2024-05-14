@@ -2,6 +2,8 @@ package com.dance101.steptodance.shortform.service;
 
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -73,9 +75,16 @@ public class ShortformServiceImpl implements ShortformService {
 	}
 
 	@Override
-	public Page<ShortformFindResponse> findShortformList(Pageable pageable) {
-		Page<ShortformFindResponse> shortformFindResponses = shortformRepository.findShortformList(pageable);
+	public List<ShortformFindResponse> findShortformList(int count) {
+		List<ShortformFindResponse> shortformFindResponses = shortformRepository.findShortformList(count);
 		
+		return shortformFindResponses;
+	}
+
+	@Override
+	public Page<ShortformFindResponse> findUserShortformList(long userId, Pageable pageable) {
+		Page<ShortformFindResponse> shortformFindResponses = shortformRepository.findUserShortformList(userId, pageable);
+
 		return shortformFindResponses;
 	}
 

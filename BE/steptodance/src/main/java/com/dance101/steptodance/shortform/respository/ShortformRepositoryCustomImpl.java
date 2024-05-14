@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.dance101.steptodance.shortform.data.response.ShortformFindResponse;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ public class ShortformRepositoryCustomImpl implements ShortformRepositoryCustom{
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public Page<ShortformFindResponse> findShortformList(Pageable pageable) {
-		List<ShortformFindResponse> content = queryFactory
+	public List<ShortformFindResponse> findShortformList(int count) {
+		return queryFactory
 			.select(Projections.constructor(ShortformFindResponse.class,
 				shortform.id,
 				guide.id,
@@ -39,6 +40,28 @@ public class ShortformRepositoryCustomImpl implements ShortformRepositoryCustom{
 			.from(shortform)
 			.innerJoin(guide).on(guide.id.eq(shortform.guide.id))
 			.innerJoin(user).on(user.id.eq(shortform.user.id))
+			.orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
+			.limit(count)
+			.fetch();
+	}
+
+	@Override
+	public Page<ShortformFindResponse> findUserShortformList(long userId, Pageable pageable) {
+		List<ShortformFindResponse> content = queryFactory
+			.select(Projections.constructor(ShortformFindResponse.class,
+				shortform.id,
+				guide.id,
+				user.id,
+				shortform.videoUrl,
+				guide.songTitle,
+				guide.singer,
+				user.nickname,
+				shortform.createdAt
+			))
+			.from(shortform)
+			.where(user.id.eq(userId))
+			.innerJoin(guide).on(guide.id.eq(shortform.guide.id))
+			.innerJoin(user).on(user.id.eq(shortform.user.id))
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.fetch();
@@ -50,6 +73,7 @@ public class ShortformRepositoryCustomImpl implements ShortformRepositoryCustom{
 
 		return new PageImpl<>(content, pageable, count);
 	}
+
 
 	@Override
 	public Optional<ShortformFindResponse> findShortformById(long shortformId) {
