@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { searchTitle } from "../../api/GuideApis";
+import { searchGuide } from "../../api/GuideApis";
 import styles from "../../styles/guide/SearchGuideList.module.css";
 import styled from "styled-components";
 
@@ -17,7 +17,7 @@ function SearchResultList(params) {
     const fetchGuideData = async () => {
       try {
         console.log(params);
-        const data = await searchTitle(searchQuery);
+        const data = await searchGuide(searchQuery);
         setGuideList(data.data.guide_list);
       } catch (error) {
         console.error("Error fetching guide data:", error);
