@@ -155,43 +155,4 @@ public class GuideServiceImpl implements GuideService{
 		// create & return
 		return new FeedbackResponse(savedFeedback.getId());
 	}
-	@Async
-	@Transactional
-	@Override
-	public CompletableFuture<FeedbackResponse> createGuideFeedbackBackUp(long userId, long guideId,
-		GuideFeedbackCreateRequest guideFeedbackCreateRequest) {
-		// find guide & user
-		Guide guide = guideRepository.findById(guideId)
-			.orElseThrow(() -> new NotFoundException("GuideServiceImpl:createGuideFeedback", GUIDE_NOT_FOUND));
-		User user = UserUtils.findUserById(userRepository, userId);
-
-		// create & save feedback
-		Feedback feedback = Feedback.builder()
-			// .videoUrl(guideFeedbackCreateRequest.videoUrl())
-			.videoUrl(null)
-			.score(0.0)
-			.thumbnailImgUrl(null)
-			.guide(guide)
-			.user(user)
-			.build();
-		Feedback savedFeedback = feedbackRepository.save(feedback);
-
-		// create message & send to ai server
-		FeedbackMessageRequest feedbackMessageRequest = FeedbackMessageRequest.builder()
-			.id(savedFeedback.getId())
-			.startAt(null)
-			.endAt(null)
-			.videoUrl(null)
-			// .startAt(guideFeedbackCreateRequest.startAt())
-			// .endAt(guideFeedbackCreateRequest.endAt())
-			// .videoUrl(guideFeedbackCreateRequest.videoUrl())
-			.guideUrl(guide.getVideoUrl())
-			.highlightSectionStartAt(guide.getHighlightSectionStartAt())
-			.highlightSectionEndAt(guide.getHighlightSectionEndAt())
-			.build();
-		aiServerService.publish(feedbackMessageRequest);
-
-		// create & return
-		return CompletableFuture.completedFuture(new FeedbackResponse(savedFeedback.getId()));
-	}
 }
