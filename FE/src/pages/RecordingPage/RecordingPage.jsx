@@ -6,6 +6,7 @@ import RecordRTC from "recordrtc";
 import ReactPlayer from "react-player";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import CheckIcon from "@mui/icons-material/Check";
+import { guideResult } from "../../api/GuideApis";
 
 export const WebcamStreamCapture = () => {
   const [layout, setLayout] = useState("overlay");
@@ -103,6 +104,12 @@ export const WebcamStreamCapture = () => {
   //   [setRecordedChunks]
   // );
 
+  function formatTime(date) {
+    let minutes = date.getMinutes().toString().padStart(2, "0");
+    let seconds = date.getSeconds().toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }
+
   useEffect(() => {
     if (recordedChunks.length) {
       const blob = new Blob(recordedChunks, {
@@ -134,8 +141,23 @@ export const WebcamStreamCapture = () => {
     setRecordVideo("");
   }, []);
 
-  const resultHandler = () => {
-    console.log(recordVideo);
+  const resultHandler = async () => {
+    const start = formatTime(new Date("00:00"));
+    const end = formatTime(new Date("01:00"));
+    const res = await fetch(recordVideo)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const formData = new FormData();
+        formData.append("video", blob, "video.mp4");
+        formData.append("start_at", start);
+        formData.append("end_at", end);
+
+        return formData;
+      });
+
+    const response = await guideResult(res);
+    console.log(response);
+
     setIsLoading(!isLoading);
   };
 

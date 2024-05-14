@@ -11,7 +11,7 @@ export default function CarouselCustom(props) {
   });
 
   const movieEdit = (element) => {
-    navigate(`/guideDetail?id=${element.content.props.item.id}`);
+    navigate(`/guideDetail/${element.content.props.item.id}`);
   };
 
   const [offsetRadius, setOffsetRadius] = useState(2);

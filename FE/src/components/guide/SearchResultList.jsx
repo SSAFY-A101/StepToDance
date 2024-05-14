@@ -28,7 +28,7 @@ function SearchResultList(params) {
   }, [location]);
 
   const renderItem = ({ item }) => (
-    <Link to={{ pathname: "/guideDetail", search: `?id=${item.id}` }}>
+    <Link to={{ pathname: `/guideDetail/${item.id}` }}>
       <div className={styles.guide}>
         <img className={styles.image} src={item.thumbnail_img_url} />
         <p className={styles.text}>
