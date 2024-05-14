@@ -19,7 +19,7 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
     @Override
     public List<TopRankerListResponse> findTopRankerList() {
         return queryFactory.select(Projections.constructor(TopRankerListResponse.class,
-                user.id,f
+                user.id,
                 user.nickname,
                 user.profileImgUrl,
                 feedback.score.sum(),
