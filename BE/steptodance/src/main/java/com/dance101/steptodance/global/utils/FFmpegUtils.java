@@ -95,7 +95,7 @@ public class FFmpegUtils {
 		log.info(type + " id: " + id + ", frame amount: " + size);
 
 		MultipartFile ret = FileUtil.convertToMultipartFile(
-			new File(outputDirPath + type + id + "/frame_0001.png"));
+			new File(outputDirPath + type + id + "/frame_0008.png"));
 
 		// 이미지파일 삭제
 		Files.walk(Path.of(outputDirPath + type + id))
