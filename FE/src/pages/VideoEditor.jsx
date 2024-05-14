@@ -23,6 +23,14 @@ const VideoEditor = () => {
   let initialSliderValue = 0;
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const hasReloaded = localStorage.getItem('hasReloaded');
+    if (!hasReloaded) {
+      localStorage.setItem('hasReloaded', 'true');
+      window.location.reload();
+    }
+  }, []);
+
   const reset = () => {
     setStartTime(0);
   }
@@ -157,7 +165,9 @@ const VideoEditor = () => {
     try {
       const response = await uploadShortform(1, videoTrimmed);
       console.log('Shortform created successfully:', response);
+      localStorage.removeItem('hasReloaded'); // Reset the flag before navigating away
       navigate(`/shortsShare?id=${response.data}`);
+      window.location.reload();
     } catch (error) {
       console.error('Error creating shortform:', error);
     }
