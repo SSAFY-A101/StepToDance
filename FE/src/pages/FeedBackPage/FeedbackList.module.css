@@ -1,0 +1,94 @@
+/* FeedbackList.module.css */
+.container {
+  padding: 1em;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 11.5rem);
+}
+
+.title {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.feedbackList {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.feedbackItem {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 1em;
+  border-radius: 5px;
+}
+
+.videoDate {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 0.5em;
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin-bottom: 0.5em;
+}
+
+.guideDetail {
+  font-size: 1em;
+  color: #333;
+}
+
+.loadMoreButton,
+.backButton {
+  display: block;
+  width: 100%;
+  padding: 0.75em;
+  margin-top: 1em;
+  font-size: 1em;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.loadMoreButton:hover,
+.backButton:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0.5em;
+  }
+
+  .title {
+    font-size: 1.2em;
+  }
+
+  .feedbackItem {
+    padding: 0.5em;
+  }
+
+  .videoDate,
+  .guideDetail {
+    font-size: 0.9em;
+  }
+
+  .loadMoreButton,
+  .backButton {
+    padding: 0.5em;
+    font-size: 0.9em;
+  }
+}

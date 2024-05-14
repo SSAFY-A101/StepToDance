@@ -17,19 +17,17 @@ const MyPage = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [shortsList, setShortsList] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
-  const [loading, setLoading] = useState(false);
-  const [feedbackPage, setFeedbackPage] = useState(0);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
 
-  const limit = 3;
+  const limit = 30;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getUserDatas(limit, 0);
+        console.log(data.data)
         setProfile(data.data.user || {});
         setFeedbackList(data.data.feedback_list || []);
-        console.log(data.data.shortform_list[0])
         setShortsList(data.data.shortform_list.slice(0, 3) || []);
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -39,24 +37,11 @@ const MyPage = () => {
     fetchData();
   }, []);
 
-  const fetchMoreFeedbacks = async () => {
-    try {
-      setLoading(true);
-      const data = await getUserDatas(limit, (feedbackPage + 1) * limit);
-      setFeedbackList((prevFeedback) => [...prevFeedback, ...data.data.feedback_list]);
-      setFeedbackPage((prevPage) => prevPage + 1);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching more feedbacks:", error);
-      setLoading(false);
-    }
-  };
-
   const fetchFeedbackDetail = async (feedbackId) => {
     try {
       const data = await getFeedbackDetail(feedbackId);
       setSelectedFeedback(data.data.feedback);
-      console.log(data)
+      console.log(data);
     } catch (error) {
       console.error("Error fetching feedback detail:", error);
     }
@@ -107,24 +92,6 @@ const MyPage = () => {
       pointer.style.transform = `translate3d(${order},0,0)`;
     }
   }, []);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop !==
-          document.documentElement.offsetHeight ||
-        loading
-      ) {
-        return;
-      }
-      if (activeTab === "feedback") {
-        fetchMoreFeedbacks();
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [loading, activeTab]);
 
   return (
     <div className={styles.safeArea}>
@@ -181,31 +148,28 @@ const MyPage = () => {
                 피드백 영상
               </h2>
               <div className={styles.feedbackList}>
-                {feedbackList.length > 0 ? (
-                  feedbackList.map((feedback) => (
-                    <div 
-                      key={feedback.id} 
-                      className={styles.feedbackItem}
-                      onClick={() => fetchFeedbackDetail(feedback.id)}
-                    >
-                      <div className={styles.videoDate}>
-                        {new Date(feedback.created_at).toLocaleDateString()}
-                      </div>
-                      <img
-                        src={feedback.thumbnail_img_url}
-                        alt="Thumbnail"
-                        className={styles.thumbnailImage}
-                      />
-                      <div className={styles.guideDetail}>
-                        {feedback.guide_title} - {feedback.guide_singer}
-                      </div>
+                {feedbackList.slice(0, limit).map((feedback) => (
+                  <div key={feedback.id} className={styles.feedbackItem}>
+                    <div className={styles.videoDate}>
+                      {new Date(feedback.created_at).toLocaleDateString()}
                     </div>
-                  ))
-                ) : (
-                  <p>피드백이 존재하지 않습니다.</p>
-                )}
+                    <img
+                      src={feedback.thumbnail_img_url}
+                      alt="Thumbnail"
+                      className={styles.thumbnailImage}
+                    />
+                    <div className={styles.guideDetail}>
+                      {feedback.guide_title} - {feedback.guide_singer}
+                    </div>
+                  </div>
+                ))}
               </div>
-              {loading && <p>Loading more feedbacks...</p>}
+                <button
+                  onClick={() => navigate("/feedbacks", { state: { initialFeedbacks: feedbackList } })}
+                  className={styles.viewAllButton}
+                >
+                  피드백 전체 리스트 보기
+                </button>
             </div>
           )}
           {activeTab === "shorts" && (
@@ -223,7 +187,9 @@ const MyPage = () => {
                       <ReactPlayer
                         className={styles.videoThumbnail}
                         url={shorts.video_url}
+                        width="100%"
                         controls
+                        playsinline
                       />
                       <div className={styles.guideDetail}>
                         {shorts.song_title} - {shorts.singer}
@@ -241,11 +207,12 @@ const MyPage = () => {
           <div className={styles.feedbackDetailModal}>
             <h2>피드백 상세 정보</h2>
             <p>Score: {selectedFeedback.score}</p>
-            <ReactPlayer url={selectedFeedback.video_url} controls />
+            <ReactPlayer url={selectedFeedback.video_url} playsinline controls />
             <p>Guide Video:</p>
-            <ReactPlayer url={selectedFeedback.guide_url} controls />
+            <ReactPlayer url={selectedFeedback.guide_url} playsinline controls />
             <p>
-              Highlight Section: {selectedFeedback.highlight_section_start_at} - {selectedFeedback.highlight_section_end_at}
+              Highlight Section: {selectedFeedback.highlight_section_start_at} -{" "}
+              {selectedFeedback.highlight_section_end_at}
             </p>
             <h3>Incorrect Sections</h3>
             <ul>
