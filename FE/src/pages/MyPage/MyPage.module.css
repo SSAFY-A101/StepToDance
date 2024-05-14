@@ -27,6 +27,125 @@
 }
 
 .profileImage {
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+}
+
+.headerView {
+  flex-grow: 1;
+}
+
+.username {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.rankAndPoints {
+  font-size: 1em;
+  color: gray;
+}
+
+.nav {
+  position: relative;
+  padding: 1em;
+  margin-top: 2vh;
+}
+
+.nav__pointer {
+  z-index: 1;
+  position: absolute;
+  top: 0.6em;
+  left: auto;
+  background-color: var(--glow1-color);
+  height: 1.8em;
+  transition: transform 0.25s ease-in-out;
+  border-radius: 0.3em;
+  will-change: transform;
+  backface-visibility: hidden;
+  border: 0.15em solid var(--glow1-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  background-color: hsl(212, 100%, 64%);
+}
+
+.nav__list {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+.card {
+  margin-top: 1em;
+  padding: 1em;
+  background: #c7ddff;
+  border-radius: 0.3em;
+}
+
+.content {
+  margin-top: 1em;
+}
+
+.item {
+  padding: 1em;
+}
+
+.tabTitle {
+  margin-bottom: 1em;
+  font-size: 2rem;
+}
+
+.tabPrimary {
+  color: #3498db;
+}
+
+.tabSuccess {
+  color: #2ecc71;
+}
+
+.tabDefault {
+  color: #7f8c8d;
+}
+
+.feedbackList,
+.shortsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedbackItem,
+.shortsItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.videoDate {
+  flex-shrink: 0;
+  font-size: 0.5rem;
+  margin-right: 1em;
+  color: gray;
+}
+
+.thumbnailImage,
+.videoThumbnail {
+  width: 100px;
+  height: 100px;
+  margin-right: 1em;
+}
+
+.guideDetail {
+  flex-grow: 1;
+}
+.profileImage {
   width: 10vw; /* 150px */
   height: 10vw;  /* 100px */
   border-radius: 50%;
@@ -92,32 +211,11 @@
   justify-content: center;
 }
 
-.feedbackItem {
-  border: 0.15em solid var(--glow1-color);
-  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
-  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
-  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
-  background-color: hsl(212, 100%, 64%);
-  border-radius: 10px;
-  padding: 0.5rem;
-  margin-left: 7px;
-  margin-right: 7px;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+.feedbackItem, .shortsItem {
 
-.shortsItem{
-  border: 0.15em solid var(--glow-color);
-  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
-  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
-  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
-  background-color: var(--glow-color);
   border-radius: 10px;
-  padding: 0.5rem;
-  margin-left: 7px;
-  margin-right: 7px;
+  padding: 0.8rem;
+  margin-left: 15px;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -143,9 +241,17 @@
 
 /* Smaller devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
+  .profileView {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-self: center;
+    gap: 10;
+  }
   .profileImage {
     width: 7.5rem; 
     height: 7.5rem;
+    margin-top: 3vh;
   }
 
   .username {
