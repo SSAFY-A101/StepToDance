@@ -3,6 +3,8 @@ package com.dance101.steptodance.shortform.controller;
 import static com.dance101.steptodance.global.data.response.StatusCode.*;
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,11 +34,17 @@ import lombok.RequiredArgsConstructor;
 public class ShortformController {
 	private final ShortformService shortformService;
 
-	@GetMapping
-	public ResponseEntity<ApiResponse<Page<ShortformFindResponse>>> findShortformList(
+	@GetMapping("/list/{count}")
+	public ResponseEntity<ApiResponse<List<ShortformFindResponse>>> findShortformList(@PathVariable("count") int count) {
+		List<ShortformFindResponse> response = shortformService.findShortformList(count);
+		return ApiResponse.toResponse(OK, StatusCode.SUCCESS_SHORTS_LIST, response);
+	}
+
+	@GetMapping("/user/{user_id}")
+	public ResponseEntity<ApiResponse<Page<ShortformFindResponse>>> findShortformList(@PathVariable("user_id") long userId,
 		@PageableDefault(size = 5, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
 	) {
-		Page<ShortformFindResponse> response = shortformService.findShortformList(pageable);
+		Page<ShortformFindResponse> response = shortformService.findUserShortformList(userId, pageable);
 		return ApiResponse.toResponse(OK, StatusCode.SUCCESS_SHORTS_LIST, response);
 	}
 
