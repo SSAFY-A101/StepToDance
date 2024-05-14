@@ -1,5 +1,5 @@
 .rank-page {
-  height: 100%;
+  height: calc(100vh - 11.5rem);
   display: flex;
   color: white;
   padding: 1rem;
