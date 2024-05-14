@@ -9,6 +9,7 @@ const GuideUploadPage = () => {
   const [videoDuration, setVideoDuration] = useState('00:00');
   const [artistName, setArtistName] = useState("");
   const [selectedOption, setSelectedOption] = useState('1');  
+  const [highlights, setHighlights] = useState([{ start: '00:00', end: '00:00' }]);
   const videoRef = useRef(null);
   
 
@@ -30,8 +31,9 @@ const GuideUploadPage = () => {
   };
 
   const handleLoadedMetadata = () => {
-    const duration = videoRef.current.duration;
-    setVideoDuration(formatTime(new Date(duration * 1000)));
+    const duration = formatTime(new Date(videoRef.current.duration * 1000));
+    setVideoDuration(duration);
+    setHighlights([{ start: '00:00', end: duration }]);
   };
 
   function formatTime(date) {
@@ -39,6 +41,18 @@ const GuideUploadPage = () => {
     let seconds = date.getSeconds().toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   }
+
+
+  const handleHighlightChange = (index, field, value) => {
+    const newHighlights = highlights.map((highlight, i) => {
+      if (i === index) {
+        return { ...highlight, [field]: value };
+      }
+      return highlight;
+    });
+    setHighlights(newHighlights);
+  };
+
 
   const sendApi = async () => {
     let start_time_str = "11:22";
@@ -60,11 +74,13 @@ const GuideUploadPage = () => {
     let end_time = current_date;
 
     const formData = new FormData();
-    formData.append("genre_id", 1);
+    formData.append("genre_id", selectedOption);
     formData.append("song_title", selectTitle);
-    formData.append("singer", "엄정화");
-    formData.append("highlight_section_start_at", formatTime(start_time));
-    formData.append("highlight_section_end_at", formatTime(end_time));
+    formData.append("singer", artistName);
+    highlights.forEach((highlight, index) => {
+      formData.append(`highlight_${index}_start`, highlight.start);
+      formData.append(`highlight_${index}_end`, highlight.end);
+    });
     formData.append("video", selectVideo);
     const response = await guideUpload(formData);
     console.log(response);
@@ -73,11 +89,11 @@ const GuideUploadPage = () => {
   return (
     <section className={styles["guide_upload-page"]}>
       <form>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked={selectedOption === '1'} onChange={handleOptionChange} /><span>K-pop</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="2" checked={selectedOption === '2'} onChange={handleOptionChange}/><span>B-boying</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="3" checked={selectedOption === '3'} onChange={handleOptionChange}/><span>Hip-hop</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="4" checked={selectedOption === '4'} onChange={handleOptionChange}/><span>Popping</span></label>
-        <label><input className={styles["bar"]} type="radio" name="genre" value="5" checked={selectedOption === '5'} onChange={handleOptionChange}/><span>Traditional</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="1" checked={selectedOption === '1'} onChange={handleOptionChange} /><span>케이팝</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="2" checked={selectedOption === '2'} onChange={handleOptionChange}/><span>비보잉</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="3" checked={selectedOption === '3'} onChange={handleOptionChange}/><span>힙합</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="4" checked={selectedOption === '4'} onChange={handleOptionChange}/><span>팝핑</span></label>
+        <label><input className={styles["bar"]} type="radio" name="genre" value="5" checked={selectedOption === '5'} onChange={handleOptionChange}/><span>전통무용</span></label>
       </form>
       <div className={styles["input-section"]}>
         <input
@@ -118,22 +134,24 @@ const GuideUploadPage = () => {
           </>
         )}
       </article>
-      <div className={styles["input-section"]}>
-        <input
-          type="text"
-          placeholder="Highlight start (default 00:00)"
-          value="00:00"
-          readOnly
-          className={styles["text-input"]}
-        />
-        <input
-          type="text"
-          placeholder="Highlight end (video end time)"
-          value={videoDuration}
-          readOnly
-          className={styles["text-input"]}
-        />
-      </div>
+      {highlights.map((highlight, index) => (
+        <div key={index} className={styles["input-section"]}>
+          <input
+            type="text"
+            placeholder="Highlight start (default 00:00)"
+            value={highlight.start}
+            onChange={(e) => handleHighlightChange(index, 'start', e.target.value)}
+            className={styles["text-input"]}
+          />
+          <input
+            type="text"
+            placeholder="Highlight end (video end time)"
+            value={highlight.end}
+            onChange={(e) => handleHighlightChange(index, 'end', e.target.value)}
+            className={styles["text-input"]}
+          />
+        </div>
+      ))}
       <button className={styles["guide-submit"]} onClick={() => sendApi()}>
         <UploadIcon 
         style={{ color: "white" }}
