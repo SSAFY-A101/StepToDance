@@ -1,0 +1,111 @@
+/* Base styles */
+
+.safeArea {
+    background: linear-gradient(180deg, #0b1238 0%, #286eca 100%);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: calc(100vh - 11.5rem);
+    z-index: 2;
+  }
+  
+  .title {
+    color: white;
+    display: flex;
+    justify-content: center;
+    margin-top: 15vh;
+  }
+  
+  .mainView {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 0 0.75rem;
+    z-index: 2;
+  }
+  
+  .headerView {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.25rem;
+  }
+  
+  .profileImage {
+    width: 10vw; /* 150px */
+    height: 5vh; /* 100px */
+    border-radius: 50%;
+  }
+  
+  .logoutButton {
+    background-color: #fff;
+    padding: 0.625rem 1.25rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    color: #0b1238;
+    font-weight: 600;
+    margin-top: 1.25rem;
+  }
+  
+  .username {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    margin-top: 6.875rem; /* 110px */
+  }
+  
+  .rankAndPoints {
+    color: #fff;
+    font-size: 1rem;
+    text-align: center;
+  }
+  
+  /* Media Queries */
+  
+  /* Smaller devices (phones, 600px and down) */
+  @media only screen and (max-width: 600px) {
+    .profileImage {
+      width: 7.5rem; /* 120px */
+      height: 7.5rem; /* 120px */
+    }
+  
+    .username {
+      font-size: 1.2rem; /* Slightly smaller font size */
+      margin-top: 5rem; /* Less margin */
+    }
+  
+    .logoutButton {
+      padding: 0.5rem 1rem; /* Smaller padding */
+      font-size: 0.9rem; /* Smaller font size */
+    }
+  
+    .mainView {
+      padding: 1.5rem 0; /* Less padding */
+    }
+  }
+  
+  /* Medium devices (tablets, 768px and up) */
+  @media only screen and (min-width: 601px) and (max-width: 768px) {
+    .profileImage {
+      width: 8.5rem; /* 136px */
+      height: 8.5rem; /* 136px */
+    }
+  
+    .username {
+      font-size: 1.4rem;
+    }
+  }
+  
+  /* Large devices (desktops, 992px and up) */
+  @media only screen and (min-width: 992px) {
+    .username {
+      font-size: 2rem; /* Larger text on larger screens */
+      margin-top: 7.5rem; /* More margin */
+    }
+  
+    .logoutButton {
+      padding: 0.75rem 1.5rem; /* Larger padding */
+      font-size: 1.1rem; /* Larger font size */
+    }
+  }
+  
