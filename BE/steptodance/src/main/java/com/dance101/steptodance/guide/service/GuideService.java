@@ -20,7 +20,6 @@ public interface GuideService {
 
 	GuideListFindResponse findHotGuideList();
 
-
 	void guideUploadFile(long userId, GuideUploadMultipartRequest request);
 
 	GuideFindResponse findGuide(long guideId);
