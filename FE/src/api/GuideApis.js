@@ -2,7 +2,7 @@ import { customAxios } from "./customAxios";
 
 export const getGuideList = async () => {
   try {
-    const response = await customAxios.get(`guides?limit=10&offset=1`, {});
+    const response = await customAxios.get(`guides?limit=10&offset=1&title=&singer=`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching guide list:", error);
@@ -13,11 +13,18 @@ export const getGuideList = async () => {
 export const guideUpload = async (formData) => {
   delete customAxios.defaults.headers["Content-Type"];
   try {
-    const response = await customAxios.post(
-      `guides/file`,
+    const response = await customAxios.post(`guides/file`, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching guide list:", error);
+    throw error;
+  }
+};
 
-      formData
-    );
+export const guideResult = async (formData) => {
+  delete customAxios.defaults.headers["Content-Type"];
+  try {
+    const response = await customAxios.post(`guides/162`, formData);
     return response.data;
   } catch (error) {
     console.error("Error fetching guide list:", error);
@@ -45,10 +52,10 @@ export const getGuideDetail = async (guideId) => {
   }
 };
 
-export const searchTitle = async (title) => {
+export const searchGuide = async (keyword) => {
   try {
     const response = await customAxios.get(
-      `guides?limit=10&offset=1&title=${title}`
+      `guides?limit=10&offset=1&title=${keyword}&singer=${keyword}`
     );
     return response.data;
   } catch (error) {

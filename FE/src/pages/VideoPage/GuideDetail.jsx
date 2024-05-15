@@ -1,15 +1,31 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./GuideDetail.module.css";
-import ReactPlayer from 'react-player';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import PauseIcon from '@mui/icons-material/Pause';
-import VolumeUpIcon from '@mui/icons-material/VolumeUp';
-import SpeedIcon from '@mui/icons-material/Speed';
-import ReplayIcon from '@mui/icons-material/Replay';
-import { useNavigate } from "react-router-dom";
-import VideocamIcon from '@mui/icons-material/Videocam';
+import ReactPlayer from "react-player";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
+import SpeedIcon from "@mui/icons-material/Speed";
+import ReplayIcon from "@mui/icons-material/Replay";
+import { useLocation, useNavigate } from "react-router-dom";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import { getGuideDetail } from "../../api/GuideApis";
+
+const VIDEODATA = {
+  id: 1,
+  video_url:
+    "https://step-to-dance.s3.ap-northeast-2.amazonaws.com/blue_check.mp4",
+  thumbnail_img_url: "src/assets/thumbnail.png",
+  song_title: "노래 제목",
+  singer: "가수",
+  genre: "Kpop",
+  rank: 1,
+  uploader: "user123",
+  count_feedback: 5,
+  created_at: "2024-04-15T08:00:00Z",
+};
 
 const GuideDetail = () => {
+  const location = useLocation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [played, setPlayed] = useState(0);
@@ -23,21 +39,17 @@ const GuideDetail = () => {
   const playbackRates = [1, 1.25, 1.5, 0.5, 0.75]; // 배속 설정 배열
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [videoData, setVideoData] = useState(VIDEODATA);
 
-  // 더미 데이터
-  const videoData = {
-    id: 1,
-    video_url: 'https://step-to-dance.s3.ap-northeast-2.amazonaws.com/blue_check.mp4',
-    thumbnail_img_url: 'src/assets/thumbnail.png',
-    song_title: '노래 제목',
-    singer: '가수',
-    genre: 'Kpop',
-    rank: 1,
-    uploader: 'user123',
-    count_feedback: 5,
-    created_at: '2024-04-15T08:00:00Z',
-  };
+  useEffect(() => {
+    const guideIndex =
+      location.pathname.split("/")[location.pathname.split("/").length - 1];
+    (async () => {
+      const response = await getGuideDetail(guideIndex);
+      setVideoData(response.data);
+    })();
+  }, []);
 
   const handlePlayPause = () => {
     if (ended) {
@@ -55,9 +67,8 @@ const GuideDetail = () => {
     setShowVolume(!showVolume);
   };
 
-
   const handleOnAirClick = () => {
-    navigate('/record', { state: { videoUrl: videoData.video_url } });
+    navigate("/record", { state: { videoUrl: videoData.video_url } });
   };
 
   const changePlaybackRate = () => {
@@ -74,18 +85,27 @@ const GuideDetail = () => {
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     seconds = Math.floor(seconds % 60);
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
 
   return (
     <div className={styles.mainView}>
       <div className={styles.infoBar}>
-        <h2>{videoData.song_title} - {videoData.singer}</h2> {/* 노래 제목과 가수 이름 표시 */}
+        <h2>
+          {videoData.song_title} - {videoData.singer}
+        </h2>{" "}
+        {/* 노래 제목과 가수 이름 표시 */}
       </div>
-      <div 
+      <div
         className={styles.playerWrapper}
-        onMouseEnter={() => { setShowControls(true); setShowVolume(true); }}
-        onMouseLeave={() => { setShowControls(false); setShowVolume(false); }}
+        onMouseEnter={() => {
+          setShowControls(true);
+          setShowVolume(true);
+        }}
+        onMouseLeave={() => {
+          setShowControls(false);
+          setShowVolume(false);
+        }}
       >
         <ReactPlayer
           url={videoData.video_url}
@@ -103,22 +123,43 @@ const GuideDetail = () => {
           volume={volume}
           playsinline
         />
-        <div className={styles.controlsOverlay} style={{opacity: showControls ? 1 : 0}}>
+        <div
+          className={styles.controlsOverlay}
+          style={{ opacity: showControls ? 1 : 0 }}
+        >
           <div className={styles.playButton} onClick={handlePlayPause}>
-            {ended ? <ReplayIcon fontSize="large" /> : isPlaying ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
+            {ended ? (
+              <ReplayIcon fontSize="large" />
+            ) : isPlaying ? (
+              <PauseIcon fontSize="large" />
+            ) : (
+              <PlayArrowIcon fontSize="large" />
+            )}
           </div>
           <div className={styles.timeDisplayOverlay}>
             {formatTime(played * duration)} / {formatTime(duration)}
           </div>
-          <div className={styles.progressBar} onClick={(e) => {
+          <div
+            className={styles.progressBar}
+            onClick={(e) => {
               const rect = e.target.getBoundingClientRect();
               const fraction = (e.clientX - rect.left) / rect.width;
-              playerRef.current.seekTo(fraction, 'fraction');
-            }}>
-            <div className={styles.progress} style={{ width: `${played * 100}%` }}></div>
+              playerRef.current.seekTo(fraction, "fraction");
+            }}
+          >
+            <div
+              className={styles.progress}
+              style={{ width: `${played * 100}%` }}
+            ></div>
           </div>
-          <div className={styles.volumeControl} style={{ display: showVolume ? 'flex' : 'none' }}>
-          <VolumeUpIcon style={{color:'white'}}onClick={toggleVolumeControl} />
+          <div
+            className={styles.volumeControl}
+            style={{ display: showVolume ? "flex" : "none" }}
+          >
+            <VolumeUpIcon
+              style={{ color: "white" }}
+              onClick={toggleVolumeControl}
+            />
             {showVolume && (
               <input
                 type="range"
@@ -132,15 +173,15 @@ const GuideDetail = () => {
             )}
           </div>
           <div className={styles.speedControl} onClick={changePlaybackRate}>
-            <SpeedIcon fontSize="small"/>
+            <SpeedIcon fontSize="small" />
             <span>{playbackRate.toFixed(2)}x</span> {/* 배속 표시 */}
           </div>
         </div>
       </div>
       <button className={styles.glowingBtn}>
         <span className={styles.glowingTxt}>
-          <VideocamIcon fontSize="large" onClick={handleOnAirClick}/>
-          </span>
+          <VideocamIcon fontSize="large" onClick={handleOnAirClick} />
+        </span>
       </button>
     </div>
   );

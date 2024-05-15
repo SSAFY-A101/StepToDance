@@ -27,6 +27,7 @@ const RankingPage = () => {
         return (
           <RankingList
             key={index}
+            id={rank.user_id}
             ranking={rank.rank}
             name={rank.nickname}
             score={rank.score}

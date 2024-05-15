@@ -1,0 +1,114 @@
+.container {
+  padding: 1em;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 11.5rem);
+}
+
+
+.title {
+  font-size: 1.5em;
+  margin-bottom: 1em;
+}
+
+.score {
+  font-size: 2em;
+  color: #0575e6;
+  margin-bottom: 1em;
+}
+
+.playersWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.player {
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.controlsOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playButton {
+  cursor: pointer;
+  color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.backButton {
+  display: block;
+  width: 100%;
+  padding: 0.75em;
+  margin-top: 1em;
+  font-size: 1em;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: #0056b3;
+}
+
+.feedbackContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.feedbackList {
+  display: flex;
+  overflow-x: auto;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.feedbackItem {
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-left: 15px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.arrowButton {
+  background-color: transparent;
+  border: none;
+  color: #3498db;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+
+@media (max-width: 600px) {
+  .score {
+    font-size: 1.5em;
+  }
+
+  .playersWrapper {
+    gap: 0.5em;
+  }
+}
