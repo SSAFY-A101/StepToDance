@@ -120,7 +120,7 @@ public class FFmpegUtils {
 			x /= 17;
 			x = imgWidth * x;
 			builder = new FFmpegBuilder();
-			builder.setInput(outputDirPath + "guide" + id + String.format("/output/frame_%05d.png", i));
+			builder.setInput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
 			builder.addOutput(outputDirPath + "guide" + id + "/output" + String.format("/frame_%05d.png", i));
 			builder.setVideoFilter("crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0");
 			// TODO: 로그 지우기
@@ -128,7 +128,7 @@ public class FFmpegUtils {
 			executor.createJob(builder).run();;
 		}
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
-			.setInput(outputDirPath + "guide" + id + "/frame_%05d.png")
+			.setInput(outputDirPath + "guide" + id + "/output/frame_%05d.png")
 			.addOutput(outputDirPath + "guide" + id + "/result.mp4")
 			.setFormat("mp4")
 			.setVideoCodec("libx264") // 비디오 코덱 설정
