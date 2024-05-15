@@ -109,7 +109,7 @@ public class FFmpegUtils {
 		for (int i = 1; i <= frameList.size(); i++) {
 			// movenet 모델
 			double x = 0;
-			for (List<Double> joint : frameList.get(i).getModel()) {
+			for (List<Double> joint : frameList.get(i-1).getModel()) {
 				x += joint.get(0);
 			}
 			x /= 17;
