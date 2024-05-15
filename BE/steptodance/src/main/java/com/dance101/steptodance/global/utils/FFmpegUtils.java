@@ -119,7 +119,7 @@ public class FFmpegUtils {
 			builder.addOutput(outputDirPath + "guide" + id + "/output" + String.format("/frame_%05d.png", i));
 			builder.setVideoFilter("crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0");
 			// TODO: 로그 지우기
-			log.info("humanCenterMethod: {" + "crop="+ (x - halfWidth) +":in_h:" + width + ":0" + "}");
+			log.info("humanCenterMethod: {" + "crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0" + "}");
 			executor.createJob(builder).run();;
 		}
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
