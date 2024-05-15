@@ -71,6 +71,7 @@ public class KafkaConsumeService implements AIConsumeService {
 		log.info("consumeGuideCompletion: received message = " + message);
 		// call guide model & save to MongoDB
 		List<String> list = redisTemplate.opsForList().range("guide:"+message, 0, -1);
+		redisTemplate.delete("guide:"+message);
 		log.info("consumeGuideCompletion: redis list called.");
 		log.info("consumeGuideCompletion: size= " + list.size());
 		log.info("consumeGuideCompletion: an Item = " + list.get(0));
@@ -89,9 +90,10 @@ public class KafkaConsumeService implements AIConsumeService {
 			Path oldGuide = s3Service.download("guide/"+message+".mp4");
 			Path newGuide = ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
 			s3Service.delete("guide/"+message+".mp4");
-			// TODO: 새로운 로컬 영상 삭제하기
 			String url = s3Service.upload(FileUtil.convertToMultipartFile(newGuide.toFile()), "guide/"+message+".mp4");
 			log.info("consumeGuideCompletion: guide video file has been replaced");
+			log.info("consumeGuideCompletion: " + url);
+			newGuide.toFile().delete();
 			guideRepository.findById(Long.parseLong(message))
 				.orElseThrow(() -> new NotFoundException("consumeGuideCompletion::가이드를 찾을 수 없습니다.", GUIDE_NOT_FOUND))
 				.addUrl(url);
