@@ -10,7 +10,18 @@ export const getShortformList = async (page) => {
   }
 };
 
+// 유저별 조회
+export const getUserShortform = async (userId) => {
+  try {
+    const response = await customAxios.get(`shorts/user/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching shortform with userId:", error);
+    throw error;
+  }
+};
 
+// 상세 조회
 export const getShortformDetail = async (shortformId) => {
   try {
     const response = await customAxios.get(`shorts/${shortformId}`, {});
@@ -21,8 +32,8 @@ export const getShortformDetail = async (shortformId) => {
   }
 };
 
-
-export const uploadShortform = async (guideId, video) => {
+// 숏폼 업로드
+export const uploadShortform = async (guideId, video, startAt, endAt) => {
   try {
     const formData = new FormData();
     formData.append('guide_id', guideId);

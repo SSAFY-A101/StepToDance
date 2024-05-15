@@ -17,6 +17,8 @@ public enum ErrorCode {
     GUIDE_UPLOAD_FAILED(404, "가이드 업로드에 실패했습니다."),
     // KAFKA
     KAFKA_INVALID_TOPIC(403, "존재하지 않는 kafka 토픽입니다."),
+    // S3
+    S3_VOD_EDIT_FAILED(500, "영상 리사이징에 실패했습니다."),
     // GENRE
     GENRE_NOT_FOUND(404, "장르를 찾을 수 없습니다."),
     // FEEDBACK

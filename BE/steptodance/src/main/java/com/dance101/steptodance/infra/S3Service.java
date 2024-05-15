@@ -3,6 +3,9 @@ package com.dance101.steptodance.infra;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +16,13 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
+import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.guide.domain.GuideBodyModel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,5 +78,15 @@ public class S3Service {
 		}
 
 		return preSignedURL;
+	}
+
+	public Path download(String storedFileName) throws IOException {
+		S3Object o = amazonS3.getObject(new GetObjectRequest(bucket, storedFileName));
+		S3ObjectInputStream objectInputStream = o.getObjectContent();
+
+		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		Files.copy(objectInputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+		log.info("download: s3에서 영상 다운로드 성공");
+		return tempFilePath;
 	}
 }

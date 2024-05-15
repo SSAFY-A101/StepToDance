@@ -103,6 +103,19 @@
 }
 
 
+.editorButton {
+  display: block;
+  width: 100%;
+  padding: 0.75em;
+  margin-top: 1em;
+  font-size: 1em;
+  color: #fff;
+  background-color: #ff0080;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 @media (max-width: 600px) {
   .score {
     font-size: 1.5em;
