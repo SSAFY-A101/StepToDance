@@ -20,7 +20,12 @@ const FeedBackList = () => {
       try {
         setLoading(true);
         const data = await getUserDatas(limit, feedbackPage * limit);
-        setFeedbackList((prevFeedback) => [...prevFeedback, ...data.data.feedback_list]);
+        setFeedbackList((prevFeedback) => {
+          const newFeedbacks = data.data.feedback_list.filter(
+            (newFeedback) => !prevFeedback.some((feedback) => feedback.id === newFeedback.id)
+          );
+          return [...prevFeedback, ...newFeedbacks];
+        });
         setLoading(false);
       } catch (error) {
         console.error("Error fetching feedbacks:", error);
