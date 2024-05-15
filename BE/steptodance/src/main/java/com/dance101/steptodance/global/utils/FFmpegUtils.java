@@ -1,7 +1,12 @@
 package com.dance101.steptodance.global.utils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -259,10 +264,10 @@ public class FFmpegUtils {
 
 	}
 
-	public MultipartFile editVideo(MultipartFile video, LocalTime startAt, LocalTime endAt) throws IOException {
+	public MultipartFile editVideo(String videoUrl, LocalTime startAt, LocalTime endAt) throws IOException {
 		// 임시 파일 생성
 		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
-		video.transferTo(tempFilePath);
+		downloadVideo(videoUrl, tempFilePath);
 
 		// 출력 파일 경로 설정
 		String outputFilePath = tempFilePath.getParent().toString() + File.separator + "edited_video.mp4";
@@ -299,4 +304,16 @@ public class FFmpegUtils {
 		return time.toNanoOfDay() / 1_000_000;
 	}
 
+	private void downloadVideo(String videoUrl, Path filePath) throws IOException {
+		URL url = new URL(videoUrl);
+		URLConnection connection = url.openConnection();
+		try (InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+			 FileOutputStream outputStream = new FileOutputStream(filePath.toFile())) {
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
+			}
+		}
+	}
 }

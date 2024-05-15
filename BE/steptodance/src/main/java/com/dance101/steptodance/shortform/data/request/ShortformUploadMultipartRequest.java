@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class ShortformUploadMultipartRequest implements Serializable {
 	private long guide_id;
-	private MultipartFile video;
+	private String video_url;
 	private LocalTime startAt;
 	private LocalTime endAt;
 }
