@@ -22,8 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static com.dance101.steptodance.global.data.response.StatusCode.*;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/guides")
@@ -64,6 +63,12 @@ public class GuideController {
 	public ResponseEntity<ApiResponse<GuideFindResponse>> findGuide(@PathVariable("guide_id") long guideId) {
 		GuideFindResponse response = guideService.findGuide(guideId);
 		return ApiResponse.toResponse(OK, SUCCESS_GUIDE_ONE, response);
+	}
+
+	@DeleteMapping("/{guide_id}")
+	public ResponseEntity<ApiResponse<Void>> deleteGuide(@PathVariable("guide_id") long guideId) {
+		guideService.deleteGuide(guideId);
+		return ApiResponse.toEmptyResponse(NO_CONTENT, SUCCESS_GUIDE_DELETION);
 	}
 
 	@PostMapping(value = "/{guide_id}", consumes = "multipart/form-data")
