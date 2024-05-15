@@ -54,11 +54,11 @@ public class ShortformServiceImpl implements ShortformService {
 
 		try {
 			// 숏폼 편집
-			MultipartFile video = fFmpegUtils.editVideo(request.getVideo(), request.getStartAt(), request.getEndAt());
+			MultipartFile video = fFmpegUtils.editVideo(request.getVideo_url(), request.getStartAt(), request.getEndAt());
 			// 영상 업로드
 			String url = s3Service.upload(
 				video,
-				"shortform/" + shortform.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
+				"shortform/" + shortform.getId() + "." + StringUtils.getFilenameExtension(video.getOriginalFilename()));
 			shortform.addUrl(url);
 			return shortform.getId();
 		} catch (Exception e) {

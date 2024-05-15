@@ -54,7 +54,7 @@ public class ShortformController {
 		return ApiResponse.toResponse(OK, StatusCode.SUCCESS_SHORTS_ONE, response);
 	}
 
-	@PostMapping(value="/file", consumes = "multipart/form-data")
+	@PostMapping(value="/file")
 	public ResponseEntity<ApiResponse<Long>> uploadShortform(
 		// @AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute ShortformUploadMultipartRequest request
