@@ -115,8 +115,9 @@ public class FFmpegUtils {
 		minX = imgWidth * minX;
 		maxX = imgWidth * maxX;
 
-		int offset = Math.max((int)minX - 10, 0);
-		int size = Math.min((int)maxX + 10, imgWidth) - offset;
+		int padding = imgHeight / 9;
+		int offset = Math.max((int)minX - padding, 0);
+		int size = Math.min((int)maxX + padding, imgWidth) - offset;
 
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
 			.setInput(oldGuide.toString())
@@ -150,7 +151,7 @@ public class FFmpegUtils {
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(vodPath.toString())
 			.addOutput(outputDirPath+type+id+"/frame_%05d.png")
-			.setVideoFrameRate(2, 1) // 1초에 2프레임 추출
+			.setVideoFrameRate(4, 1) // 1초에 4프레임 추출
 			.done();
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
@@ -185,7 +186,7 @@ public class FFmpegUtils {
 		log.info(type + " id: " + id + ", frame amount: " + size);
 
 		MultipartFile ret = FileUtil.convertToMultipartFile(
-			new File(outputDirPath + type + id + "/frame_00006.png"));
+			new File(outputDirPath + type + id + "/frame_00012.png"));
 
 		// 이미지파일 삭제
 		Files.walk(Path.of(outputDirPath + type + id))
@@ -212,8 +213,8 @@ public class FFmpegUtils {
 		// 동영상 파일 -> 0.5초마다의 프레임 이미지
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(tempFilePath.toString())
-			.addOutput(outputDirPath+type+id+"/frame_%04d.png")
-			.setVideoFrameRate(2, 1) // 1초에 2프레임 추출
+			.addOutput(outputDirPath+type+id+"/frame_%05d.png")
+			.setVideoFrameRate(4, 1) // 1초에 2프레임 추출
 			.done();
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
@@ -248,7 +249,7 @@ public class FFmpegUtils {
 		log.info(type + " id: " + id + ", frame amount: " + size);
 
 		MultipartFile ret = FileUtil.convertToMultipartFile(
-			new File(outputDirPath + type + id + "/frame_0008.png"));
+			new File(outputDirPath + type + id + "/frame_00012.png"));
 
 		// 이미지파일 삭제
 		Files.walk(Path.of(outputDirPath + type + id))
