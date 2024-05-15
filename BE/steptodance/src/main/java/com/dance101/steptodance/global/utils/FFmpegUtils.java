@@ -105,11 +105,11 @@ public class FFmpegUtils {
 			throw new NotFoundException("setVodCenterOnHuman: 비디오를 찾지 못했습니다.", ErrorCode.GUIDE_NOT_FOUND);
 		}
 
-		int width = videoStream.width;
-		int height = videoStream.height;
-		width = (int)(double)height/16*9;
+		int imgWidth = videoStream.width;
+		int imgHeight = videoStream.height;
+		int width = (int)(double)imgHeight/16*9;
 		int halfWidth = width / 2;
-		log.info("setVodCenterOnHuman: width=" + width + ", height=" + height);
+		log.info("setVodCenterOnHuman: width=" + width + ", height=" + imgHeight);
 
 		for (int i = 1; i <= frameList.size(); i++) {
 			// movenet 모델
@@ -118,13 +118,13 @@ public class FFmpegUtils {
 				x += joint.get(0);
 			}
 			x /= 17;
-			x = width * x;
+			x = imgWidth * x;
 			builder = new FFmpegBuilder();
 			builder.setInput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
 			builder.addOutput(outputDirPath + "guide" + id + "/output" + String.format("/frame_%05d.png", i));
 			builder.setVideoFilter("crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0");
 			// TODO: 로그 지우기
-			log.info("humanCenterMethod: {" + "crop="+ (x - halfWidth) +":in_h:" + width + ":0" + "}");
+			log.info("humanCenterMethod: {" + "crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0" + "}");
 			executor.createJob(builder).run();;
 		}
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
