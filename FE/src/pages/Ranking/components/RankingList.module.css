@@ -26,9 +26,18 @@
 }
 
 .ranking-score {
-  width: 15%;
+  width: 35%;
   display: flex;
-  justify-content: center;
+  gap: 2px;
+}
+
+.ranking-point {
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0;
+  text-align: center;
 }
 
 .ranking:nth-child(1) .ranking-rank {

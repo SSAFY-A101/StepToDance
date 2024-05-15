@@ -1,5 +1,7 @@
 package com.dance101.steptodance.shortform.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,7 +13,9 @@ public interface ShortformService {
 
 	ShortformFindResponse findShortform(long shortformId);
 
-	Page<ShortformFindResponse> findShortformList(Pageable pageable);
+	List<ShortformFindResponse> findShortformList(int count);
+
+	Page<ShortformFindResponse> findUserShortformList(long userId, Pageable pageable);
 
 	void deleteShortForm(long shortformId);
 

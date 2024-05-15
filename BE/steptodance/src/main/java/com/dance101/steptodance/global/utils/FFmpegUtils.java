@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.nio.file.Paths;
+import java.time.LocalTime;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -252,4 +255,45 @@ public class FFmpegUtils {
 		return ret;
 
 	}
+
+	public MultipartFile editVideo(MultipartFile video, LocalTime startAt, LocalTime endAt) throws IOException {
+		// 임시 파일 생성
+		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		video.transferTo(tempFilePath);
+
+		// 출력 파일 경로 설정
+		String outputFilePath = tempFilePath.getParent().toString() + File.separator + "edited_video.mp4";
+
+		// 시작 시간과 종료 시간을 밀리초로 변환
+		long startMilliseconds = toMilliseconds(startAt);
+		long durationMilliseconds = toMilliseconds(endAt) - startMilliseconds;
+
+		// FFmpegBuilder를 사용하여 비디오 편집 작업 설정
+		FFmpegBuilder builder = new FFmpegBuilder()
+			.setInput(tempFilePath.toString())
+			.overrideOutputFiles(true) // 출력 파일 덮어쓰기
+			.addOutput(outputFilePath)
+			.setStartOffset(startMilliseconds, TimeUnit.MILLISECONDS) // 시작 시간 설정 (밀리초 단위)
+			.setDuration(durationMilliseconds, TimeUnit.MILLISECONDS) // 지속 시간 설정 (밀리초 단위)
+			.done();
+
+		// FFmpegExecutor를 사용하여 비디오 편집 작업 실행
+		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+		executor.createJob(builder).run();
+
+		// 편집된 비디오 파일을 MultipartFile로 변환하여 반환
+		File editedVideoFile = new File(outputFilePath);
+		MultipartFile editedVideo = FileUtil.convertToMultipartFile(editedVideoFile);
+
+		// 임시 파일 및 편집된 비디오 파일 삭제
+		Files.delete(tempFilePath);
+		Files.deleteIfExists(Paths.get(outputFilePath));
+
+		return editedVideo;
+	}
+
+	private long toMilliseconds(LocalTime time) {
+		return time.toNanoOfDay() / 1_000_000;
+	}
+
 }

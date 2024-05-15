@@ -2,11 +2,14 @@ package com.dance101.steptodance.shortform.service;
 
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
@@ -33,6 +36,7 @@ public class ShortformServiceImpl implements ShortformService {
 	private final ShortformRepository shortformRepository;
 	private final UserRepository userRepository;
 	private final S3Service s3Service;
+	private final FFmpegUtils fFmpegUtils;
 
 	@Transactional
 	@Override
@@ -47,10 +51,13 @@ public class ShortformServiceImpl implements ShortformService {
 			.build();
 
 		shortformRepository.save(shortform);
+
 		try {
+			// 숏폼 편집
+			MultipartFile video = fFmpegUtils.editVideo(request.getVideo(), request.getStartAt(), request.getEndAt());
 			// 영상 업로드
 			String url = s3Service.upload(
-				request.getVideo(),
+				video,
 				"shortform/" + shortform.getId() + "." + StringUtils.getFilenameExtension(request.getVideo().getOriginalFilename()));
 			shortform.addUrl(url);
 			return shortform.getId();
@@ -68,9 +75,16 @@ public class ShortformServiceImpl implements ShortformService {
 	}
 
 	@Override
-	public Page<ShortformFindResponse> findShortformList(Pageable pageable) {
-		Page<ShortformFindResponse> shortformFindResponses = shortformRepository.findShortformList(pageable);
+	public List<ShortformFindResponse> findShortformList(int count) {
+		List<ShortformFindResponse> shortformFindResponses = shortformRepository.findShortformList(count);
 		
+		return shortformFindResponses;
+	}
+
+	@Override
+	public Page<ShortformFindResponse> findUserShortformList(long userId, Pageable pageable) {
+		Page<ShortformFindResponse> shortformFindResponses = shortformRepository.findUserShortformList(userId, pageable);
+
 		return shortformFindResponses;
 	}
 

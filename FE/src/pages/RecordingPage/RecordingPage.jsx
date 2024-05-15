@@ -4,11 +4,12 @@ import styles from "./RecordingPage.module.css";
 import { useLocation } from "react-router-dom";
 import RecordRTC from "recordrtc";
 import ReactPlayer from "react-player";
-import VideocamIcon from '@mui/icons-material/Videocam';
-import CheckIcon from '@mui/icons-material/Check';
+import VideocamIcon from "@mui/icons-material/Videocam";
+import CheckIcon from "@mui/icons-material/Check";
+import { guideResult } from "../../api/GuideApis";
 
 export const WebcamStreamCapture = () => {
-  const [layout, setLayout] = useState('overlay');
+  const [layout, setLayout] = useState("overlay");
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
   const webcamRef = useRef(null);
@@ -29,9 +30,12 @@ export const WebcamStreamCapture = () => {
     const newOpacity = e.target.value;
     setPlayerOpacity(newOpacity);
     const hueRotation = newOpacity * 360; // Adjust the rotation scale if necessary
-    document.documentElement.style.setProperty('--slider-hue', `${hueRotation}deg`);
+    document.documentElement.style.setProperty(
+      "--slider-hue",
+      `${hueRotation}deg`
+    );
   };
-  
+
   useEffect(() => {
     const handleResize = () => {
       const currentWidth = window.innerWidth;
@@ -75,12 +79,13 @@ export const WebcamStreamCapture = () => {
   const handleStartCaptureClick = useCallback(() => {
     setIsRecording(true);
     setCapturing(true);
-    navigator.mediaDevices.getUserMedia({ video: true })
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
       .then((stream) => {
         if (webcamRef.current) {
           webcamRef.current.srcObject = stream;
         }
-        const options = { type: 'video', mimeType: 'video/webm' };
+        const options = { type: "video", mimeType: "video/webm" };
         const recorder = new RecordRTC(stream, options);
         recorder.startRecording();
         setRecordRTC(recorder);
@@ -90,7 +95,6 @@ export const WebcamStreamCapture = () => {
       });
   }, [setIsRecording]);
 
-
   // const handleDataAvailable = useCallback(
   //   ({ data }) => {
   //     if (data.size > 0) {
@@ -99,6 +103,12 @@ export const WebcamStreamCapture = () => {
   //   },
   //   [setRecordedChunks]
   // );
+
+  function formatTime(date) {
+    let minutes = date.getMinutes().toString().padStart(2, "0");
+    let seconds = date.getSeconds().toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  }
 
   useEffect(() => {
     if (recordedChunks.length) {
@@ -131,6 +141,25 @@ export const WebcamStreamCapture = () => {
     setRecordVideo("");
   }, []);
 
+  const resultHandler = async () => {
+    const start = formatTime(new Date("00:00"));
+    const end = formatTime(new Date("01:00"));
+    const res = await fetch(recordVideo)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const formData = new FormData();
+        formData.append("video", blob, "video.mp4");
+        formData.append("start_at", start);
+        formData.append("end_at", end);
+
+        return formData;
+      });
+
+    const response = await guideResult(res);
+    console.log(response);
+
+    setIsLoading(!isLoading);
+  };
 
   return (
     <section className={styles["record-page"]}>
@@ -141,9 +170,9 @@ export const WebcamStreamCapture = () => {
       </button>
       {recordVideo ? (
         <>
-           <video
+          <ReactPlayer
             controls
-            src={recordVideo}
+            url={recordVideo}
             type="video/mp4"
             width={widthSize}
             height={heightSize * 0.9}
@@ -158,85 +187,89 @@ export const WebcamStreamCapture = () => {
               <VideocamIcon />
               다시촬영
             </div>
-            <div className={styles["record-button__save"]} onClick={() => setIsLoading(!isLoading)}>
-              { !isLoading && <CheckIcon /> }
-              { isLoading && <div className={styles.spinner}></div> }
+            <div
+              className={styles["record-button__save"]}
+              onClick={resultHandler}
+            >
+              {!isLoading && <CheckIcon />}
+              {isLoading && <div className={styles.spinner}></div>}
               평가하기
             </div>
           </article>
         </>
       ) : (
         <>
-        <div style={{ width: "100%" }}> 
-          <ReactPlayer
-            ref={videoRef}
-            url={videoUrl}
-            loop
-            muted
-            controls
-            width={widthSize}
-            height={heightSize * 0.75}
-            autoPlay
-            style={{
-              position: "absolute",
-              zIndex: 1,
-              width: "100%",
-              height: "75%",
-              objectFit: "cover",
-              opacity: playerOpacity,
-              display: showVideo ? "block" : "none",
-            }}
-            playsinline={true}
-            type="video/mp4"
-          />
-          {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            width={widthSize}
-            height={heightSize * 0.75}
-            mirrored={true}
-            videoConstraints={{
-              facingMode: "user",
-              aspectRatio: 1.77778
-            }}
-          />
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value={playerOpacity}
-            onChange={handleSliderChange}
-            className={styles.rangeSlider}
-            style={{
-              position: "absolute",
-              zIndex: 2,
-              left: "10px",
-              top: "10px",
-              filter: `hue-rotate(${playerOpacity * 360}deg)`              }}
-          />
-          {capturing ? (
-            <article className={styles["record-btn"]}>
-              <button
-                className={styles["record-stop"]}
-                onClick={handleStopCaptureClick}
-              >
-                　
-              </button>
-            </article>
-          ) : (
-            <article className={styles["record-btn"]}>
-              <button
-                className={styles["record-start"]}
-                onClick={handleStartCaptureClick}
-              >
-                　
-              </button>
-            </article>
-          )}
-        </div>
+          <div style={{ width: "100%" }}>
+            <ReactPlayer
+              ref={videoRef}
+              url={videoUrl}
+              loop
+              muted
+              controls
+              width={widthSize}
+              height={heightSize * 0.75}
+              autoPlay
+              style={{
+                position: "absolute",
+                zIndex: 1,
+                width: "100%",
+                height: "75%",
+                objectFit: "cover",
+                opacity: playerOpacity,
+                display: showVideo ? "block" : "none",
+              }}
+              playsinline={true}
+              type="video/mp4"
+            />
+            {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
+            <Webcam
+              audio={false}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              width={widthSize}
+              height={heightSize * 0.75}
+              mirrored={false}
+              videoConstraints={{
+                facingMode: "user",
+                aspectRatio: 1.77778,
+              }}
+            />
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.1"
+              value={playerOpacity}
+              onChange={handleSliderChange}
+              className={styles.rangeSlider}
+              style={{
+                position: "absolute",
+                zIndex: 2,
+                left: "10px",
+                top: "10px",
+                filter: `hue-rotate(${playerOpacity * 360}deg)`,
+              }}
+            />
+            {capturing ? (
+              <article className={styles["record-btn"]}>
+                <button
+                  className={styles["record-stop"]}
+                  onClick={handleStopCaptureClick}
+                >
+                  　
+                </button>
+              </article>
+            ) : (
+              <article className={styles["record-btn"]}>
+                <button
+                  className={styles["record-start"]}
+                  onClick={handleStartCaptureClick}
+                >
+                  　
+                </button>
+              </article>
+            )}
+          </div>
         </>
       )}
     </section>

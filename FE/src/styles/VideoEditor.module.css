@@ -1,10 +1,8 @@
 .homeContainer {
-  position: absolute;
-  top: 25vw;
-  left: 0;
-  right: 0;
-  bottom: 22vw;
+  position: relative;
+  height: calc(100vh - 11.5rem);
   overflow-y: auto;
+  overflow-x: hidden;
   z-index: 2;
 }
 

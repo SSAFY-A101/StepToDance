@@ -1,9 +1,5 @@
 .homeContainer {
-  position: absolute;
-  top: 25vw; 
-  left: 0;
-  right: 0;
-  bottom: 22vw;
+  height: calc(100vh - 11.5rem);
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -23,7 +19,7 @@
 
 /* 스크롤바 핸들 */
 ::-webkit-scrollbar-thumb {
-  background-color: var(--glow1-color); 
+  background-color: var(--glow1-color);
   box-shadow: 0 0 10px var(--glow1-color);
   border-radius: 4px;
 }
