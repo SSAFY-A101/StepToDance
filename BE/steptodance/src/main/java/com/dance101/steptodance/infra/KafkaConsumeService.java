@@ -8,16 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bytedeco.flycapture.FlyCapture2.TimeStamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dance101.steptodance.feedback.data.response.FeedbackResultData;
 import com.dance101.steptodance.feedback.domain.Feedback;
 import com.dance101.steptodance.feedback.domain.FeedbackBodyModel;
+import com.dance101.steptodance.feedback.domain.Timestamp;
 import com.dance101.steptodance.feedback.repository.FeedbackBodyRepository;
 import com.dance101.steptodance.feedback.repository.FeedbackRepository;
+import com.dance101.steptodance.feedback.repository.TimeStampRepository;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
 import com.dance101.steptodance.global.exception.data.response.ErrorCode;
@@ -45,7 +49,9 @@ public class KafkaConsumeService implements AIConsumeService {
 	private final FeedbackRepository feedbackRepository;
 	private final GuideBodyRepository guideBodyRepository;
 	private final FeedbackBodyRepository feedbackBodyRepository;
+	private final TimeStampRepository timeStampRepository;
 	private final FFmpegUtils ffmpegUtils;
+	// 모델과 채점 방법에 따라 3 중 택 1
 	// private final CaffeGraderUtils graderUtils;
 	// private final MoveNetGraderUtils graderUtils;
 	private final MoveNetGraderEuclideanDistanceUtils graderUtils;
@@ -53,7 +59,8 @@ public class KafkaConsumeService implements AIConsumeService {
 	@Autowired
 	private final ObjectMapper objectMapper;
 	private final StringRedisTemplate redisTemplate;
-	private final List<Integer> zeroList = List.of(0, 0);
+	// 빈 칸 채우기 로직을 위함
+	// private final List<Integer> zeroList = List.of(0, 0);
 	private final List<Double> zeroDoubleList = List.of(0.0, 0.0);
 
 	@KafkaListener(topics = "${message.topic.name}", groupId = "step-to-dance")
@@ -148,10 +155,15 @@ public class KafkaConsumeService implements AIConsumeService {
 		GuideBodyModel<Double> guideBodyModel = guideBodyRepository.findByGuideId(guide.getId())
 			.orElseThrow(() -> new NotFoundException("consumeFeedbackCompletion:저장된 가이드 모델이 없습니다.", GUIDE_BODY_NOT_FOUND));
 		// 모델 비교하기
-		double score = graderUtils.getScore(0, model.getModels().size(),
+		FeedbackResultData scoreResult = graderUtils.getScoreResult(0, model.getModels().size(),
 			guideBodyModel.getModels(), model.getModels());
 		// 점수를 피드백으로 업데이트하기
-		feedback.update(score);
+		feedback.update(scoreResult.getScore());
+		// 틀린부분 업데이트 하기
+		timeStampRepository.saveAll(
+			scoreResult.getIncorrectSectionList().stream()
+				.map(time -> new Timestamp(time, feedback))
+				.toList());
 	}
 
 	private GuideBodyModel<Double> makeGuideModelOutOfFrameList(String message, List<Frame<Double>> frameList) {
