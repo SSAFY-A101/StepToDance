@@ -1,8 +1,9 @@
 import { customAxios } from "./customAxios";
 
-export const getShortformList = async (page) => {
+// 랜덤 5개 조회
+export const getShortformList = async () => {
     try {
-    const response = await customAxios.get(`shorts?page=${page}`);
+    const response = await customAxios.get(`shorts/list/5`);
     return response.data;
     } catch (error) {
     console.error("Error fetching shortform list:", error);
@@ -10,7 +11,18 @@ export const getShortformList = async (page) => {
     }
 };
 
+// 유저별 조회
+export const getUserShortform = async (userId) => {
+  try {
+  const response = await customAxios.get(`shorts/user/${userId}`);
+  return response.data;
+  } catch (error) {
+  console.error("Error fetching shortform with userId:", error);
+  throw error;
+  }
+};
 
+// 상세 조회
 export const getShortformDetail = async (shortformId) => {
   try {
     const response = await customAxios.get(`shorts/${shortformId}`, {});
@@ -21,12 +33,14 @@ export const getShortformDetail = async (shortformId) => {
   }
 };
 
-
-export const uploadShortform = async (guideId, video) => {
+// 숏폼 업로드
+export const uploadShortform = async (guideId, video, startAt, endAt) => {
   try {
     const formData = new FormData(); 
     formData.append('guide_id', guideId); 
     formData.append('video', video); 
+    formData.append('startAt', startAt);
+    formData.append('endAt', endAt);
 
     const response = await customAxios.post(`shorts/file`, formData, {
       headers: {
@@ -41,6 +55,7 @@ export const uploadShortform = async (guideId, video) => {
   }
 };
 
+// 숏폼 삭제
 export const deleteShortform = async(shortformId)=> {
   try {
     const response = await customAxios.delete(`shorts/${shortformId}`);
