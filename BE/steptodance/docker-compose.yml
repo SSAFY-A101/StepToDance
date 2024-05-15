@@ -48,7 +48,7 @@ services:
       - mysql
       - redis
     volumes:
-      - ~/data/vod/:/data/vod/
+      - /data/spring/vod/:/data/vod/
     environment:
       MYSQL_BINDING_PORT: ${MYSQL_BINDING_PORT}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
