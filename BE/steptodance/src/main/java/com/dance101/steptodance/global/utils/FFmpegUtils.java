@@ -114,6 +114,7 @@ public class FFmpegUtils {
 			}
 			x /= 17;
 			x = width * x;
+			builder = new FFmpegBuilder();
 			builder.setInput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
 			builder.addOutput(outputDirPath + "guide" + id + "/output" + String.format("/frame_%05d.png", i));
 			builder.setVideoFilter("crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0");
