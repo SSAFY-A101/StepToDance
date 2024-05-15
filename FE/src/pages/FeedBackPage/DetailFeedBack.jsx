@@ -25,6 +25,7 @@ const DetailFeedback = () => {
       try {
         const data = await getFeedbackDetail(feedbackId);
         setFeedbackDetail(data.data);
+        console.log(data.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching feedback detail:", error);
@@ -122,6 +123,16 @@ const DetailFeedback = () => {
           </ul>
           <button onClick={() => navigate("/feedbacks", { state: { initialFeedbacks } })} className={styles.backButton}>
             Back to Feedback List
+          </button>
+          <button onClick={()=> navigate("/videoeditor", {
+            state: {
+              guideId : feedbackDetail.feedback.guide_url.match(/\/(\d+)\.mp4$/)[1],
+              videoUrl : feedbackDetail.feedback.video_url,
+              highlightStartAt : feedbackDetail.feedback.highlight_section_start_at,
+              highlightEndAt : feedbackDetail.feedback.highlight_section_end_at,
+            }
+            })} className={styles.editorButton}>
+            편집하기
           </button>
         </div>
       )}
