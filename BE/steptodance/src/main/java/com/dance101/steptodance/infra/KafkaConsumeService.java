@@ -20,7 +20,9 @@ import com.dance101.steptodance.feedback.repository.FeedbackBodyRepository;
 import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.global.exception.data.response.ErrorCode;
 import com.dance101.steptodance.global.utils.FFmpegUtils;
+import com.dance101.steptodance.global.utils.FileUtil;
 import com.dance101.steptodance.global.utils.grader.MoveNetGraderEuclideanDistanceUtils;
 import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.response.GuideFeedbackCreateResponse;
@@ -84,12 +86,18 @@ public class KafkaConsumeService implements AIConsumeService {
 
 		// s3 기존의 영상을 잘라서 다시 저장
 		try {
-			// TODO: 파일 위치 제대로 적고 테스트
 			Path oldGuide = s3Service.download("guide/"+message+".mp4");
-			ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
+			Path newGuide = ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
+			s3Service.delete("guide/"+message+".mp4");
+			// TODO: 새로운 로컬 영상 삭제하기
+			String url = s3Service.upload(FileUtil.convertToMultipartFile(newGuide.toFile()), "guide/"+message+".mp4");
+			log.info("consumeGuideCompletion: guide video file has been replaced");
+			guideRepository.findById(Long.parseLong(message))
+				.orElseThrow(() -> new NotFoundException("consumeGuideCompletion::가이드를 찾을 수 없습니다.", GUIDE_NOT_FOUND))
+				.addUrl(url);
 		} catch (IOException e) {
 			e.printStackTrace();
-			throw new ExternalServerException("consumeGuideCompletion: s3 영상 편집 중 오류", S3_VOD_EDIT_FAILED);
+			throw new ExternalServerException("consumeGuideCompletion: exception occured during editing s3 vod ", S3_VOD_EDIT_FAILED);
 		}
 
 		// update & save result
