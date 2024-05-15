@@ -75,15 +75,16 @@ public class FFmpegUtils {
 	}
 
 	public Path setVodCenterOnHuman(Path path, long id, List<Frame<Double>> frameList) throws IOException {
+		Files.createDirectories(Path.of(outputDirPath + "guide" + id));
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(path.toString())
 			.addOutput(outputDirPath+"guide"+id+"/frame_%05d.png")
 			.setVideoFrameRate(30, 1) // 1초에 30프레임 추출
 			.done();
-		log.info("setVodCenterOnHuman: vod to img success");
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 		executor.createJob(builder).run();
+		log.info("setVodCenterOnHuman: vod to img success");
 
 		FFprobe ffprobe = new FFprobe("ffprobe"); // FFprobe 실행 파일 경로 설정
 		FFmpegProbeResult probeResult = ffprobe.probe(path.toString());
