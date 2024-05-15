@@ -112,14 +112,15 @@ public class FFmpegUtils {
 
 		for (int i = 1; i <= frameList.size(); i++) {
 			// movenet 모델
-			int x = 0;
+			double x = 0;
 			for (List<Double> joint : frameList.get(i).getModel()) {
 				x += joint.get(0);
 			}
 			x /= 17;
+			x = width * x;
 			builder.setInput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
 			builder.addOutput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
-			builder.setVideoFilter("crop="+ (x - halfWidth) +":in_h:" + width + ":0");
+			builder.setVideoFilter("crop="+ ((int)x - halfWidth) +":in_h:" + width + ":0");
 			// TODO: 로그 지우기
 			log.info("humanCenterMethod: {" + "crop="+ (x - halfWidth) +":in_h:" + width + ":0" + "}");
 			executor.createJob(builder).run();;
