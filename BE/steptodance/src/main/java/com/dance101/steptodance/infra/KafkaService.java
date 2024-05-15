@@ -50,7 +50,7 @@ public class KafkaService implements AIServerService {
     private final FeedbackBodyRepository feedbackBodyRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final S3Service s3Service;
-    private final FFmpegUtils ffmpegUtils;
+    // private final FFmpegUtils ffmpegUtils;
     // private final CaffeGraderUtils graderUtils;
     // private final MoveNetGraderUtils graderUtils;
     private final MoveNetGraderEuclideanDistanceUtils graderUtils;
