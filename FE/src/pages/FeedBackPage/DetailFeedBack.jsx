@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import styles from "./DetailFeedback.module.css"; // Import CSS module
 import { getFeedbackDetail } from "../../api/FeedbackApis";
 import ReactPlayer from "react-player";
@@ -9,6 +9,8 @@ import PauseIcon from "@mui/icons-material/Pause";
 const DetailFeedback = () => {
   const { feedbackId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialFeedbacks = location.state?.initialFeedbacks || [];
   const [feedbackDetail, setFeedbackDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -79,6 +81,7 @@ const DetailFeedback = () => {
               onEnded={handleVideoEnded}
               controls={false}
               className={styles.player}
+              playsinline={true}
             />
             <ReactPlayer
               url={feedbackDetail.feedback.video_url}
@@ -90,6 +93,7 @@ const DetailFeedback = () => {
               onEnded={handleVideoEnded}
               controls={false}
               className={styles.player}
+              playsinline={true}
             />
             <div className={styles.controlsOverlay}>
               <div className={styles.playButton} onClick={handlePlayPause}>
@@ -116,7 +120,7 @@ const DetailFeedback = () => {
               <li>No incorrect sections</li>
             )}
           </ul>
-          <button onClick={() => navigate("/feedbacks", { state: { initialFeedbacks: feedbackList } })} className={styles.backButton}>
+          <button onClick={() => navigate("/feedbacks", { state: { initialFeedbacks } })} className={styles.backButton}>
             Back to Feedback List
           </button>
         </div>

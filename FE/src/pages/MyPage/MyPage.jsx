@@ -93,6 +93,10 @@ const MyPage = () => {
     }
   }, []);
 
+  const handleFeedbackClick = (feedbackId) => {
+    navigate(`/feedback/${feedbackId}`, { state: { initialFeedbacks: feedbackList } });
+  };
+
   return (
     <div className={styles.safeArea}>
       <div className={styles.title}>MYPAGE</div>
@@ -147,29 +151,33 @@ const MyPage = () => {
               <h2 className={`${styles.tabTitle} ${styles.tabSuccess}`}>
                 피드백 영상
               </h2>
-              <div className={styles.feedbackList}>
-                {feedbackList.slice(0, limit).map((feedback) => (
-                  <div key={feedback.id} className={styles.feedbackItem}>
-                    <div className={styles.videoDate}>
-                      {new Date(feedback.created_at).toLocaleDateString()}
+              <div className={styles.feedbackContainer}>
+                <button className={styles.arrowButton} onClick={() => document.getElementById('feedbackList').scrollBy({ left: -200, behavior: 'smooth' })}>{"<"}</button>
+                <div className={styles.feedbackList} id="feedbackList">
+                  {feedbackList.slice(0, limit).map((feedback) => (
+                    <div key={feedback.id} className={styles.feedbackItem} onClick={() => handleFeedbackClick(feedback.id)}>
+                      <div className={styles.videoDate}>
+                        {new Date(feedback.created_at).toLocaleDateString()}
+                      </div>
+                      <img
+                        src={feedback.thumbnail_img_url}
+                        alt="Thumbnail"
+                        className={styles.thumbnailImage}
+                      />
+                      <div className={styles.guideDetail}>
+                        {feedback.guide_title} - {feedback.guide_singer}
+                      </div>
                     </div>
-                    <img
-                      src={feedback.thumbnail_img_url}
-                      alt="Thumbnail"
-                      className={styles.thumbnailImage}
-                    />
-                    <div className={styles.guideDetail}>
-                      {feedback.guide_title} - {feedback.guide_singer}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <button className={styles.arrowButton} onClick={() => document.getElementById('feedbackList').scrollBy({ left: 200, behavior: 'smooth' })}>{">"}</button>
               </div>
-                <button
-                  onClick={() => navigate("/feedbacks", { state: { initialFeedbacks: feedbackList } })}
-                  className={styles.viewAllButton}
-                >
-                  피드백 전체 리스트 보기
-                </button>
+              <div
+                onClick={() => navigate("/feedbacks", { state: { initialFeedbacks: feedbackList } })}
+                className={styles.viewAllButton}
+              >
+                피드백 전체 리스트 보기
+              </div>
             </div>
           )}
           {activeTab === "shorts" && (
