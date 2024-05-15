@@ -81,6 +81,7 @@ public class FFmpegUtils {
 
 	public Path setVodCenterOnHuman(Path path, long id, List<Frame<Double>> frameList) throws IOException {
 		Files.createDirectories(Path.of(outputDirPath + "guide" + id));
+		Files.createDirectories(Path.of(outputDirPath + "guide" + id + "/output"));
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(path.toString())
 			.addOutput(outputDirPath+"guide"+id+"/frame_%05d.png")
