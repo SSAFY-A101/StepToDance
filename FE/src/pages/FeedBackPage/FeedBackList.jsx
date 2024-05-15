@@ -63,6 +63,9 @@ const FeedBackList = () => {
           <div key={feedback.id} className={styles.feedbackItem}>
             <div className={styles.videoDate}>
               {new Date(feedback.created_at).toLocaleDateString()}
+              <div onClick={() => handleDelete(feedback.id)} className={styles.deleteButton}>
+              삭제하기
+            </div>
             </div>
             <img
               src={feedback.thumbnail_img_url}
@@ -73,9 +76,6 @@ const FeedBackList = () => {
             <div className={styles.guideDetail}>
               {feedback.guide_title} - {feedback.guide_singer}
             </div>
-            <button onClick={() => handleDelete(feedback.id)} className={styles.deleteButton}>
-              Delete
-            </button>
           </div>
         ))}
       </div>
