@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import org.bytedeco.tesseract.TFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,11 +80,11 @@ public class FFmpegUtils {
 		return tempFilePath;
 	}
 
-	public Path setVodCenterOnHuman(Path path, long id, List<Frame<Double>> frameList) throws IOException {
+	public Path setVodCenterOnHuman(Path oldGuide, long id, List<Frame<Double>> frameList) throws IOException {
 		Files.createDirectories(Path.of(outputDirPath + "/"));
 
 		FFprobe ffprobe = new FFprobe("ffprobe"); // FFprobe 실행 파일 경로 설정
-		FFmpegProbeResult probeResult = ffprobe.probe(path.toString());
+		FFmpegProbeResult probeResult = ffprobe.probe(oldGuide.toString());
 
 		// FFmpegProbeResult에서 스트림 정보 가져오기
 		FFmpegStream videoStream = probeResult.getStreams().stream()
@@ -118,7 +119,7 @@ public class FFmpegUtils {
 		int size = Math.min((int)maxX + 10, imgWidth) - offset;
 
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
-			.setInput(path.toString())
+			.setInput(oldGuide.toString())
 			.addOutput(outputDirPath + "/guide" + id + ".mp4")
 			.setVideoFilter("crop=" + size + ":in_h:" + offset + ":0")
 			.done();
@@ -126,6 +127,9 @@ public class FFmpegUtils {
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 		executor.createJob(vodBuilder).run();
 		log.info("humanCenterMethod: vod crop has done");
+
+		oldGuide.toFile().delete();
+		log.info("humanCenterMethod: old guide vod has been deleted");
 
 		return Path.of(outputDirPath + "/guide" + id + ".mp4");
 	}
