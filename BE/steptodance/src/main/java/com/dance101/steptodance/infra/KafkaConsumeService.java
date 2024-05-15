@@ -92,6 +92,8 @@ public class KafkaConsumeService implements AIConsumeService {
 			// TODO: 새로운 로컬 영상 삭제하기
 			String url = s3Service.upload(FileUtil.convertToMultipartFile(newGuide.toFile()), "guide/"+message+".mp4");
 			log.info("consumeGuideCompletion: guide video file has been replaced");
+			log.info("consumeGuideCompletion: " + url);
+			newGuide.toFile().delete();
 			guideRepository.findById(Long.parseLong(message))
 				.orElseThrow(() -> new NotFoundException("consumeGuideCompletion::가이드를 찾을 수 없습니다.", GUIDE_NOT_FOUND))
 				.addUrl(url);
