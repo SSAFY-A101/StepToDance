@@ -80,8 +80,7 @@ public class FFmpegUtils {
 	}
 
 	public Path setVodCenterOnHuman(Path path, long id, List<Frame<Double>> frameList) throws IOException {
-		Files.createDirectories(Path.of(outputDirPath + "guide" + id));
-		Files.createDirectories(Path.of(outputDirPath + "guide" + id + "/output"));
+		Files.createDirectories(Path.of(outputDirPath + "/"));
 
 		FFprobe ffprobe = new FFprobe("ffprobe"); // FFprobe 실행 파일 경로 설정
 		FFmpegProbeResult probeResult = ffprobe.probe(path.toString());
