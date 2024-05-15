@@ -2,6 +2,8 @@ package com.dance101.steptodance.infra;
 
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,8 +15,8 @@ import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.global.exception.category.ExternalServerException;
 import com.dance101.steptodance.global.exception.category.ForbiddenException;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.global.utils.FFmpegUtils;
 import com.dance101.steptodance.global.utils.grader.MoveNetGraderEuclideanDistanceUtils;
-import com.dance101.steptodance.global.utils.grader.MoveNetGraderUtils;
 import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.request.MessageRequest;
@@ -47,6 +49,8 @@ public class KafkaService implements AIServerService {
     private final GuideBodyRepository guideBodyRepository;
     private final FeedbackBodyRepository feedbackBodyRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final S3Service s3Service;
+    private final FFmpegUtils ffmpegUtils;
     // private final CaffeGraderUtils graderUtils;
     // private final MoveNetGraderUtils graderUtils;
     private final MoveNetGraderEuclideanDistanceUtils graderUtils;
@@ -112,7 +116,19 @@ public class KafkaService implements AIServerService {
         frameList = fillEmptyFrames(frameList);
         log.info("consumeGuideCompletion: filled all empty frames");
 
-        // update & save result
+        // s3 기존의 영상을 잘라서 다시 저장
+		try {
+            // TODO: 파일 위치 제대로 적고 테스트
+			Path oldGuide = s3Service.download("guide/"+message+".mp4");
+            ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
+
+
+		} catch (IOException e) {
+            e.printStackTrace();
+			throw new ExternalServerException("consumeGuideCompletion: s3 영상 편집 중 오류", S3_VOD_EDIT_FAILED);
+		}
+
+		// update & save result
         GuideBodyModel<Double> model = makeGuideModelOutOfFrameList(message, frameList);
         guideBodyRepository.save(model);
         log.info("consumeGuideCompletion: stored in MongoDB");
