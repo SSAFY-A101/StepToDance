@@ -80,6 +80,7 @@ public class FFmpegUtils {
 			.addOutput(outputDirPath+"guide"+id+"/frame_%05d.png")
 			.setVideoFrameRate(30, 1) // 1초에 30프레임 추출
 			.done();
+		log.info("setVodCenterOnHuman: vod to img success");
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 		executor.createJob(builder).run();
@@ -101,6 +102,7 @@ public class FFmpegUtils {
 		int height = videoStream.height;
 		width = (int)(double)height/16*9;
 		int halfWidth = width / 2;
+		log.info("setVodCenterOnHuman: width=" + width + ", height=" + height);
 
 		for (int i = 1; i <= frameList.size(); i++) {
 			// movenet 모델
