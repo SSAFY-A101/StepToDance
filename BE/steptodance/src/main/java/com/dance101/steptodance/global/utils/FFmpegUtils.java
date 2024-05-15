@@ -115,8 +115,9 @@ public class FFmpegUtils {
 		minX = imgWidth * minX;
 		maxX = imgWidth * maxX;
 
-		int offset = Math.max((int)minX - 10, 0);
-		int size = Math.min((int)maxX + 10, imgWidth) - offset;
+		int padding = imgHeight / 9;
+		int offset = Math.max((int)minX - padding, 0);
+		int size = Math.min((int)maxX + padding, imgWidth) - offset;
 
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
 			.setInput(oldGuide.toString())
