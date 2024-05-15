@@ -120,9 +120,7 @@ public class KafkaService implements AIServerService {
 		try {
             // TODO: 파일 위치 제대로 적고 테스트
 			Path oldGuide = s3Service.download("guide/"+message+".mp4");
-            ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
-
-
+            // ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
 		} catch (IOException e) {
             e.printStackTrace();
 			throw new ExternalServerException("consumeGuideCompletion: s3 영상 편집 중 오류", S3_VOD_EDIT_FAILED);
