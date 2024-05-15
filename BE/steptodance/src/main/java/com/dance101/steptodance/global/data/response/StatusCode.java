@@ -17,6 +17,7 @@ public enum StatusCode {
     // GUIDE
     SUCCESS_GUIDE_LIST(200, "가이드 목록 조회 성공"),
     SUCCESS_GUIDE_ONE(200, "가이드 상세 조회 성공"),
+    SUCCESS_GUIDE_DELETION(204, "가이드 삭제 성공"),
     CREATED_GUIDE(201, "가이드 업로드 요청"),
 
     // FEEDBACK
