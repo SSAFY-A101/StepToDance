@@ -125,10 +125,13 @@ public class FFmpegUtils {
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
 			.setInput(outputDirPath + "guide" + id + "/frame_%05d.png")
 			.addOutput(outputDirPath + "guide" + id + "/result.mp4")
+			.setFormat("mp4")
 			.setVideoCodec("libx264") // 비디오 코덱 설정
+			.setVideoFrameRate(30)
 			.setStrict(FFmpegBuilder.Strict.EXPERIMENTAL) // 실험적 옵션 사용
 			.done();
-		executor.createJob(vodBuilder).run();;
+		executor.createJob(vodBuilder).run();
+		log.info("humanCenterMethod: imgs have converted into vod");
 		// TODO : 노래를 그대로 가져오기
 
 		return Path.of(outputDirPath + "guide" + id + "/result.mp4");
