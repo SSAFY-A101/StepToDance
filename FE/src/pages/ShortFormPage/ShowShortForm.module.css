@@ -1,0 +1,14 @@
+.short-page {
+    height: calc(100vh - 11.5rem);
+    overflow-y: scroll;
+}
+
+.short-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.short-page::-webkit-scrollbar {
+    display: none;
+}
