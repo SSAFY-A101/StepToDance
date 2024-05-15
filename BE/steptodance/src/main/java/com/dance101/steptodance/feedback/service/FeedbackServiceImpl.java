@@ -5,10 +5,13 @@ import com.dance101.steptodance.feedback.data.response.FeedbackInfoResponse;
 import com.dance101.steptodance.feedback.data.response.SectionListResponse;
 import com.dance101.steptodance.feedback.domain.Feedback;
 import com.dance101.steptodance.feedback.domain.Timestamp;
+import com.dance101.steptodance.feedback.repository.FeedbackBodyRepository;
 import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.feedback.repository.TimeStampRepository;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
 import com.dance101.steptodance.guide.data.response.GuideFeedbackCreateResponse;
+import com.dance101.steptodance.infra.S3Service;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +26,9 @@ import static com.dance101.steptodance.global.exception.data.response.ErrorCode.
 @Service
 public class FeedbackServiceImpl implements FeedbackService {
     private final FeedbackRepository feedbackRepository;
+    private final FeedbackBodyRepository feedbackBodyRepository;
     private final TimeStampRepository timeStampRepository;
+    private final S3Service s3Service;
 
     @Override
     public FeedbackFindResponse findFeedback(long feedbackId) {
@@ -44,12 +49,16 @@ public class FeedbackServiceImpl implements FeedbackService {
     @Transactional
     @Override
     public void deleteFeedback(long feedbackId) {
+        // MySql
         // get feedback
         Feedback feedback = feedbackRepository.findById(feedbackId)
             .orElseThrow(() -> new NotFoundException("FeedbackServiceImpl:deleteFeedback", FEEDBACK_NOT_FOUND));
-
         // delete
         feedbackRepository.delete(feedback);
+        // s3
+        s3Service.delete("feedback/"+feedbackId+ ".mp4");
+        // MongoDB
+        feedbackBodyRepository.deleteByFeedbackId(feedbackId);
     }
 
     @Transactional

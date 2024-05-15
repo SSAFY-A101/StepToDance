@@ -10,4 +10,5 @@ import com.dance101.steptodance.feedback.domain.FeedbackBodyModel;
 @Repository
 public interface FeedbackBodyRepository extends CrudRepository<FeedbackBodyModel, String> {
 	Optional<FeedbackBodyModel> findByFeedbackId(long guideId);
+	void deleteByFeedbackId(long feedbackId);
 }
