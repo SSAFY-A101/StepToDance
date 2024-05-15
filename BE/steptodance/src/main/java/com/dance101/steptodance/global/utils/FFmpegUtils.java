@@ -15,6 +15,7 @@ import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import org.bytedeco.tesseract.TFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,21 +80,11 @@ public class FFmpegUtils {
 		return tempFilePath;
 	}
 
-	public Path setVodCenterOnHuman(Path path, long id, List<Frame<Double>> frameList) throws IOException {
-		Files.createDirectories(Path.of(outputDirPath + "guide" + id));
-		Files.createDirectories(Path.of(outputDirPath + "guide" + id + "/output"));
-		FFmpegBuilder builder = new FFmpegBuilder()
-			.setInput(path.toString())
-			.addOutput(outputDirPath+"guide"+id+"/frame_%05d.png")
-			.setVideoFrameRate(30, 1) // 1초에 30프레임 추출
-			.done();
-
-		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
-		executor.createJob(builder).run();
-		log.info("setVodCenterOnHuman: vod to img success");
+	public Path setVodCenterOnHuman(Path oldGuide, long id, List<Frame<Double>> frameList) throws IOException {
+		Files.createDirectories(Path.of(outputDirPath + "/"));
 
 		FFprobe ffprobe = new FFprobe("ffprobe"); // FFprobe 실행 파일 경로 설정
-		FFmpegProbeResult probeResult = ffprobe.probe(path.toString());
+		FFmpegProbeResult probeResult = ffprobe.probe(oldGuide.toString());
 
 		// FFmpegProbeResult에서 스트림 정보 가져오기
 		FFmpegStream videoStream = probeResult.getStreams().stream()
@@ -101,42 +92,46 @@ public class FFmpegUtils {
 			.findFirst()
 			.orElse(null);
 
+		double maxX = frameList.parallelStream()
+			.flatMap(frame -> frame.getModel().stream())
+			.map(joint -> joint.get(0))
+			.reduce(Double::max)
+			.orElseThrow(() -> new NotFoundException("setVodCenterOnHuman: model has null problem", ErrorCode.GUIDE_BODY_NOT_FOUND));
+
+		double minX = frameList.parallelStream()
+			.flatMap(frame -> frame.getModel().stream())
+			.map(joint -> joint.get(0))
+			.reduce(Double::min)
+			.orElseThrow(() -> new NotFoundException("setVodCenterOnHuman: model has null problem", ErrorCode.GUIDE_BODY_NOT_FOUND));
+
 		if (videoStream == null) {
 			throw new NotFoundException("setVodCenterOnHuman: 비디오를 찾지 못했습니다.", ErrorCode.GUIDE_NOT_FOUND);
 		}
 
 		int imgWidth = videoStream.width;
 		int imgHeight = videoStream.height;
-		int width = (int)(double)imgHeight/16*9;
-		int halfWidth = width / 2;
-		log.info("setVodCenterOnHuman: width=" + width + ", height=" + imgHeight);
+		log.info("setVodCenterOnHuman: width=" + imgWidth + ", height=" + imgHeight);
 
-		for (int i = 1; i <= frameList.size(); i++) {
-			// movenet 모델
-			double x = 0;
-			for (List<Double> joint : frameList.get(i-1).getModel()) {
-				x += joint.get(0);
-			}
-			x /= 17;
-			x = imgWidth * x;
-			builder = new FFmpegBuilder();
-			builder.setInput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
-			builder.addOutput(outputDirPath + "guide" + id + "/output" + String.format("/frame_%05d.png", i));
-			builder.setVideoFilter("crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0");
-			// TODO: 로그 지우기
-			log.info("humanCenterMethod: {" + "crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0" + "}");
-			executor.createJob(builder).run();;
-		}
+		minX = imgWidth * minX;
+		maxX = imgWidth * maxX;
+
+		int offset = Math.max((int)minX - 10, 0);
+		int size = Math.min((int)maxX + 10, imgWidth) - offset;
+
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
-			.setInput(outputDirPath + "guide" + id + "/frame_%05d.png")
-			.addOutput(outputDirPath + "guide" + id + "/result.mp4")
-			.setVideoCodec("libx264") // 비디오 코덱 설정
-			.setStrict(FFmpegBuilder.Strict.EXPERIMENTAL) // 실험적 옵션 사용
+			.setInput(oldGuide.toString())
+			.addOutput(outputDirPath + "/guide" + id + ".mp4")
+			.setVideoFilter("crop=" + size + ":in_h:" + offset + ":0")
 			.done();
-		executor.createJob(vodBuilder).run();;
-		// TODO : 노래를 그대로 가져오기
 
-		return Path.of(outputDirPath + "guide" + id + "/result.mp4");
+		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+		executor.createJob(vodBuilder).run();
+		log.info("humanCenterMethod: vod crop has done");
+
+		oldGuide.toFile().delete();
+		log.info("humanCenterMethod: old guide vod has been deleted");
+
+		return Path.of(outputDirPath + "/guide" + id + ".mp4");
 	}
 
 
@@ -155,7 +150,7 @@ public class FFmpegUtils {
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(vodPath.toString())
 			.addOutput(outputDirPath+type+id+"/frame_%05d.png")
-			.setVideoFrameRate(30, 1) // 1초에 30프레임 추출
+			.setVideoFrameRate(2, 1) // 1초에 2프레임 추출
 			.done();
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
@@ -190,7 +185,7 @@ public class FFmpegUtils {
 		log.info(type + " id: " + id + ", frame amount: " + size);
 
 		MultipartFile ret = FileUtil.convertToMultipartFile(
-			new File(outputDirPath + type + id + "/frame_00090.png"));
+			new File(outputDirPath + type + id + "/frame_00006.png"));
 
 		// 이미지파일 삭제
 		Files.walk(Path.of(outputDirPath + type + id))

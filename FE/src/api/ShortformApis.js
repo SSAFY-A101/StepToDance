@@ -33,11 +33,13 @@ export const getShortformDetail = async (shortformId) => {
 };
 
 // 숏폼 업로드
-export const uploadShortform = async (guideId, video, startAt, endAt) => {
+export const uploadShortform = async (guideId, videoUrl, startAt, endAt) => {
   try {
     const formData = new FormData();
     formData.append('guide_id', guideId);
-    formData.append('video', video);
+    formData.append('video_url', videoUrl);
+    formData.append('startAt', startAt);
+    formData.append('endAt', endAt);
 
     const response = await customAxios.post(`shorts/file`, formData, {
       headers: {
