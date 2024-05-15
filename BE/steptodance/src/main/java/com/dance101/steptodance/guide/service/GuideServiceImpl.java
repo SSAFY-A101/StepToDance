@@ -15,6 +15,7 @@ import com.dance101.steptodance.guide.data.response.GuideListFindResponse;
 import com.dance101.steptodance.guide.domain.Genre;
 import com.dance101.steptodance.guide.domain.Guide;
 import com.dance101.steptodance.guide.repository.GenreRepository;
+import com.dance101.steptodance.guide.repository.GuideBodyRepository;
 import com.dance101.steptodance.guide.repository.GuideRepository;
 import com.dance101.steptodance.infra.AIPublishService;
 import com.dance101.steptodance.infra.S3Service;
@@ -45,7 +46,7 @@ import static com.dance101.steptodance.global.exception.data.response.ErrorCode.
 public class GuideServiceImpl implements GuideService{
 	private final GuideRepository guideRepository;
 	private final GenreRepository genreRepository;
-	private final AIPublishService aiPublishService;
+	private final GuideBodyRepository guideBodyRepository;
 	private final UserRepository userRepository;
 	private final FeedbackRepository feedbackRepository;
 	private final FFmpegUtils ffmpegUtils;
@@ -163,5 +164,20 @@ public class GuideServiceImpl implements GuideService{
 
 		// create & return
 		return new FeedbackResponse(savedFeedback.getId());
+	}
+
+	@Override
+	public void deleteGuide(long guideId) {
+		// MySql
+		// get guide
+		Guide guide = guideRepository.findById(guideId)
+			.orElseThrow(() -> new NotFoundException("deleteGuide", GUIDE_NOT_FOUND));
+		// delete guide
+		guideRepository.delete(guide);
+		// s3
+		s3Service.delete("guide/"+guideId+ ".mp4");
+		// MongoDB
+		guideBodyRepository.deleteByGuideId(guideId);
+
 	}
 }
