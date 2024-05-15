@@ -95,30 +95,6 @@ const ShowShortForm = () => {
     };
     getData();
   }, []);
-
-  // 비디오 렌더링
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.1,
-    };
-
-    const videoList = showShortForm.map((short, index) => {
-      return (
-        <>
-          <video
-            className={styles["short-video"]}
-            src={short.video_url}
-            id={`video_${index}`}
-            key={index}></video>
-        </>
-      );
-    });
-
-    setRenderVideo(videoList);
-  }, [showShortForm]);
-
   useEffect(() => {
     if (showShortForm) {
       const options = {
@@ -153,6 +129,24 @@ const ShowShortForm = () => {
         observer.disconnect();
       };
     }
+  }, [currentPos, showShortForm]);
+  // 비디오 렌더링
+  useEffect(() => {
+    const videoList = showShortForm.map((short, index) => {
+      return (
+        <>
+          <video
+            className={styles["short-video"]}
+            src={short.video_url}
+            id={`video_${index}`}
+            loop
+            muted
+            key={index}></video>
+        </>
+      );
+    });
+
+    setRenderVideo(videoList);
   }, [showShortForm]);
 
   return (
