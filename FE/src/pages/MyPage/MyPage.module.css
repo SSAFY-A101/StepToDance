@@ -95,7 +95,7 @@ a {
 }
 
 .item {
-  padding: 1em;
+  padding: 0.4em;
 }
 
 .tabTitle {
@@ -258,7 +258,7 @@ a {
   background-color: transparent;
   border: none;
   color: #3498db;
-  font-size: 1.5rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 

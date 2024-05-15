@@ -1,7 +1,12 @@
 package com.dance101.steptodance.global.utils;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -75,15 +80,17 @@ public class FFmpegUtils {
 	}
 
 	public Path setVodCenterOnHuman(Path path, long id, List<Frame<Double>> frameList) throws IOException {
+		Files.createDirectories(Path.of(outputDirPath + "guide" + id));
+		Files.createDirectories(Path.of(outputDirPath + "guide" + id + "/output"));
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(path.toString())
 			.addOutput(outputDirPath+"guide"+id+"/frame_%05d.png")
 			.setVideoFrameRate(30, 1) // 1초에 30프레임 추출
 			.done();
-		log.info("setVodCenterOnHuman: vod to img success");
 
 		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
 		executor.createJob(builder).run();
+		log.info("setVodCenterOnHuman: vod to img success");
 
 		FFprobe ffprobe = new FFprobe("ffprobe"); // FFprobe 실행 파일 경로 설정
 		FFmpegProbeResult probeResult = ffprobe.probe(path.toString());
@@ -98,24 +105,26 @@ public class FFmpegUtils {
 			throw new NotFoundException("setVodCenterOnHuman: 비디오를 찾지 못했습니다.", ErrorCode.GUIDE_NOT_FOUND);
 		}
 
-		int width = videoStream.width;
-		int height = videoStream.height;
-		width = (int)(double)height/16*9;
+		int imgWidth = videoStream.width;
+		int imgHeight = videoStream.height;
+		int width = (int)(double)imgHeight/16*9;
 		int halfWidth = width / 2;
-		log.info("setVodCenterOnHuman: width=" + width + ", height=" + height);
+		log.info("setVodCenterOnHuman: width=" + width + ", height=" + imgHeight);
 
 		for (int i = 1; i <= frameList.size(); i++) {
 			// movenet 모델
-			int x = 0;
-			for (int j = 0; j <= 17; j++) {
-				x += frameList.get(i).getModel().get(j).get(0);
+			double x = 0;
+			for (List<Double> joint : frameList.get(i-1).getModel()) {
+				x += joint.get(0);
 			}
 			x /= 17;
+			x = imgWidth * x;
+			builder = new FFmpegBuilder();
 			builder.setInput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
-			builder.addOutput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
-			builder.setVideoFilter("crop="+ (x - halfWidth) +":in_h:" + width + ":0");
+			builder.addOutput(outputDirPath + "guide" + id + "/output" + String.format("/frame_%05d.png", i));
+			builder.setVideoFilter("crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0");
 			// TODO: 로그 지우기
-			log.info("humanCenterMethod: {" + "crop="+ (x - halfWidth) +":in_h:" + width + ":0" + "}");
+			log.info("humanCenterMethod: {" + "crop="+ width +":in_h:" + Math.max(0, (int)x - halfWidth) + ":0" + "}");
 			executor.createJob(builder).run();;
 		}
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
@@ -258,10 +267,10 @@ public class FFmpegUtils {
 
 	}
 
-	public MultipartFile editVideo(MultipartFile video, LocalTime startAt, LocalTime endAt) throws IOException {
+	public MultipartFile editVideo(String videoUrl, LocalTime startAt, LocalTime endAt) throws IOException {
 		// 임시 파일 생성
 		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
-		video.transferTo(tempFilePath);
+		downloadVideo(videoUrl, tempFilePath);
 
 		// 출력 파일 경로 설정
 		String outputFilePath = tempFilePath.getParent().toString() + File.separator + "edited_video.mp4";
@@ -298,4 +307,16 @@ public class FFmpegUtils {
 		return time.toNanoOfDay() / 1_000_000;
 	}
 
+	private void downloadVideo(String videoUrl, Path filePath) throws IOException {
+		URL url = new URL(videoUrl);
+		URLConnection connection = url.openConnection();
+		try (InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+			 FileOutputStream outputStream = new FileOutputStream(filePath.toFile())) {
+			byte[] buffer = new byte[1024];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
+			}
+		}
+	}
 }

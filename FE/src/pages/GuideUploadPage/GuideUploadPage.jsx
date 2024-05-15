@@ -12,6 +12,7 @@ const GuideUploadPage = () => {
   const [artistName, setArtistName] = useState("");
   const [selectedOption, setSelectedOption] = useState('1');  
   const [highlights, setHighlights] = useState([{ start: '00:00', end: '00:00' }]);
+  const [isUploading, setIsUploading] = useState(false); // 업로드 진행 상태 추가
   const videoRef = useRef(null);
 
   const handleOptionChange = (e) => {
@@ -53,6 +54,7 @@ const GuideUploadPage = () => {
   };
 
   const sendApi = async () => {
+    setIsUploading(true); // 업로드 시작 시 상태 변경
     const formData = new FormData();
     formData.append("genre_id", selectedOption);
     formData.append("song_title", selectTitle);
@@ -73,6 +75,8 @@ const GuideUploadPage = () => {
     } catch (error) {
       console.error("Error uploading guide:", error);
       alert("가이드 업로드 실패!");
+    } finally {
+      setIsUploading(false); // 업로드 완료 시 상태 변경
     }
   };
 
@@ -199,6 +203,7 @@ const GuideUploadPage = () => {
       >
         <UploadIcon style={{ color: "white" }} />
       </button>
+      {isUploading && <div className={styles.spinner}></div>} {/* 스피너 표시 */}
     </section>
   );
 };
