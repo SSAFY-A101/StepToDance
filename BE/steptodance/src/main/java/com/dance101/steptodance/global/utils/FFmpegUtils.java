@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.nio.file.Paths;
 import java.time.LocalTime;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,12 @@ import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
 import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import net.bramp.ffmpeg.probe.FFmpegProbeResult;
+import net.bramp.ffmpeg.probe.FFmpegStream;
 
+import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.global.exception.data.response.ErrorCode;
+import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.request.MessageRequest;
 import com.dance101.steptodance.guide.service.AIServerService;
 
@@ -68,6 +74,60 @@ public class FFmpegUtils {
 		return tempFilePath;
 	}
 
+	public Path setVodCenterOnHuman(Path path, long id, List<Frame<Double>> frameList) throws IOException {
+		FFmpegBuilder builder = new FFmpegBuilder()
+			.setInput(path.toString())
+			.addOutput(outputDirPath+"guide"+id+"/frame_%05d.png")
+			.setVideoFrameRate(30, 1) // 1초에 30프레임 추출
+			.done();
+
+		FFmpegExecutor executor = new FFmpegExecutor(ffmpeg, ffprobe);
+		executor.createJob(builder).run();
+
+		FFprobe ffprobe = new FFprobe("ffprobe"); // FFprobe 실행 파일 경로 설정
+		FFmpegProbeResult probeResult = ffprobe.probe(path.toString());
+
+		// FFmpegProbeResult에서 스트림 정보 가져오기
+		FFmpegStream videoStream = probeResult.getStreams().stream()
+			.filter(stream -> stream.codec_type == FFmpegStream.CodecType.VIDEO)
+			.findFirst()
+			.orElse(null);
+
+		if (videoStream == null) {
+			throw new NotFoundException("setVodCenterOnHuman: 비디오를 찾지 못했습니다.", ErrorCode.GUIDE_NOT_FOUND);
+		}
+
+		int width = videoStream.width;
+		int height = videoStream.height;
+		width = (int)(double)height/16*9;
+		int halfWidth = width / 2;
+
+		for (int i = 1; i <= frameList.size(); i++) {
+			// movenet 모델
+			int x = 0;
+			for (int j = 0; j <= 17; j++) {
+				x += frameList.get(i).getModel().get(j).get(0);
+			}
+			x /= 17;
+			builder.setInput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
+			builder.addOutput(outputDirPath + "guide" + id + String.format("/frame_%05d.png", i));
+			builder.setVideoFilter("crop="+ (x - halfWidth) +":in_h:" + width + ":0");
+			// TODO: 로그 지우기
+			log.info("humanCenterMethod: {" + "crop="+ (x - halfWidth) +":in_h:" + width + ":0" + "}");
+			executor.createJob(builder).run();;
+		}
+		FFmpegBuilder vodBuilder = new FFmpegBuilder()
+			.setInput(outputDirPath + "guide" + id + "/frame_%05d.png")
+			.addOutput(outputDirPath + "guide" + id + "/result.mp4")
+			.setVideoCodec("libx264") // 비디오 코덱 설정
+			.setStrict(FFmpegBuilder.Strict.EXPERIMENTAL) // 실험적 옵션 사용
+			.done();
+		executor.createJob(vodBuilder).run();;
+		// TODO : 노래를 그대로 가져오기
+
+		return Path.of(outputDirPath + "guide" + id + "/result.mp4");
+	}
+
 
 	/**
 	 *
@@ -80,7 +140,7 @@ public class FFmpegUtils {
 		String type = "guide";
 		Files.createDirectories(Path.of(outputDirPath + type + id));
 
-		// 동영상 파일 -> 0.5초마다의 프레임 이미지
+		// 동영상 파일 -> 모든 프레임 이미지 (30)
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(vodPath.toString())
 			.addOutput(outputDirPath+type+id+"/frame_%05d.png")
