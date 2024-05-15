@@ -6,7 +6,6 @@ import com.dance101.steptodance.feedback.repository.FeedbackRepository;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
 import com.dance101.steptodance.global.utils.FFmpegUtils;
 import com.dance101.steptodance.global.utils.FileUtil;
-import com.dance101.steptodance.guide.data.request.FeedbackMessageRequest;
 import com.dance101.steptodance.guide.data.request.GuideFeedbackCreateRequest;
 import com.dance101.steptodance.guide.data.request.GuideUploadMultipartRequest;
 import com.dance101.steptodance.guide.data.request.SearchConditions;
@@ -17,6 +16,7 @@ import com.dance101.steptodance.guide.domain.Genre;
 import com.dance101.steptodance.guide.domain.Guide;
 import com.dance101.steptodance.guide.repository.GenreRepository;
 import com.dance101.steptodance.guide.repository.GuideRepository;
+import com.dance101.steptodance.infra.AIPublishService;
 import com.dance101.steptodance.infra.S3Service;
 import com.dance101.steptodance.user.domain.User;
 import com.dance101.steptodance.user.repository.UserRepository;
@@ -25,7 +25,6 @@ import com.dance101.steptodance.user.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -35,7 +34,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.*;
 import static com.dance101.steptodance.global.exception.data.response.ErrorCode.GUIDE_NOT_FOUND;
@@ -47,7 +45,7 @@ import static com.dance101.steptodance.global.exception.data.response.ErrorCode.
 public class GuideServiceImpl implements GuideService{
 	private final GuideRepository guideRepository;
 	private final GenreRepository genreRepository;
-	private final AIServerService aiServerService;
+	private final AIPublishService aiPublishService;
 	private final UserRepository userRepository;
 	private final FeedbackRepository feedbackRepository;
 	private final FFmpegUtils ffmpegUtils;
