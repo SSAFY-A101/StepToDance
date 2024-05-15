@@ -95,7 +95,8 @@ public class GuideServiceImpl implements GuideService{
 		try {
 			// 멀티파트 영상을 임시로 로컬에 저장한다.
 			Path path = ffmpegUtils.saveInTmpLocal(request.getVideo());
-			path = ffmpegUtils.setVodFrame30(path);
+			// TODO: 문제 없다면 30프레임 고정 부분 삭제
+			// path = ffmpegUtils.setVodFrame30(path);
 			// kafka를 통해 비디오 프레임 전송
 			MultipartFile thumbnail = ffmpegUtils.sendVodToKafkaGuide(guide.getId(), path);
 
