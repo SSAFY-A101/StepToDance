@@ -32,7 +32,6 @@ public interface GraderUtils<BodyType> {
 			deduct = getDeduct(guide.get(i), feedback.get(i));
 			ans += deduct;
 			if (leftTime <= 0) {
-				leftTime--;
 				if (deduct <= standard && deductLast <= standard) {
 					int second = i / 4;
 					int minute = second / 60;
@@ -41,6 +40,7 @@ public interface GraderUtils<BodyType> {
 					leftTime = wrongSectionLasts;
 				}
 			}
+			leftTime--;
 			deductLast = deduct;
 		}
 		System.out.println("totalDeduct = " + ans);
