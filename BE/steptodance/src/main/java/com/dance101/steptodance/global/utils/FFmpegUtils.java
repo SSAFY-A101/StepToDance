@@ -115,7 +115,7 @@ public class FFmpegUtils {
 		minX = imgWidth * minX;
 		maxX = imgWidth * maxX;
 
-		int padding = imgHeight / 9;
+		int padding = imgHeight / 18;
 		int offset = Math.max((int)minX - padding, 0);
 		int size = Math.min((int)maxX + padding, imgWidth) - offset;
 
