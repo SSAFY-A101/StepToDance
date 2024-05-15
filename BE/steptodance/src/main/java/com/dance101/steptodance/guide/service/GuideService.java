@@ -25,4 +25,6 @@ public interface GuideService {
 	GuideFindResponse findGuide(long guideId);
 
 	FeedbackResponse createGuideFeedback(long userId, long guideId, GuideFeedbackCreateRequest guideFeedbackCreateRequest);
+
+	void deleteGuide(long guideId);
 }
