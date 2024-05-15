@@ -166,6 +166,7 @@ public class GuideServiceImpl implements GuideService{
 		return new FeedbackResponse(savedFeedback.getId());
 	}
 
+	@Transactional
 	@Override
 	public void deleteGuide(long guideId) {
 		// MySql
