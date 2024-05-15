@@ -21,7 +21,7 @@ public interface GraderUtils<BodyType> {
 
 	default FeedbackResultData getScoreResult(int start, int end, List<List<List<BodyType>>> guide, List<List<List<BodyType>>> feedback) {
 		double ans = 0;
-		double standard = 0.85;
+		double standard = 0.9;
 		List<LocalTime> incorrectTimeList = new ArrayList<>();
 		double deduct = 0.0;
 		double deductLast = 1.0;
