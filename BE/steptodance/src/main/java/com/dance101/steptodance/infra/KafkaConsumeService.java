@@ -71,6 +71,7 @@ public class KafkaConsumeService implements AIConsumeService {
 		log.info("consumeGuideCompletion: received message = " + message);
 		// call guide model & save to MongoDB
 		List<String> list = redisTemplate.opsForList().range("guide:"+message, 0, -1);
+		redisTemplate.delete("guide:"+message);
 		log.info("consumeGuideCompletion: redis list called.");
 		log.info("consumeGuideCompletion: size= " + list.size());
 		log.info("consumeGuideCompletion: an Item = " + list.get(0));
