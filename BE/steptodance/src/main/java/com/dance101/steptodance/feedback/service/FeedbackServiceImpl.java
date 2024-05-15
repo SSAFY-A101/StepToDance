@@ -53,7 +53,9 @@ public class FeedbackServiceImpl implements FeedbackService {
         // get feedback
         Feedback feedback = feedbackRepository.findById(feedbackId)
             .orElseThrow(() -> new NotFoundException("FeedbackServiceImpl:deleteFeedback", FEEDBACK_NOT_FOUND));
-        // delete
+        // delete timestamp
+        timeStampRepository.deleteAllByfeedback(feedback);
+        // delete feedback
         feedbackRepository.delete(feedback);
         // s3
         s3Service.delete("feedback/"+feedbackId+ ".mp4");
