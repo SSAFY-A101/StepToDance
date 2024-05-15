@@ -25,7 +25,7 @@ import com.dance101.steptodance.global.exception.category.NotFoundException;
 import com.dance101.steptodance.global.exception.data.response.ErrorCode;
 import com.dance101.steptodance.guide.data.request.Frame;
 import com.dance101.steptodance.guide.data.request.MessageRequest;
-import com.dance101.steptodance.guide.service.AIServerService;
+import com.dance101.steptodance.infra.KafkaPublishService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,16 +37,16 @@ public class FFmpegUtils {
 	private FFmpeg ffmpeg;
 	private FFprobe ffprobe;
 	private final String outputDirPath = "data/vod/output";
-	private final AIServerService aiServerService;
+	private final KafkaPublishService kafkaPublishService;
 
 	public FFmpegUtils(
 		@Value("${ffmpeg.location}")String ffmpegPath,
 		@Value("${ffprobe.location}")String ffprobePath,
-		AIServerService aiServerService) throws IOException
+		KafkaPublishService kafkaPublishService) throws IOException
 	{
 		this.ffmpegPath = ffmpegPath;
 		this.ffprobePath = ffprobePath;
-		this.aiServerService = aiServerService;
+		this.kafkaPublishService = kafkaPublishService;
 		ffmpeg = new FFmpeg(this.ffmpegPath);
 		ffprobe = new FFprobe(this.ffprobePath);
 	}
@@ -158,7 +158,7 @@ public class FFmpegUtils {
 			paths.filter(Files::isRegularFile)
 				.forEach(path -> {
 					try {
-						aiServerService.publish(
+						kafkaPublishService.publish(
 							MessageRequest.builder()
 								.type(type)
 								.id(id)
@@ -221,7 +221,7 @@ public class FFmpegUtils {
 			paths.filter(Files::isRegularFile)
 				.forEach(path -> {
 					try {
-						aiServerService.publish(
+						kafkaPublishService.publish(
 							MessageRequest.builder()
 								.type(type)
 								.id(id)
