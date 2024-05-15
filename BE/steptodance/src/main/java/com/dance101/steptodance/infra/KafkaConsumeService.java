@@ -90,7 +90,6 @@ public class KafkaConsumeService implements AIConsumeService {
 			Path oldGuide = s3Service.download("guide/"+message+".mp4");
 			Path newGuide = ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
 			s3Service.delete("guide/"+message+".mp4");
-			// TODO: 새로운 로컬 영상 삭제하기
 			String url = s3Service.upload(FileUtil.convertToMultipartFile(newGuide.toFile()), "guide/"+message+".mp4");
 			log.info("consumeGuideCompletion: guide video file has been replaced");
 			log.info("consumeGuideCompletion: " + url);
