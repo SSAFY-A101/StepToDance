@@ -121,8 +121,6 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
     }
 
     private BooleanExpression categorySearch(String category, long userId) {
-        System.out.println(category);
-        System.out.println(userId);
         if (StringUtil.isNullOrEmpty(category)) {
             return null;
         } else if (category.equals("custom")) {
