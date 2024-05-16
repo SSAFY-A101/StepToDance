@@ -13,6 +13,8 @@ const ShareModal = ({ infos }) => {
         title: infos.song_title,
         description: infos.singer,
         imageUrl: THUMBNAIL,
+        image_width: "300px",
+        image_height: "300px",
         link: {
           webUrl: "https://www.steptodance.site/home",
           mobileWebUrl: "https://www.steptodance.site/home",
@@ -20,7 +22,7 @@ const ShareModal = ({ infos }) => {
       },
       buttons: [
         {
-          title: "이동",
+          title: "영상 이동",
           link: {
             webUrl: "http://www.steptodance.site/home",
             mobileWebUrl: "https://www.steptodance.site/home",
