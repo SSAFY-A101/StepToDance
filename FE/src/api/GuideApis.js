@@ -1,8 +1,8 @@
 import { customAxios } from "./customAxios";
 
-export const getGuideList = async () => {
+export const getGuideList = async (keyword) => {
   try {
-    const response = await customAxios.get(`guides?limit=10&offset=1&title=&singer=`, {});
+    const response = await customAxios.get(`guides?limit=10&offset=1&title=&singer=&category=${keyword}`, {});
     return response.data;
   } catch (error) {
     console.error("Error fetching guide list:", error);
