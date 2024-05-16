@@ -5,20 +5,28 @@ import TWITTER from "../../assets/twitter.png";
 import THUMBNAIL from "../../assets/thumbnail.png";
 
 const ShareModal = ({ infos }) => {
-  console.log(infos);
   const shareOnKaKao = () => {
-    window.Kakao.Link.sendDefault({
+    console.log(infos);
+    window.Kakao.Share.sendDefault({
       objectType: "feed",
       content: {
         title: infos.song_title,
         description: infos.singer,
         imageUrl: THUMBNAIL,
+        link: {
+          webUrl: "https://www.steptodance.site/home",
+        },
       },
-      link: {
-        webUrl: "https://k10a101.p.ssafy.io/home",
-        mobileWeburl: "https://k10a101.p.ssafy.io/home",
-      },
+      buttons: [
+        {
+          title: "이동",
+          link: {
+            webUrl: "http://www.steptodance.site/home",
+          },
+        },
+      ],
     });
+    console.log("hi");
   };
   return (
     <section className={styles["modal-page"]}>
