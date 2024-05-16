@@ -137,6 +137,7 @@ const ShowShortForm = () => {
             className={styles["short-video"]}
             src={short.video_url}
             id={`video_${index}`}
+            autoPlay
             loop
             muted
             playsInline
