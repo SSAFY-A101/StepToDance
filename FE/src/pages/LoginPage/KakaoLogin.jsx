@@ -20,7 +20,7 @@ const KakaoLogin = () => {
         try {
           const response = await axios({
             method: "GET",
-            url: `https://www.steptodance.site/api/v1/auth/login?code=${code}`,
+            url: `https://www.steptodance.site/auth/login?code=${code}`,
           });
 
           if (response.status === 201) {
