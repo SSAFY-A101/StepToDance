@@ -12,7 +12,8 @@ const ShareModal = ({ infos }) => {
       content: {
         title: infos.song_title,
         description: infos.singer,
-        imageUrl: "../../assets/thumbnail.png",
+        imageUrl:
+          "https://step-to-dance.s3.ap-northeast-2.amazonaws.com/guide/thumbnail/213.png",
         imageWidth: 300,
         imageHeight: 300,
         link: {
