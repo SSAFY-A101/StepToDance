@@ -5,7 +5,7 @@ import styles from "../styles/VideoEditor.module.css";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import { uploadShortform } from "../api/ShortformApis";
-import TimeRange from "react-timeline-range-slider";
+import TimeRange from "@glav-kod/react-timeline-range-slider";
 import { format } from "date-fns";
 
 function VideoEditor() {
