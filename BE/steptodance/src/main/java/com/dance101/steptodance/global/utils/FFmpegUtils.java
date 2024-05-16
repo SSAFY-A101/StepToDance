@@ -121,9 +121,9 @@ public class FFmpegUtils {
 		int padding = imgHeight / 18;
 		int offset = Math.max((int)minX - padding, 0);
 		int size = Math.min((int)maxX + padding, imgWidth) - offset;
-		if (size > imgWidth) {
+		if (size > 1080) {
 			offset = 0;
-			size = imgWidth;
+			size = 1080;
 		}
 
 		String extension = StringUtils.getFilenameExtension(oldGuide.toString());
