@@ -107,7 +107,7 @@ function GuideList() {
         (
         guideList.map((item) => (
           <div key={`page_${item.id}`}>{renderItem({ item })}</div>
-        ))}
+        )))}
       </div>
     </div>
   );
