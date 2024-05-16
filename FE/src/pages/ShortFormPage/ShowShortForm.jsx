@@ -1,6 +1,8 @@
 import styles from "./ShowShortForm.module.css";
 import { getShortformList } from "../../api/ShortformApis";
 import { useEffect, useRef, useState } from "react";
+import FLY from "../../assets/images/fly.png"; // <a href="https://www.flaticon.com/kr/free-icons/-" title="종이 접기 아이콘">종이 접기 아이콘 제작자: Smashicons - Flaticon</a>
+import ShareModal from "./ShareModal.jsx";
 
 const ShowShortForm = () => {
   const [showShortForm, setShowShortForm] = useState([]);
@@ -108,7 +110,9 @@ const ShowShortForm = () => {
         entries.forEach((entry) => {
           const video = entry.target;
           if (entry.isIntersecting) {
-            video.play().catch((error) => console.error('Video play failed:', error));
+            video
+              .play()
+              .catch((error) => console.error("Video play failed:", error));
           } else {
             video.pause();
           }
@@ -131,18 +135,23 @@ const ShowShortForm = () => {
   // 비디오 렌더링
   useEffect(() => {
     const videoList = showShortForm.map((short, index) => {
+      console.log(short);
       return (
-        <video
-          className={styles["short-video"]}
-          id={`video_${index}`}
-          poster="영상썸네일"
-          src={short.video_url}
-          loop
-          muted
-          playsInline
-          type="video/mp4"
-          key={index}
-        ></video>
+        <article className={styles["vidoe-page"]} key={index}>
+          <ShareModal infos={short} />
+          <video
+            className={styles["short-video"]}
+            src={short.video_url}
+            id={`video_${index}`}
+            loop
+            muted
+            playsInline
+          ></video>
+          <p className={styles["short-title"]}>
+            {short.song_title} - {short.singer}
+          </p>
+          <img className={styles["short-share"]} src={FLY} alt="" />
+        </article>
       );
     });
 
