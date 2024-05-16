@@ -59,7 +59,7 @@ public class FFmpegUtils {
 	}
 
 	public Path saveInTmpLocal(MultipartFile video) throws IOException {
-		String extension = video.getContentType();
+		String extension = StringUtils.getFilenameExtension(video.getOriginalFilename());
 		Path tempFilePath = Files.createTempFile("temp-", "."+extension);
 		video.transferTo(tempFilePath);
 		return tempFilePath;
@@ -209,7 +209,7 @@ public class FFmpegUtils {
 	 */
 	public MultipartFile sendVodToKafkaFeedback(long id, MultipartFile video) throws IOException {
 		String type = "feedback";
-		String extension = video.getContentType();
+		String extension = StringUtils.getFilenameExtension(video.getOriginalFilename());
 		Path tempFilePath = Files.createTempFile("temp-", "."+extension);
 		video.transferTo(tempFilePath);
 
