@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getCookie } from "../cookie";
 
-const BASE_RUL = "https://k10a101.p.ssafy.io/api/v1/";
+const BASE_RUL = "https://www.steptodance.site/api/v1/";
 
 const accessToken = getCookie("accessToken");
 
