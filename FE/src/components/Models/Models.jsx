@@ -39,12 +39,6 @@ export function Model(props) {
 }
 }, [actions]);
 
-useEffect(() => {
-  if (animationCompleted) {
-      navigate('/login');
-  }
-}, [animationCompleted, navigate]);
-
 
   return (
     <group ref={group} {...props} dispose={null}>

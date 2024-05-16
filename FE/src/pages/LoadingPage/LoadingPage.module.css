@@ -1,0 +1,25 @@
+
+.loadingPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 1.2em;
+  }
+  
+  .progressBarContainer {
+    width: 80%;
+    background-color: #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  
+  .progressBar {
+    height: 20px;
+    background-color: #4caf50;
+  }
+  

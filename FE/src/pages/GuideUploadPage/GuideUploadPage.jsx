@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
 import { guideUpload } from "../../api/GuideApis";
+import LoadingPage from '../LoadingPage/LoadingPage'; // Import LoadingPage
 import styles from "./GuideUploadPage.module.css";
 import UploadIcon from "@mui/icons-material/Upload";
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import IconButton from '@mui/material/IconButton';
 
 const GuideUploadPage = () => {
   const [selectVideo, setSelectVideo] = useState(null);
@@ -12,7 +11,8 @@ const GuideUploadPage = () => {
   const [artistName, setArtistName] = useState("");
   const [selectedOption, setSelectedOption] = useState('1');  
   const [highlights, setHighlights] = useState([{ start: '00:00', end: '00:00' }]);
-  const [isUploading, setIsUploading] = useState(false); // 업로드 진행 상태 추가
+  const [isUploading, setIsUploading] = useState(false); // Uploading state
+  const [uploadProgress, setUploadProgress] = useState(0); // Progress state
   const videoRef = useRef(null);
 
   const handleOptionChange = (e) => {
@@ -54,7 +54,7 @@ const GuideUploadPage = () => {
   };
 
   const sendApi = async () => {
-    setIsUploading(true); // 업로드 시작 시 상태 변경
+    setIsUploading(true); // Start uploading
     const formData = new FormData();
     formData.append("genre_id", selectedOption);
     formData.append("song_title", selectTitle);
@@ -66,7 +66,14 @@ const GuideUploadPage = () => {
     formData.append("video", selectVideo);
 
     try {
-      const response = await guideUpload(formData);
+      const response = await guideUpload(formData, {
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.lengthComputable) {
+            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(percentCompleted);
+          }
+        }
+      });
       console.log(response);
       if (response.status === 201) {
         alert("가이드 업로드 성공!");
@@ -76,12 +83,13 @@ const GuideUploadPage = () => {
       console.error("Error uploading guide:", error);
       alert("가이드 업로드 실패!");
     } finally {
-      setIsUploading(false); // 업로드 완료 시 상태 변경
+      setIsUploading(false); // Finish uploading
     }
   };
 
   return (
     <section className={styles["guide_upload-page"]}>
+      {isUploading && <LoadingPage progress={uploadProgress} />}
       <form>
         <label>
           <input
@@ -200,10 +208,11 @@ const GuideUploadPage = () => {
         type="button"
         className={styles["guide-submit"]}
         onClick={sendApi}
+        disabled={isUploading} // Disable button during upload
       >
         <UploadIcon style={{ color: "white" }} />
       </button>
-      {isUploading && <div className={styles.spinner}></div>} {/* 스피너 표시 */}
+      {isUploading && <div className={styles.spinner}></div>} {/* Spinner */}
     </section>
   );
 };
