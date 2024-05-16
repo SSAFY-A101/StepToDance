@@ -101,9 +101,13 @@ function GuideList() {
         </ul>
       </nav>
       <div className={styles.links}>
-        {guideList.map((item) => (
+      {guideList.length === 0 ? (
+          <div className={styles.noGuide}>아직 영상이 없어요</div>
+        ):
+        (
+        guideList.map((item) => (
           <div key={`page_${item.id}`}>{renderItem({ item })}</div>
-        ))}
+        )))}
       </div>
     </div>
   );
