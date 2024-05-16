@@ -96,6 +96,6 @@ public class ShortformServiceImpl implements ShortformService {
 			.orElseThrow(()->new NotFoundException("ShortformServiceImpl:deleteShortform", SHORTFORM_NOT_FOUND));
 		shortformRepository.delete(shortform);
 		// S3
-		s3Service.delete("shortform/"+shortformId+".mp4");
+		s3Service.delete("shortform/"+shortformId);
 	}
 }

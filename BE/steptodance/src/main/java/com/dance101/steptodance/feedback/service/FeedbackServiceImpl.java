@@ -58,7 +58,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         // delete feedback
         feedbackRepository.delete(feedback);
         // s3
-        s3Service.delete("feedback/"+feedbackId+ ".mp4");
+        s3Service.delete("feedback/"+feedbackId);
         // MongoDB
         feedbackBodyRepository.deleteByFeedbackId(feedbackId);
     }
