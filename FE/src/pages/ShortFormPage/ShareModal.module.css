@@ -1,0 +1,27 @@
+.modal-page {
+  width: 100vw;
+  height: calc(100vh - 11.5rem);
+  z-index: 20;
+  background-color: rgba(85, 85, 85, 0.705);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  top: 0;
+}
+
+.modal-content {
+  width: 80%;
+  height: 5rem;
+  background-color: rgba(255, 255, 255, 0.692);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-around;
+}
+
+.modal-image {
+  width: 3rem;
+  height: 3rem;
+}

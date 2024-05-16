@@ -2,6 +2,8 @@ import styles from "./ShowShortForm.module.css";
 import testVideo from "../../assets/PerfectNight_르세라핌.mp4";
 import { getShortformList } from "../../api/ShortformApis";
 import { useEffect, useRef, useState } from "react";
+import FLY from "../../assets/images/fly.png"; // <a href="https://www.flaticon.com/kr/free-icons/-" title="종이 접기 아이콘">종이 접기 아이콘 제작자: Smashicons - Flaticon</a>
+import ShareModal from "./ShareModal";
 
 const ShowShortForm = () => {
   const [showShortForm, setShowShortForm] = useState([]);
@@ -131,8 +133,10 @@ const ShowShortForm = () => {
   // 비디오 렌더링
   useEffect(() => {
     const videoList = showShortForm.map((short, index) => {
+      console.log(short);
       return (
-        <>
+        <article className={styles["vidoe-page"]} key={index}>
+          <ShareModal />
           <video
             className={styles["short-video"]}
             src={short.video_url}
@@ -140,9 +144,12 @@ const ShowShortForm = () => {
             loop
             muted
             playsInline
-            key={index}
           ></video>
-        </>
+          <p className={styles["short-title"]}>
+            {short.song_title} - {short.singer}
+          </p>
+          <img className={styles["short-share"]} src={FLY} alt="" />
+        </article>
       );
     });
 
