@@ -17,6 +17,7 @@ function GuideList() {
         const data = await getGuideList(genre);
         console.log(data.data.guide_list);
         setGuideList(data.data.guide_list);
+        // console.log(data.data.guide_list[0].genre)
         setGenre(data.data.guide_list[0].genre);
       } catch (error) {
         console.error("Error fetching guide data:", error);
@@ -76,7 +77,7 @@ function GuideList() {
       pointer.style.transform = `translate3d(${order},0,0)`;
     }
   }, []);
-
+  
   return (
     <div className={styles.container}>
       <div className={styles.title}>{user.nickname}님이 좋아하는 {krGenre} 장르</div>

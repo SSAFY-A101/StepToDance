@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { getUserDatas } from "../../api/UserApis";
 import { getFeedbackDetail } from "../../api/FeedbackApis";
 import ReactPlayer from "react-player";
+import PModel from "../../components/Models/PModel";
 
 const MyPage = () => {
   const user = useSelector((state) => state.user);
@@ -149,6 +150,7 @@ const MyPage = () => {
                 Home
               </h2>
               <p>Welcome to your profile!</p>
+              <PModel />
               <div>Rank: {profile.user_rank}위</div>
               <div>총점: {roundedTotalScore}</div>
               <div>평균 점수: {averageScore}</div>
