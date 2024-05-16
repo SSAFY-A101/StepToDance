@@ -23,20 +23,23 @@ const VARIANTS = {
     --button-color: #ffffff;
     --button-bg-color: #4169E1;
     --button-hover-bg-color: #00008B;
+    --button-selected-bg-color: #00008B;
   `,
   error: css`
     --button-color: #ffffff;
     --button-bg-color: #dc3545;
     --button-hover-bg-color: #c82333;
+    --button-selected-bg-color: #c82333;
   `,
   warning: css`
     --button-color: #212529;
     --button-bg-color: #ffc107;
     --button-hover-bg-color: #e0a800;
+    --button-selected-bg-color: #e0a800;
   `,
 };
 
-function Button({ disabled, size, variant, children, onClick }) {
+function Button({ disabled, size, variant, children, onClick, selected }) {
   const sizeStyle = SIZES[size];
   const variantStyle = VARIANTS[variant];
 
@@ -46,6 +49,7 @@ function Button({ disabled, size, variant, children, onClick }) {
     sizestyle={sizeStyle}
     variantstyle={variantStyle}
     onClick={onClick}
+    selected={selected}
     >
     {children}
     </StyledButton>
@@ -77,7 +81,14 @@ const StyledButton = styled.button`
     opacity: 0.5;
     background: var(--button-bg-color, #025ce2);
   }
+
+  ${(p) =>
+    p.selected &&
+    css`
+      background: var(--button-selected-bg-color, #00008B);
+    `}
 `;
+
 
 
 
