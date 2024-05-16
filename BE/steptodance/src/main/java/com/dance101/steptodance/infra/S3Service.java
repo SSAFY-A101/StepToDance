@@ -1,5 +1,7 @@
 package com.dance101.steptodance.infra;
 
+import static org.springframework.util.StringUtils.*;
+
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -11,17 +13,21 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.StringUtils;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.util.IOUtils;
 import com.dance101.steptodance.global.exception.category.NotFoundException;
+import com.dance101.steptodance.global.utils.FileUtil;
 import com.dance101.steptodance.guide.domain.GuideBodyModel;
 
 import lombok.RequiredArgsConstructor;
@@ -51,7 +57,11 @@ public class S3Service {
 	public void delete (String keyName) {
 		try {
 			// deleteObject(버킷명, 키값)으로 객체 삭제
-			amazonS3.deleteObject(bucket, keyName);
+			ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(keyName + ".*");
+
+			for (S3ObjectSummary object : listObjectsV2Result.getObjectSummaries()) {
+				amazonS3.deleteObject(bucket, object.getKey());
+			}
 		} catch (AmazonServiceException e) {
 			log.error(e.toString());
 		}
@@ -81,12 +91,18 @@ public class S3Service {
 	}
 
 	public Path download(String storedFileName) throws IOException {
-		S3Object o = amazonS3.getObject(new GetObjectRequest(bucket, storedFileName));
+		ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(storedFileName+ ".*");
+		S3Object o = null;
+		for (S3ObjectSummary object : listObjectsV2Result.getObjectSummaries()) {
+			o = amazonS3.getObject(new GetObjectRequest(bucket, object.getKey()));
+		}
 		S3ObjectInputStream objectInputStream = o.getObjectContent();
+		String extension = StringUtils.getFilenameExtension(o.getKey());
 
-		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		Path tempFilePath = Files.createTempFile("temp-", "."+extension);
 		Files.copy(objectInputStream, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		log.info("download: s3에서 영상 다운로드 성공");
 		return tempFilePath;
 	}
+
 }

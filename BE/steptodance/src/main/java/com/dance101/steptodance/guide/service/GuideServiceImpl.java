@@ -176,7 +176,7 @@ public class GuideServiceImpl implements GuideService{
 		// delete guide
 		guideRepository.delete(guide);
 		// s3
-		s3Service.delete("guide/"+guideId+ ".mp4");
+		s3Service.delete("guide/"+guideId);
 		// MongoDB
 		guideBodyRepository.deleteByGuideId(guideId);
 
