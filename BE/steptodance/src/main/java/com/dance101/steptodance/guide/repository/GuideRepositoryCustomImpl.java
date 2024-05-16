@@ -121,21 +121,20 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
     }
 
     private BooleanExpression categorySearch(String category, long userId) {
+        System.out.println(category);
+        System.out.println(userId);
         if (StringUtil.isNullOrEmpty(category)) {
             return null;
         } else if (category.equals("custom")) {
-            category = queryFactory.select(genre.name)
-                .from(guide)
-                .innerJoin(genre).on(genre.id.eq(guide.genre.id))
-                .where(guide.id.eq(
-                    JPAExpressions.select(guide.id)
-                        .from(feedback)
-                        .where(feedback.user.id.eq(userId))
-                        .groupBy(feedback.guide.id)
-                        .orderBy(feedback.id.count().desc())
-                        .limit(1)
-                ))
-                .fetchOne();
+            category = queryFactory.select(feedback.guide.genre.name)
+                .from(feedback)
+                .where(feedback.user.id.eq(4L))
+                .groupBy(feedback.guide.genre)
+                .orderBy(feedback.guide.genre.count().desc())
+                .fetchFirst();
+            if (category == null) {
+                category = "k-pop";
+            }
         }
         return guide.genre.name.like("%" + category+ "%");
     }
