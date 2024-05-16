@@ -121,6 +121,10 @@ public class FFmpegUtils {
 		int padding = imgHeight / 18;
 		int offset = Math.max((int)minX - padding, 0);
 		int size = Math.min((int)maxX + padding, imgWidth) - offset;
+		if (size > imgWidth) {
+			offset = 0;
+			size = imgWidth;
+		}
 
 		String extension = StringUtils.getFilenameExtension(oldGuide.toString());
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
