@@ -50,7 +50,7 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
             .from(guide).leftJoin(feedback).on(feedback.guide.id.eq(guide.id))
             .where(
                 titleSearch(searchConditions.getTitle())
-                    .or(categorySearch(searchConditions.getCategory(), userId))
+                    .and(categorySearch(searchConditions.getCategory(), userId))
                     .or(singerSearch(searchConditions.getSinger()))
                     .or(uploaderSearch(searchConditions.getUploader())))
             .groupBy(guide.id)
