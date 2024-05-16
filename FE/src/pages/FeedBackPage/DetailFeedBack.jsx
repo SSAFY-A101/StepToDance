@@ -19,6 +19,9 @@ const DetailFeedback = () => {
   const uploadPlayerRef = useRef(null);
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [highlightStyle, setHighlightStyle] = useState({});
 
   useEffect(() => {
     const fetchFeedbackDetail = async () => {
@@ -62,6 +65,50 @@ const DetailFeedback = () => {
     };
   }, []);
 
+  const parseTime = (time) => {
+    if (!time) return null;
+    const [hours, minutes, seconds] = time.split(":").map(Number);
+    return hours * 3600 + minutes * 60 + seconds;
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  const addSeconds = (time, secondsToAdd) => {
+    const timeInSeconds = parseTime(time);
+    const newTimeInSeconds = timeInSeconds + secondsToAdd;
+    const hours = Math.floor(newTimeInSeconds / 3600);
+    const minutes = Math.floor((newTimeInSeconds % 3600) / 60);
+    const seconds = newTimeInSeconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleProgress = (state) => {
+    setProgress(state.played);
+    setCurrentTime(state.playedSeconds);
+
+    if (feedbackDetail) {
+      const currentTime = state.playedSeconds;
+      const incorrectSection = feedbackDetail.incorrect_section_list.some((section) => {
+        const startAt = parseTime(section.start_at);
+        const endAt = section.end_at ? parseTime(section.end_at) : startAt + 3; // Extend by 3 seconds if end_at is not specified
+        return currentTime >= startAt && currentTime <= endAt;
+      });
+      setHighlightStyle(incorrectSection ? { border: "2px solid red" } : { border: "1px solid #ddd" });
+    }
+  };
+
+  const handleSeek = (event) => {
+    const rect = event.target.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const newProgress = clickX / rect.width;
+    guidePlayerRef.current.seekTo(newProgress);
+    uploadPlayerRef.current.seekTo(newProgress);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -80,9 +127,11 @@ const DetailFeedback = () => {
               width={widthSize}
               height={heightSize * 0.35}
               onEnded={handleVideoEnded}
+              onProgress={handleProgress}
               controls={false}
               className={styles.player}
               playsinline={true}
+              style={highlightStyle}
             />
             <ReactPlayer
               url={feedbackDetail.feedback.video_url}
@@ -92,9 +141,11 @@ const DetailFeedback = () => {
               muted={true}
               height={heightSize * 0.35}
               onEnded={handleVideoEnded}
+              onProgress={handleProgress}
               controls={false}
               className={styles.player}
               playsinline={true}
+              style={highlightStyle}
             />
             <div className={styles.controlsOverlay}>
               <div className={styles.playButton} onClick={handlePlayPause}>
@@ -108,6 +159,12 @@ const DetailFeedback = () => {
               </div>
             </div>
           </div>
+          <div className={styles.progressBarWrapper} onClick={handleSeek}>
+            <div className={styles.progressBar}>
+              <div className={styles.progress} style={{ width: `${progress * 100}%` }} />
+            </div>
+          </div>
+          <p>Current Time: {formatTime(currentTime)}</p>
           <p>
             Highlight Section: {feedbackDetail.feedback.highlight_section_start_at} - {feedbackDetail.feedback.highlight_section_end_at}
           </p>
@@ -115,7 +172,9 @@ const DetailFeedback = () => {
           <ul>
             {feedbackDetail.incorrect_section_list.length > 0 ? (
               feedbackDetail.incorrect_section_list.map((section, index) => (
-                <li key={index}>Start at: {section.start_at}</li>
+                <li key={index}>
+                  Start at: {section.start_at} End at: {addSeconds(section.start_at, 3)}
+                </li>
               ))
             ) : (
               <li>No incorrect sections</li>
@@ -124,14 +183,14 @@ const DetailFeedback = () => {
           <button onClick={() => navigate("/feedbacks", { state: { initialFeedbacks } })} className={styles.backButton}>
             Back to Feedback List
           </button>
-          <button onClick={()=> navigate("/videoeditor", {
+          <button onClick={() => navigate("/videoeditor", {
             state: {
-              guideId : feedbackDetail.feedback.guide_url.match(/\/(\d+)\.mp4$/)[1],
-              videoUrl : feedbackDetail.feedback.video_url,
-              highlightStartAt : feedbackDetail.feedback.highlight_section_start_at,
-              highlightEndAt : feedbackDetail.feedback.highlight_section_end_at,
+              guideId: feedbackDetail.feedback.guide_url.match(/\/(\d+)\.mp4$/)[1],
+              videoUrl: feedbackDetail.feedback.video_url,
+              highlightStartAt: feedbackDetail.feedback.highlight_section_start_at,
+              highlightEndAt: feedbackDetail.feedback.highlight_section_end_at,
             }
-            })} className={styles.editorButton}>
+          })} className={styles.editorButton}>
             편집하기
           </button>
         </div>
