@@ -12,7 +12,7 @@ const ShareModal = ({ infos }) => {
       content: {
         title: infos.song_title,
         description: infos.singer,
-        imageUrl: THUMBNAIL,
+        imageUrl: "../../assets/thumbnail.png",
         imageWidth: 300,
         imageHeight: 300,
         link: {
