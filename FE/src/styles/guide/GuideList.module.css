@@ -78,3 +78,30 @@ a {
 .link {
   text-decoration: none;
 }
+
+.guide {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
+  .noGuide {
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 15em;
+    margin: 0 auto;
+    margin-top: 5em;
+  }
+
+  .buttons {
+    margin-left: 2vw;
+  }
+
+  .buttons button {
+    margin-right: 1vw; 
+  }
+  
