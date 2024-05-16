@@ -16,32 +16,35 @@ const KakaoLogin = () => {
   useEffect(() => {
     const kakaoLogin = async () => {
       if (code) {
-        console.log(code)
+        console.log(code);
         try {
           const response = await axios({
             method: "GET",
-            url: `https://k10a101.p.ssafy.io/api/v1/auth/login?code=${code}`
+            url: `https://www.steptodance.site/api/v1/auth/login?code=${code}`,
           });
 
           if (response.status === 201) {
-            const { access_token, nickname, profile_img_url } = response.data.data;
-            const refresh_token = response.headers['refresh_token'];
+            const { access_token, nickname, profile_img_url } =
+              response.data.data;
+            const refresh_token = response.headers["refresh_token"];
 
             // localStorage.setItem("accessToken", access_token);
             // localStorage.setItem("refreshToken", refresh_token);
 
-            dispatch(setUserData({
-              accessToken: access_token,
-              nickname: nickname,
-              profileImgUrl: profile_img_url,
-              isLoggedIn: true,
-            }));
+            dispatch(
+              setUserData({
+                accessToken: access_token,
+                nickname: nickname,
+                profileImgUrl: profile_img_url,
+                isLoggedIn: true,
+              })
+            );
             setCookie("accessToken", access_token);
             setCookie("refreshToken", refresh_token);
 
             navigate("/home");
           } else {
-            throw new Error('Failed to login with Kakao');
+            throw new Error("Failed to login with Kakao");
           }
         } catch (error) {
           console.error("Error during Kakao login: ", error);
@@ -66,7 +69,6 @@ const KakaoLogin = () => {
         </div>
       </div>
     </section>
-
   );
 };
 
