@@ -133,7 +133,7 @@ const GuideUploadPage = () => {
             checked={selectedOption === '4'}
             onChange={handleOptionChange}
           />
-          <span>팝핑</span>
+          <span>팝핀</span>
         </label>
         <label>
           <input
