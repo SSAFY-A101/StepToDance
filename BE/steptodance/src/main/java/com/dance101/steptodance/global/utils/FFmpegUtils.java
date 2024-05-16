@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import org.bytedeco.tesseract.TFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.bramp.ffmpeg.FFmpeg;
@@ -58,13 +59,15 @@ public class FFmpegUtils {
 	}
 
 	public Path saveInTmpLocal(MultipartFile video) throws IOException {
-		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		String extension = video.getContentType();
+		Path tempFilePath = Files.createTempFile("temp-", "."+extension);
 		video.transferTo(tempFilePath);
 		return tempFilePath;
 	}
 
 	public Path setVodFrame30(Path path) throws IOException {
-		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		String extension = StringUtils.getFilenameExtension(String.valueOf(path.getFileName()));
+		Path tempFilePath = Files.createTempFile("temp-", "." + extension);
 
 		FFmpegBuilder builder = new FFmpegBuilder()
 			.setInput(path.toString())
@@ -119,9 +122,10 @@ public class FFmpegUtils {
 		int offset = Math.max((int)minX - padding, 0);
 		int size = Math.min((int)maxX + padding, imgWidth) - offset;
 
+		String extension = StringUtils.getFilenameExtension(oldGuide.toString());
 		FFmpegBuilder vodBuilder = new FFmpegBuilder()
 			.setInput(oldGuide.toString())
-			.addOutput(outputDirPath + "/guide" + id + ".mp4")
+			.addOutput(outputDirPath + "/guide" + id + "." + extension)
 			.setVideoFilter("crop=" + size + ":in_h:" + offset + ":0")
 			.done();
 
@@ -132,7 +136,7 @@ public class FFmpegUtils {
 		oldGuide.toFile().delete();
 		log.info("humanCenterMethod: old guide vod has been deleted");
 
-		return Path.of(outputDirPath + "/guide" + id + ".mp4");
+		return Path.of(outputDirPath + "/guide" + id + "." + extension);
 	}
 
 
@@ -205,7 +209,8 @@ public class FFmpegUtils {
 	 */
 	public MultipartFile sendVodToKafkaFeedback(long id, MultipartFile video) throws IOException {
 		String type = "feedback";
-		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		String extension = video.getContentType();
+		Path tempFilePath = Files.createTempFile("temp-", "."+extension);
 		video.transferTo(tempFilePath);
 
 		Files.createDirectories(Path.of(outputDirPath + type + id));
@@ -264,12 +269,13 @@ public class FFmpegUtils {
 	}
 
 	public MultipartFile editVideo(String videoUrl, LocalTime startAt, LocalTime endAt) throws IOException {
+		String extension = StringUtils.getFilenameExtension(videoUrl);
 		// 임시 파일 생성
-		Path tempFilePath = Files.createTempFile("temp-", ".mp4");
+		Path tempFilePath = Files.createTempFile("temp-", "."+extension);
 		downloadVideo(videoUrl, tempFilePath);
 
 		// 출력 파일 경로 설정
-		String outputFilePath = tempFilePath.getParent().toString() + File.separator + "edited_video.mp4";
+		String outputFilePath = tempFilePath.getParent().toString() + File.separator + "edited_video."+extension;
 
 		// 시작 시간과 종료 시간을 밀리초로 변환
 		long startMilliseconds = toMilliseconds(startAt);

@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.dance101.steptodance.feedback.data.response.FeedbackResultData;
 import com.dance101.steptodance.feedback.domain.Feedback;
@@ -94,10 +95,11 @@ public class KafkaConsumeService implements AIConsumeService {
 
 		// s3 기존의 영상을 잘라서 다시 저장
 		try {
-			Path oldGuide = s3Service.download("guide/"+message+".mp4");
+			Path oldGuide = s3Service.download("guide/"+message);
 			Path newGuide = ffmpegUtils.setVodCenterOnHuman(oldGuide, Long.parseLong(message), frameList);
-			s3Service.delete("guide/"+message+".mp4");
-			String url = s3Service.upload(FileUtil.convertToMultipartFile(newGuide.toFile()), "guide/"+message+".mp4");
+			s3Service.delete("guide/"+message);
+			String extension = StringUtils.getFilenameExtension(oldGuide.toString());
+			String url = s3Service.upload(FileUtil.convertToMultipartFile(newGuide.toFile()), "guide/"+message+"."+extension);
 			log.info("consumeGuideCompletion: guide video file has been replaced");
 			log.info("consumeGuideCompletion: " + url);
 			newGuide.toFile().delete();
