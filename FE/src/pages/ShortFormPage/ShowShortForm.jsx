@@ -1,5 +1,4 @@
 import styles from "./ShowShortForm.module.css";
-import testVideo from "../../assets/PerfectNight_르세라핌.mp4";
 import { getShortformList } from "../../api/ShortformApis";
 import { useEffect, useRef, useState } from "react";
 
@@ -95,8 +94,10 @@ const ShowShortForm = () => {
     };
     getData();
   }, []);
+
+  // Intersection Observer for autoplay
   useEffect(() => {
-    if (showShortForm) {
+    if (showShortForm.length > 0) {
       const options = {
         root: null,
         rootMargin: "0px",
@@ -107,9 +108,7 @@ const ShowShortForm = () => {
         entries.forEach((entry) => {
           const video = entry.target;
           if (entry.isIntersecting) {
-            if (video.paused) {
-              video.play();
-            }
+            video.play().catch((error) => console.error('Video play failed:', error));
           } else {
             video.pause();
           }
@@ -128,23 +127,22 @@ const ShowShortForm = () => {
       };
     }
   }, [currentPos, showShortForm]);
+
   // 비디오 렌더링
   useEffect(() => {
     const videoList = showShortForm.map((short, index) => {
       return (
-        <>
-          <video
-            className={styles["short-video"]}
-            id={`video_${index}`}
-            poster="영상썸네일"
-            src={short.video_url}
-            loop
-            muted
-            playsInline
-            type="video/mp4"
-            key={index}
-          ></video>
-        </>
+        <video
+          className={styles["short-video"]}
+          id={`video_${index}`}
+          poster="영상썸네일"
+          src={short.video_url}
+          loop
+          muted
+          playsInline
+          type="video/mp4"
+          key={index}
+        ></video>
       );
     });
 
