@@ -1,38 +1,80 @@
-.image {
-    width: 6rem;
-    height: 6rem;
-    border-radius: 1rem;
-    margin-left: 1rem;
-    object-fit: cover;
+/* GuideList.module.css */
+.container {
+  height: calc(100vh - 11.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .title {
-    color:white;
-    margin-top:2rem;
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    font-size: large;
+  color: white;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }
 
+.nav {
+  position: relative;
+  padding: 1.2em;
+  margin-top: 2vh;
+}
+
+.nav__pointer {
+  z-index: 1;
+  position: absolute;
+  top: 0.6em;
+  left: auto;
+  background-color: var(--glow1-color);
+  height: 1.8em;
+  transition: transform 0.25s ease-in-out;
+  border-radius: 0.2em;
+  will-change: transform;
+  backface-visibility: hidden;
+  border: 0.2em solid var(--glow1-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  background-color: hsl(212, 100%, 64%);
+}
+
+.nav__list {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+
+
+.guide {
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin: 1rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+}
+
+.image {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 1rem;
+  margin-left: 1rem;
+  object-fit: cover;
+}
 .text {
   color: white;
   margin: 1em;
   vertical-align: middle;
 }
 
-.guide {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    margin-top: 1em;
-    margin-bottom: 1em;
-  }
-
-  .buttons {
-    margin-left: 2vw;
-  }
-
-  .buttons button {
-    margin-right: 1vw; 
-  }
-  
+.link {
+  text-decoration: none;
+}
