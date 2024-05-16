@@ -16,11 +16,11 @@ const KakaoLogin = () => {
   useEffect(() => {
     const kakaoLogin = async () => {
       if (code) {
-        console.log(code);
+        console.log("여기", code);
         try {
           const response = await axios({
             method: "GET",
-            url: `https://www.steptodance.site/auth/login?code=${code}`,
+            url: `https://www.steptodance.site/api/v1/auth/login?code=${code}`,
           });
 
           if (response.status === 201) {
