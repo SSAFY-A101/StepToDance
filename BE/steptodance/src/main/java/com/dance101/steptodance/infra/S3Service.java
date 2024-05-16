@@ -20,6 +20,7 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ListObjectsV2Request;
 import com.amazonaws.services.s3.model.ListObjectsV2Result;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
@@ -56,9 +57,13 @@ public class S3Service {
 	/* 2. 파일 삭제 */
 	public void delete (String keyName) {
 		try {
-			// deleteObject(버킷명, 키값)으로 객체 삭제
-			ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(keyName + ".*");
+			ListObjectsV2Request listRequest = new ListObjectsV2Request()
+				.withBucketName(bucket)
+				.withPrefix(keyName);
+			log.info("delete: listRequest=" + listRequest);
 
+			ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(listRequest);
+			// deleteObject(버킷명, 키값)으로 객체 삭제
 			for (S3ObjectSummary object : listObjectsV2Result.getObjectSummaries()) {
 				amazonS3.deleteObject(bucket, object.getKey());
 			}
@@ -91,7 +96,12 @@ public class S3Service {
 	}
 
 	public Path download(String storedFileName) throws IOException {
-		ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(storedFileName+ ".*");
+		ListObjectsV2Request listRequest = new ListObjectsV2Request()
+			.withBucketName(bucket)
+			.withPrefix(storedFileName);
+		log.info("download: listRequest=" + storedFileName);
+
+		ListObjectsV2Result listObjectsV2Result = amazonS3.listObjectsV2(listRequest);
 		S3Object o = null;
 		for (S3ObjectSummary object : listObjectsV2Result.getObjectSummaries()) {
 			o = amazonS3.getObject(new GetObjectRequest(bucket, object.getKey()));
