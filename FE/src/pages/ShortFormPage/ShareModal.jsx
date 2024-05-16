@@ -13,8 +13,8 @@ const ShareModal = ({ infos }) => {
         title: infos.song_title,
         description: infos.singer,
         imageUrl: THUMBNAIL,
-        image_width: "300px",
-        image_height: "300px",
+        imageWidth: 300,
+        imageHeight: 300,
         link: {
           webUrl: "https://www.steptodance.site/home",
           mobileWebUrl: "https://www.steptodance.site/home",
