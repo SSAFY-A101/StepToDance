@@ -117,9 +117,7 @@ const ShowShortForm = () => {
       }, options);
 
       showShortForm.forEach((short, index) => {
-        console.log("short", short);
         const videoElement = document.getElementById(`video_${index}`);
-        console.log("vide", videoElement);
         if (videoElement) {
           observer.observe(videoElement);
         }
@@ -141,7 +139,9 @@ const ShowShortForm = () => {
             id={`video_${index}`}
             loop
             muted
-            key={index}></video>
+            playsInline
+            key={index}
+          ></video>
         </>
       );
     });
