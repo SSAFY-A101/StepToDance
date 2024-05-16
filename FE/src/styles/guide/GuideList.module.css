@@ -27,3 +27,12 @@
     margin-top: 1em;
     margin-bottom: 1em;
   }
+
+  .buttons {
+    margin-left: 2vw;
+  }
+
+  .buttons button {
+    margin-right: 1vw; 
+  }
+  
