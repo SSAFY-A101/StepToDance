@@ -15,6 +15,7 @@ const ShareModal = ({ infos }) => {
         imageUrl: THUMBNAIL,
         link: {
           webUrl: "https://www.steptodance.site/home",
+          mobileWebUrl: "https://www.steptodance.site/home",
         },
       },
       buttons: [
@@ -22,6 +23,7 @@ const ShareModal = ({ infos }) => {
           title: "이동",
           link: {
             webUrl: "http://www.steptodance.site/home",
+            mobileWebUrl: "https://www.steptodance.site/home",
           },
         },
       ],
