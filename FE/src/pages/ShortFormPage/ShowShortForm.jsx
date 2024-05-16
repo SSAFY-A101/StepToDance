@@ -137,13 +137,13 @@ const ShowShortForm = () => {
             className={styles["short-video"]}
             id={`video_${index}`}
             poster="영상썸네일"
+            src={short.video_url}
             loop
             muted
             playsInline
+            type="video/mp4"
             key={index}
-          >
-            <source src={short.video_url} />
-          </video>
+          ></video>
         </>
       );
     });
