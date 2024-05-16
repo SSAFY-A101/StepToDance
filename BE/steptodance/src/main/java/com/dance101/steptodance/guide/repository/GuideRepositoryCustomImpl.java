@@ -133,7 +133,7 @@ public class GuideRepositoryCustomImpl implements GuideRepositoryCustom {
                         .where(feedback.user.id.eq(userId))
                         .groupBy(feedback.guide.id)
                         .orderBy(feedback.id.count().desc())
-                        .fetchFirst()
+                        .limit(1)
                 ))
                 .fetchOne();
         }
