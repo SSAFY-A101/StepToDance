@@ -137,7 +137,6 @@ const ShowShortForm = () => {
             className={styles["short-video"]}
             id={`video_${index}`}
             poster="영상썸네일"
-            autoPlay
             loop
             muted
             playsInline
