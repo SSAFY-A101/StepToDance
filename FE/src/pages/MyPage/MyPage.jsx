@@ -25,7 +25,7 @@ const MyPage = () => {
     const fetchData = async () => {
       try {
         const data = await getUserDatas(limit, 0);
-        console.log(data.data)
+        console.log(data.data);
         setProfile(data.data.user || {});
         setFeedbackList(data.data.feedback_list || []);
         setShortsList(data.data.shortform_list.slice(0, 3) || []);
@@ -97,9 +97,9 @@ const MyPage = () => {
     navigate(`/feedback/${feedbackId}`, { state: { initialFeedbacks: feedbackList } });
   };
 
-
   const totalScore = profile.score || 0;
   const feedbackCount = feedbackList.length;
+  const roundedTotalScore = totalScore.toFixed(2);
   const averageScore = feedbackCount > 0 ? (totalScore / feedbackCount).toFixed(2) : 0;
 
   return (
@@ -150,7 +150,7 @@ const MyPage = () => {
               </h2>
               <p>Welcome to your profile!</p>
               <div>Rank: {profile.user_rank}위</div>
-              <div>총점: {totalScore}</div>
+              <div>총점: {roundedTotalScore}</div>
               <div>평균 점수: {averageScore}</div>
             </div>
           )}
@@ -178,7 +178,7 @@ const MyPage = () => {
                     </div>
                   ))}
                 </div>
-                <button className={styles.arrowButton} onClick={() => document.getElementById('feedbackList').scrollBy({ left: 50, behavior: 'smooth' })}>{">"}</button>
+                <button className={styles.arrowButton} onClick={() => document.getElementById('feedbackList').scrollBy({ left: 200, behavior: 'smooth' })}>{">"}</button>
               </div>
               <div
                 onClick={() => navigate("/feedbacks", { state: { initialFeedbacks: feedbackList } })}
