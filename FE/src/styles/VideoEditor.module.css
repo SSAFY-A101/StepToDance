@@ -1,3 +1,9 @@
+.homeContainer {
+  height: calc(100vh - 11.5rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .playButton {
   /* transform: scale(1.8); */
   color: white;
@@ -9,14 +15,14 @@
   display: flex; 
   justify-content: center; 
   align-items: center;
-  margin-top: 7vh;
+  margin-top: 3vh;
 }
 
 .progressBar {
   width: 40vh;
   height: 5vh;
   background-color: #ffffff;
-  position: absolute;
+  /* position: absolute; */
 }
 
 .progress {
@@ -25,11 +31,14 @@
 }
 
 .timeDisplayOverlay {
-  position: absolute;
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  /* position: absolute;
   left: 50%;
-  transform: translateX(-20%);
+  transform: translateX(-20%); */
   color: white;
-  width: 30vh;
+  /* width: 30vh; */
   font-size: 1rem; /* Larger font size for visibility */
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Enhancing readability */
 }
