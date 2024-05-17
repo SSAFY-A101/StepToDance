@@ -1,13 +1,6 @@
 import tensorflow as tf
 import tensorflow_hub as hub
-import numpy as np
-import cv2
 import base64
-
-# Import matplotlib libraries
-from matplotlib import pyplot as plt
-from matplotlib.collections import LineCollection
-import matplotlib.patches as patches
 
 model = None
 module = None
