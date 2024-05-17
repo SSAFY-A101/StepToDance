@@ -11,10 +11,8 @@ function VideoEditor() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state;
-  const [guideId, setGuideId] = useState(state.guideId);
-  const [videoUrl, setVideoUrl] = useState(state.videoUrl);
-  const [highlightStartAt, setHighlightStartAt] = useState(state.highlightStartAt);
-  const [highlightEndAt, setHighlightEndAt] = useState(state.highlightEndAt);
+  const guideId = useState(state.guideId);
+  const videoUrl = useState(state.videoUrl);
   const [played, setPlayed] = useState(0);
   const [startAt, setStartAt] = useState(parseTime(state.highlightStartAt));
   const [endAt, setEndAt] = useState(parseTime(state.highlightEndAt));
@@ -153,28 +151,13 @@ function VideoEditor() {
       <div className={styles.timeDisplayOverlay}>
         {formatTime(played * duration)} / {formatTime(duration)}
       </div>
-      {/* <div className={styles.progressContainer}>
-        <div
-          className={styles.progressBar}
-          onClick={(e) => {
-            const rect = e.target.getBoundingClientRect();
-            const fraction = (e.clientX - rect.left) / rect.width;
-            playerRef.current.seekTo(fraction, "fraction");
-          }}
-        >
-          <div
-            className={styles.progress}
-            style={{ width: `${played * 100}%` }}
-          ></div>
-        </div>
-      </div> */}
       <div style={{ marginTop: '5vw' }}>
         <p style={{marginLeft:'5vw', color: 'white' }}>시작 {formatTime(startAt)} &nbsp; 끝 {formatTime(endAt)}</p>
       </div>
       <div className={styles.timelineContainer}>
         <Timeline 
           fixedMinTime={0} 
-          fixedMaxTime={67} 
+          fixedMaxTime={duration || 1} 
           rangeMin={4}
           rangeMax={10}
           timeGap={1} 
