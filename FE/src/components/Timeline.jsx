@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
-function Timeline({ fixedMinTime, fixedMaxTime, rangeMin, rangeMax, timeGap, onTimeChange, onPlaybarMove }) {
+function Timeline({ fixedMinTime, fixedMaxTime, rangeMin, rangeMax, timeGap, onTimeChange, onPlaybarMove, currentTime }) {
   const [rangeMinValue, setRangeMinValue] = useState(rangeMin); 
   const [rangeMaxValue, setRangeMaxValue] = useState(rangeMax);
   const [rangeMinPercent, setRangeMinPercent] = useState(0);
   const [rangeMaxPercent, setRangeMaxPercent] = useState(100);
-  const [currentTime, setCurrentTime] = useState(0);
-  
+
   // 슬라이더 핸들러 함수
   const timeRangeMinValueHandler = (e) => {
     const minValue = parseInt(e.target.value);
@@ -36,7 +35,6 @@ function Timeline({ fixedMinTime, fixedMaxTime, rangeMin, rangeMax, timeGap, onT
     const clickPercent = (clickX / timelineRect.width) * 100;
     const clickTime = (clickPercent / 100) * fixedMaxTime;
     onPlaybarMove(clickTime);
-    setCurrentTime(clickTime);
   };
   
   return (
@@ -45,7 +43,7 @@ function Timeline({ fixedMinTime, fixedMaxTime, rangeMin, rangeMax, timeGap, onT
           rangeminpercent={rangeMinPercent}
           rangemaxpercent={rangeMaxPercent}
         />
-        <Playbar playbarposition={(currentTime / fixedMaxTime) * 100}/>
+        <Playbar playbarposition={(currentTime / fixedMaxTime) * 100} currenttime={currentTime}/>
         <FilterTimeRangeWrap>
         <FilterTimeRangeMin
           type="range"

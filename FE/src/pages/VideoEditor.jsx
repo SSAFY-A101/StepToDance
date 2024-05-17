@@ -11,8 +11,8 @@ function VideoEditor() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state;
-  const guideId = useState(state.guideId);
-  const videoUrl = useState(state.videoUrl);
+  const [guideId, setGuideId] = useState(state.guideId);
+  const [videoUrl, setVideoUrl] = useState(state.videoUrl);  
   const [played, setPlayed] = useState(0);
   const [startAt, setStartAt] = useState(parseTime(state.highlightStartAt));
   const [endAt, setEndAt] = useState(parseTime(state.highlightEndAt));
@@ -163,6 +163,7 @@ function VideoEditor() {
           timeGap={1} 
           onTimeChange={handleTimelineChange}
           onPlaybarMove={handlePlaybarMove}
+          currentTime={played * duration}
         />
       </div>
     </div>
