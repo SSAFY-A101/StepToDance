@@ -283,6 +283,11 @@ h2 {
   transition: opacity .2s;
 }
 
+.backButton {
+  position: relative;
+  margin-right: 80vw;
+  color: var(--glow-color);
+}
 .timeDisplayOverlay {
   position: absolute;
   left: 50%;

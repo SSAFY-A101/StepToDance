@@ -8,6 +8,7 @@ import SpeedIcon from "@mui/icons-material/Speed";
 import ReplayIcon from "@mui/icons-material/Replay";
 import { useLocation, useNavigate } from "react-router-dom";
 import VideocamIcon from "@mui/icons-material/Videocam";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"; // Import the icon
 import { getGuideDetail } from "../../api/GuideApis";
 
 const VIDEODATA = {
@@ -26,6 +27,7 @@ const VIDEODATA = {
 
 const GuideDetail = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Use the useNavigate hook
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [played, setPlayed] = useState(0);
@@ -39,7 +41,6 @@ const GuideDetail = () => {
   const playbackRates = [1, 1.25, 1.5, 0.5, 0.75]; // 배속 설정 배열
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
-  const navigate = useNavigate();
   const [videoData, setVideoData] = useState(VIDEODATA);
 
   useEffect(() => {
@@ -68,7 +69,7 @@ const GuideDetail = () => {
   };
 
   const handleOnAirClick = () => {
-    navigate("/record", { state: { videoUrl: videoData.video_url } });
+    navigate("/record", { state: { videoUrl: videoData.video_url, guideId: videoData.id } });
   };
 
   const changePlaybackRate = () => {
@@ -91,10 +92,14 @@ const GuideDetail = () => {
   return (
     <div className={styles.mainView}>
       <div className={styles.infoBar}>
+        <ArrowBackIcon 
+          fontSize="large" 
+          className={styles.backButton}
+          onClick={() => navigate(-1)} // Navigate back to the previous page
+        />
         <h2>
           {videoData.song_title} - {videoData.singer}
-        </h2>{" "}
-        {/* 노래 제목과 가수 이름 표시 */}
+        </h2>
       </div>
       <div
         className={styles.playerWrapper}
