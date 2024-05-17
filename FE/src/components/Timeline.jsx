@@ -1,11 +1,21 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 
-function Timeline({ fixedMinTime, fixedMaxTime, rangeMin, rangeMax, timeGap, onTimeChange, onPlaybarMove, currentTime }) {
+function Timeline({ fixedMinTime, fixedMaxTime, rangeMin, rangeMax, initialStartAt, initialEndAt, timeGap, onTimeChange, onPlaybarMove, currentTime }) {
   const [rangeMinValue, setRangeMinValue] = useState(rangeMin); 
   const [rangeMaxValue, setRangeMaxValue] = useState(rangeMax);
   const [rangeMinPercent, setRangeMinPercent] = useState(0);
   const [rangeMaxPercent, setRangeMaxPercent] = useState(100);
+
+  useEffect(() => {
+    setRangeMinValue(rangeMin);
+    setRangeMaxValue(rangeMax);
+  }, [rangeMin, rangeMax]);
+
+  useEffect(() => {
+    setRangeMinValue(initialStartAt);
+    setRangeMaxValue(initialEndAt);
+  }, [initialStartAt, initialEndAt]);
 
   // 슬라이더 핸들러 함수
   const timeRangeMinValueHandler = (e) => {
