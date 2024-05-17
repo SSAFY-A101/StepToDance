@@ -1,4 +1,3 @@
-import boto3
 from data.GuideRequest import GuideUpdateRequest
 from data.GuideUpdateMsg import GuideUpdateMsg
 from data.FeedbackUpdateMsg import FeedbackUpdateMsg

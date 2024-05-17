@@ -1,18 +1,8 @@
 fastapi
-tapi
 uvicorn
-openai
-clarifai
-nbformat
-nbclient
-nbconvert
-# kafka-python
 confluent_kafka
-boto3
 python-dotenv
-python-multipart
 redis
 tensorflow
 tensorflow_hub
-matplotlib
 opencv-python
