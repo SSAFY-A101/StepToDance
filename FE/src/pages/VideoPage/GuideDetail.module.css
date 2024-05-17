@@ -123,6 +123,13 @@ h2 {
 
 }
 
+.backButton{
+  color: var(--glow1-color);
+  left: 1vw;
+  bottom: 0;
+  position: absolute;
+}
+
 .volumeIcon {
   cursor: pointer;
   color: #0575e6; /* Adjust to fit your theme */
