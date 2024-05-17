@@ -1,5 +1,4 @@
 import cv2
-import boto3
 import os
 import base64
 import numpy as np
