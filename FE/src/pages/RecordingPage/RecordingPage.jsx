@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
 import styles from "./RecordingPage.module.css";
@@ -7,34 +7,67 @@ import ReactPlayer from "react-player";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import CheckIcon from "@mui/icons-material/Check";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
+import ReplayIcon from "@mui/icons-material/Replay";
 import { guideResult } from "../../api/GuideApis";
 
+const playbackRates = [1, 1.25, 1.5, 0.5, 0.75];
+
 export const WebcamStreamCapture = () => {
-  const [layout, setLayout] = useState("overlay");
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
   const webcamRef = useRef(null);
   const [recordRTC, setRecordRTC] = useState(null);
   const [playerOpacity, setPlayerOpacity] = useState(1);
   const [capturing, setCapturing] = useState(false);
-  const [recordedChunks, setRecordedChunks] = useState([]);
   const [recordVideo, setRecordVideo] = useState("");
   const location = useLocation();
   const videoUrl = location.state?.videoUrl;
   const guideId = location.state?.guideId;
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
   const [showVideo, setShowVideo] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [rateIndex, setRateIndex] = useState(0);
+  const [showControls, setShowControls] = useState(false);
+  const [duration, setDuration] = useState(0);
+  const [played, setPlayed] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [version, setVersion] = useState("sideBySide"); // State to manage version
 
   const handleSliderChange = (e) => {
     const newOpacity = e.target.value;
     setPlayerOpacity(newOpacity);
-    const hueRotation = newOpacity * 360;
-    document.documentElement.style.setProperty("--slider-hue", `${hueRotation}deg`);
   };
+
+  const handlePlayPause = () => {
+    if (ended) {
+      videoRef.current.seekTo(0);
+      setEnded(false);
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const changePlaybackRate = () => {
+    const nextRateIndex = (rateIndex + 1) % playbackRates.length;
+    setPlaybackRate(playbackRates[nextRateIndex]);
+    setRateIndex(nextRateIndex);
+  };
+
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+    setEnded(true);
+  };
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    seconds = Math.floor(seconds % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  }
 
   useEffect(() => {
     const handleResize = () => {
@@ -42,12 +75,6 @@ export const WebcamStreamCapture = () => {
       const currentHeight = window.innerHeight;
       setWidthSize(currentWidth);
       setHeightSize(currentHeight);
-
-      const canvas = canvasRef.current;
-      if (canvas) {
-        canvas.width = currentWidth;
-        canvas.height = currentHeight;
-      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -77,26 +104,6 @@ export const WebcamStreamCapture = () => {
       });
   }, [setIsRecording]);
 
-  function formatTime(date) {
-    let minutes = date.getMinutes().toString().padStart(2, "0");
-    let seconds = date.getSeconds().toString().padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  }
-
-  useEffect(() => {
-    if (recordedChunks.length) {
-      const blob = new Blob(recordedChunks, {
-        type: "video/mp4",
-      });
-      const url = URL.createObjectURL(blob);
-      setRecordVideo(url);
-    }
-  }, [recordedChunks]);
-
-  useEffect(() => {
-    console.log("Video URL:", videoUrl);
-  }, [videoUrl]);
-
   const handleStopCaptureClick = useCallback(() => {
     if (recordRTC) {
       recordRTC.stopRecording(() => {
@@ -112,6 +119,7 @@ export const WebcamStreamCapture = () => {
 
   const reRecord = useCallback(() => {
     setRecordVideo("");
+    setVersion("sideBySide"); // Reset to default version
   }, []);
 
   const resultHandler = async () => {
@@ -146,11 +154,149 @@ export const WebcamStreamCapture = () => {
   };
 
   const handleBackClick = () => {
-    const confirmBack = window.confirm("해당 페이지에서 벗어나게 되면 녹화된 영상이 삭제됩니다.\n정말 나가시겠습니까?");
+    const confirmBack = window.confirm(
+      "해당 페이지에서 벗어나게 되면 녹화된 영상이 삭제됩니다.\n정말 나가시겠습니까?"
+    );
     if (confirmBack) {
       navigate(-1);
     }
   };
+
+  const renderVideoPlayer = (url, ref, opacity = 1) => (
+    <>
+      <ReactPlayer
+        ref={ref}
+        url={url}
+        loop
+        playing={isPlaying}
+        onDuration={setDuration}
+        playbackRate={playbackRate}
+        onEnded={handleVideoEnded}
+        onProgress={({ played, loadedSeconds }) => {
+          setPlayed(played);
+          setDuration(loadedSeconds);
+        }}
+        width={version === "sideBySide" ? widthSize / 2 : widthSize}
+        height={heightSize * 0.7}
+        autoPlay
+        style={{
+          objectFit: "cover",
+          opacity: opacity,
+          display: showVideo ? "block" : "none",
+          zIndex: 3
+        }}
+        playsinline={true}
+        type="video/mp4"
+      />
+      <div
+        className={styles.controlsOverlay}
+        style={{ opacity: showControls ? 1 : 0 }}
+        onClick={(e) => e.stopPropagation()} // Prevent click from propagating to parent
+      >
+        <div className={styles.playButton} onClick={handlePlayPause}>
+          {ended ? (
+            <ReplayIcon fontSize="large" />
+          ) : isPlaying ? (
+            <PauseIcon fontSize="large" />
+          ) : (
+            <PlayArrowIcon fontSize="large" />
+          )}
+        </div>
+        <div className={styles.timeDisplayOverlay}>
+          {formatTime(played * duration)} / {formatTime(duration)}
+        </div>
+        <div
+          className={styles.progressBar}
+          onClick={(e) => {
+            const rect = e.target.getBoundingClientRect();
+            const fraction = (e.clientX - rect.left) / rect.width;
+            ref.current.seekTo(fraction, "fraction");
+          }}
+        >
+          <div
+            className={styles.progress}
+            style={{ width: `${played * 100}%` }}
+          ></div>
+        </div>
+      </div>
+    </>
+  );
+
+  const renderSideBySide = () => (
+    <>
+      <div className={styles.playerWrapper}>
+        {renderVideoPlayer(videoUrl, videoRef)}
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          width={widthSize / 2}
+          height={heightSize * 0.75}
+          mirrored={false}
+          videoConstraints={{
+            facingMode: "user",
+            aspectRatio: 1,
+          }}
+        />
+      </div>
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value={playerOpacity}
+        onChange={handleSliderChange}
+        className={styles.rangeSlider}
+        style={{
+          position: "absolute",
+          zIndex: 2,
+          left: "10px",
+          top: "10px",
+        }}
+      />
+    </>
+  );
+
+  const renderOverlay = () => (
+    <>
+      <div className={styles.overlayWrapper}>
+        {renderVideoPlayer(videoUrl, videoRef, playerOpacity)}
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          width={widthSize}
+          height={heightSize * 0.75}
+          mirrored={false}
+          videoConstraints={{
+            facingMode: "user",
+            aspectRatio: 1,
+          }}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 2,
+          }}
+        />
+      </div>
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value={playerOpacity}
+        onChange={handleSliderChange}
+        className={styles.rangeSlider}
+        style={{
+          position: "absolute",
+          zIndex: 3,
+          left: "10px",
+          top: "10px",
+        }}
+      />
+    </>
+  );
 
   return (
     <section className={styles["record-page"]}>
@@ -159,114 +305,83 @@ export const WebcamStreamCapture = () => {
       >
         <span className={styles.glowingTxt}>ON AIR</span>
       </button>
-      <ArrowBackIcon 
-        fontSize="large" 
+      <ArrowBackIcon
+        fontSize="large"
         className={styles.backButton}
         onClick={handleBackClick}
       />
-      {recordVideo ? (
-        <>
-          <ReactPlayer
-            controls
-            url={recordVideo}
-            type="video/mp4"
-            width={widthSize}
-            height={heightSize * 0.9}
-            autoPlay
-            playsinline={true}
-          />
-          <article className={styles["record-button"]}>
-            <div
-              className={styles["record-button__cancle"]}
-              onClick={reRecord}
-              onTouchEnd={reRecord}
-            >
-              <VideocamIcon />
-              다시촬영
-            </div>
-            <div
-              className={styles["record-button__save"]}
-              onClick={resultHandler}
-            >
-              {!isLoading && <CheckIcon />}
-              {isLoading && <div className={styles.spinner}></div>}
-              평가하기
-            </div>
-          </article>
-        </>
+      <div
+        className={styles.playerWrapper}
+        onMouseEnter={() => {
+          setShowControls(true);
+        }}
+        onMouseLeave={() => {
+          setShowControls(false);
+        }}
+      >
+        {recordVideo
+          ? renderVideoPlayer(recordVideo, videoRef)
+          : version === "sideBySide"
+          ? renderSideBySide()
+          : renderOverlay()}
+      </div>
+      {capturing ? (
+        <article className={styles["record-btn"]}>
+          <button
+            className={styles["record-stop"]}
+            onClick={() => {
+              handleStopCaptureClick();
+              setVersion(null); // Hide version buttons after stopping the recording
+            }}
+          >
+            　
+          </button>
+        </article>
       ) : (
-        <>
-          <div style={{ width: "100%" }}>
-            <ReactPlayer
-              ref={videoRef}
-              url={videoUrl}
-              loop
-              muted
-              controls
-              width={widthSize}
-              height={heightSize * 0.75}
-              autoPlay
-              style={{
-                position: "absolute",
-                zIndex: 1,
-                width: "100%",
-                height: "75%",
-                objectFit: "cover",
-                opacity: playerOpacity,
-                display: showVideo ? "block" : "none",
-              }}
-              playsinline={true}
-              type="video/mp4"
-            />
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/jpeg"
-              width={widthSize}
-              height={heightSize * 0.75}
-              mirrored={false}
-              videoConstraints={{
-                facingMode: "user",
-                aspectRatio: 1
-              }}
-            />
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.1"
-              value={playerOpacity}
-              onChange={handleSliderChange}
-              className={styles.rangeSlider}
-              style={{
-                position: "absolute",
-                zIndex: 2,
-                left: "10px",
-                top: "10px",
-                filter: `hue-rotate(${playerOpacity * 360}deg)`,
-              }}
-            />
-            {capturing ? (
-              <article className={styles["record-btn"]}>
-                <button
-                  className={styles["record-stop"]}
-                  onClick={handleStopCaptureClick}
-                >
-                  　
-                </button>
-              </article>
-            ) : (
-              <article className={styles["record-btn"]}>
-                <button
-                  className={styles["record-start"]}
-                  onClick={handleStartCaptureClick}
-                >
-                  　
-                </button>
-              </article>
-            )}
+        <article className={styles["record-btn"]}>
+          <button
+            className={styles["record-start"]}
+            onClick={handleStartCaptureClick}
+          >
+            　
+          </button>
+        </article>
+      )}
+      {recordVideo && (
+        <article className={styles["record-button"]}>
+          <div
+            className={styles["record-button__cancle"]}
+            onClick={reRecord}
+            onTouchEnd={reRecord}
+          >
+            <VideocamIcon />
+            다시촬영
           </div>
-        </>
+          <div
+            className={styles["record-button__save"]}
+            onClick={resultHandler}
+          >
+            {!isLoading && <CheckIcon />}
+            {isLoading && <div className={styles.spinner}></div>}
+            평가하기
+          </div>
+        </article>
+      )}
+      {!recordVideo && (
+        <div className={styles.versionToggle}>
+          <div
+            className={`${styles.toggleButton} ${version === "sideBySide" ? styles.active : ""}`}
+            onClick={() => setVersion("sideBySide")}
+          >
+            사이드
+          </div>
+          <div
+            className={`${styles.toggleButton} ${version === "overlay" ? styles.active : ""}`}
+            onClick={() => setVersion("overlay")}
+          >
+            오버레이
+          </div>
+        </div>
       )}
     </section>
   );

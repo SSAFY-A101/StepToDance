@@ -7,8 +7,19 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* 내용이 넘치면 숨김 */
+  overflow: hidden; 
 }
+
+
+.playerWrapper, .overlayWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 .record-btn {
   position: absolute;
@@ -24,7 +35,10 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  z-index: 8;
 }
+
+
 
 .record-start {
   width: 100%;
@@ -52,6 +66,7 @@
   position: absolute;
   justify-content: space-around;
   align-items: center;
+  z-index: 5;
 }
 
 .record-button > button {
@@ -204,6 +219,8 @@
 
 .video-overlay {
   z-index: 1;
+  pointer-events: none; /* Prevents video overlay from blocking controls */
+
 }
 
 h2 {
@@ -232,7 +249,28 @@ h2 {
   color: white;
 }
 
-
+.versionToggle{
+  position: absolute;
+  bottom: 74vh;
+  display: flex;
+  z-index: 6;
+}
+.toggleButton{
+  appearance: none;
+  border: none;
+  font-size: inherit;
+  border-radius: 2em;
+  padding: 0.5em 1em;
+  margin-right: 5vw;
+  margin-left: 5vw;
+  background: rgb(61, 134, 142);
+  border: 0.15em solid var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  cursor: wait;
+}
 .playButton {
   position: absolute;
   top: 50%;
@@ -241,18 +279,9 @@ h2 {
   cursor: pointer;
   color: #f0f0f0;
   display: flex;
+  z-index: 5;
   align-items: center;
   justify-content: center;
-}
-
-.playerWrapper {
-  position: relative;
-  width: 100%;
-  height: 75%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
 }
 
 
@@ -265,7 +294,7 @@ h2 {
   height: 0.8vh;
   background-color: #ffffff;
   position: absolute;
-  top: 35vh; /* Adjust as needed */
+  top: 25vh;
 }
 
 .progress {
@@ -287,11 +316,14 @@ h2 {
   position: relative;
   margin-right: 80vw;
   color: var(--glow-color);
+  z-index: 2;
+  cursor: pointer;
 }
+
 .timeDisplayOverlay {
   position: absolute;
   left: 50%;
-  top: 32vh;
+  top: 28vh;
   transform: translateX(-20%);
   color: white;
   width: 30vh;
@@ -321,7 +353,7 @@ h2 {
   left: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
-
+  z-index: 4;
 }
 
 .controlsOverlay:hover {
@@ -368,6 +400,7 @@ h2 {
 
 .glowingBtn {
   position: relative;
+  margin-top: 3vh;
   color: var(--glow-color);
   cursor: pointer;
   padding: 0.35em 1em;
