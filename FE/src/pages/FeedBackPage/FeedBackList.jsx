@@ -81,10 +81,10 @@ const FeedBackList = () => {
       </div>
       {loading && <p>Loading more feedbacks...</p>}
       <button onClick={fetchMoreFeedbacks} className={styles.loadMoreButton}>
-        Load More
+        더보기
       </button>
       <button onClick={() => navigate("/mypage")} className={styles.backButton}>
-        Back to MyPage
+        뒤로 가기
       </button>
     </div>
   );

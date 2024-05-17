@@ -114,7 +114,7 @@ const FilterTimeRangeMin = styled.input`
     pointer-events: auto;
     height: 6vw;
     border-radius: 600px;
-    width: 1vw;
+    width: 6vw;
     background-color: var(--glow1-color);
     border: 0.15em solid var(--glow1-color);
     box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),0px 0px 0.5em 0px var(--glow1-color);
@@ -135,7 +135,7 @@ background: none;
   pointer-events: auto;
   height: 6vw;
   border-radius: 600px;
-  width: 1vw;
+  width: 6vw;
   background-color: var(--glow1-color);
   border: 0.15em solid var(--glow1-color);
   box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),0px 0px 0.5em 0px var(--glow1-color);
