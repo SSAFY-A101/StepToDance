@@ -135,13 +135,20 @@ a {
   overflow-y: auto;
 }
 
-.feedbackItem,
 .shortsItem {
   display: flex;
   align-items: center;
   margin-bottom: 1em;
 }
 
+.feedbackItem {
+display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+  min-width: 200px; /* Ensure a minimum width */
+  max-width: 200px; /* Ensure a maximum width */
+  flex: 1 1 200px; /* Allow items to grow and shrink */
+}
 .videoDate {
   flex-shrink: 0;
   font-size: 0.7rem;
