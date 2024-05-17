@@ -25,7 +25,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1em; 
+  gap: 1em;
 }
 
 .player {
@@ -53,19 +53,6 @@
   justify-content: center;
 }
 
-.backButton {
-  display: block;
-  width: 100%;
-  padding: 0.75em;
-  margin-top: 1em;
-  font-size: 1em;
-  color: #fff;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
 .progressBarWrapper {
   margin-top: 10px;
   width: 100%;
@@ -80,57 +67,85 @@
 
 .progress {
   height: 100%;
-  background-color: #3f51b5;
+  background: linear-gradient(to right, #00f260, #0575e6);
+  border: 0.15em solid #00f260;
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),0px 0px 0.5em 0px var(--glow1-color);
+  color: hsl(209, 25%, 65%);
+}
+
+.progressTime {
+  font-size: 1em;
+  color: #666;
+  margin-top: 0.5em;
+  text-align: center;
+}
+
+.info {
+  font-size: 1em;
+  margin: 1em 0;
+}
+
+.infoTitle1 {
+  font-size: 1.2em;
+  color: var(--glow1-color);
+  margin: 1em 0 0.5em;
+}
+.infoTitle2 {
+  font-size: 1.2em;
+  color: var(--glow-color);
+  margin: 1em 0 0.5em;
+}
+
+.backButton {
+  display: block;
+  width: 50%;
+  padding: 0.75em;
+  margin-top: 1em;
+  font-size: 1em;
+  margin-right: 5vw;
+  color: black;
+  border: 0.15em solid var(--glow1-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  background-color: var(--glow1-color);  
+  border: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .backButton:hover {
   background-color: #0056b3;
 }
 
-.feedbackContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
 
-.feedbackList {
+.buttonWrapper {
+  flex-direction: row;
   display: flex;
-  overflow-x: auto;
-  width: 100%;
-  margin-top: 1.5rem;
-}
-
-.feedbackItem {
-  cursor: pointer;
-  border-radius: 10px;
-  padding: 0.8rem;
-  margin-left: 15px;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.arrowButton {
-  background-color: transparent;
-  border: none;
-  color: #3498db;
-  font-size: 1.5rem;
-  cursor: pointer;
+  margin-left: 5vw;
+  margin-right: 5vw;
 }
 
 .editorButton {
   display: block;
-  width: 100%;
+  width: 50%;
   padding: 0.75em;
   margin-top: 1em;
   font-size: 1em;
   color: #fff;
-  background-color: #ff0080;
-  border: none;
+  border-radius: 0.3em;
+  will-change: transform;
+  backface-visibility: hidden;
+  border: 0.15em solid var(--glow-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  background-color: var(--glow-color);  
   border-radius: 5px;
   cursor: pointer;
+  margin-left: 5vw;
+
 }
 
 @media (max-width: 600px) {
