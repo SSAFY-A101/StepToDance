@@ -22,7 +22,9 @@ function VideoEditor() {
   const [ended, setEnded] = useState(false);
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
-
+  const initialStartAt = parseTime(state.highlightStartAt);
+  const initialEndAt = parseTime(state.highlightEndAt);
+  
   const handlePlayPause = () => {
     if (ended) {
       playerRef.current.seekTo(0);
@@ -160,6 +162,8 @@ function VideoEditor() {
           fixedMaxTime={67} 
           rangeMin={startAt}
           rangeMax={endAt}
+          initialStartAt={initialStartAt}
+          initialEndAt={initialEndAt}
           timeGap={1} 
           onTimeChange={handleTimelineChange}
           onPlaybarMove={handlePlaybarMove}
