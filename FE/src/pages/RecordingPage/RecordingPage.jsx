@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
 import styles from "./RecordingPage.module.css";
-import { useLocation } from "react-router-dom";
 import RecordRTC from "recordrtc";
 import ReactPlayer from "react-player";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import CheckIcon from "@mui/icons-material/Check";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { guideResult } from "../../api/GuideApis";
 
 export const WebcamStreamCapture = () => {
@@ -20,20 +21,19 @@ export const WebcamStreamCapture = () => {
   const [recordVideo, setRecordVideo] = useState("");
   const location = useLocation();
   const videoUrl = location.state?.videoUrl;
+  const guideId = location.state?.guideId;
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
-  const [showVideo, setShowVideo] = useState(true); // Set it true for testing
-  const [isRecording, setIsRecording] = useState(false); // New state for recording status
+  const [showVideo, setShowVideo] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSliderChange = (e) => {
     const newOpacity = e.target.value;
     setPlayerOpacity(newOpacity);
-    const hueRotation = newOpacity * 360; // Adjust the rotation scale if necessary
-    document.documentElement.style.setProperty(
-      "--slider-hue",
-      `${hueRotation}deg`
-    );
+    const hueRotation = newOpacity * 360;
+    document.documentElement.style.setProperty("--slider-hue", `${hueRotation}deg`);
   };
 
   useEffect(() => {
@@ -51,30 +51,12 @@ export const WebcamStreamCapture = () => {
     };
 
     window.addEventListener("resize", handleResize);
-    handleResize(); // 초기 로딩시에도 크기를 설정합니다.
+    handleResize();
 
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  // const startRecording = () => {
-  //   navigator.mediaDevices
-  //     .getUserMedia({ video: true })
-  //     .then(function (stream) {
-  //       if (webcamRef.current) {
-  //         webcamRef.current.srcObject = stream;
-  //       }
-  //       const recorder = new RecordRTC(stream, {
-  //         type: "video",
-  //       });
-  //       recorder.startRecording();
-  //       setRecordRTC(recorder);
-  //     })
-  //     .catch(function (error) {
-  //       console.error("Error accessing the media devices.", error);
-  //     });
-  // };
 
   const handleStartCaptureClick = useCallback(() => {
     setIsRecording(true);
@@ -95,15 +77,6 @@ export const WebcamStreamCapture = () => {
       });
   }, [setIsRecording]);
 
-  // const handleDataAvailable = useCallback(
-  //   ({ data }) => {
-  //     if (data.size > 0) {
-  //       setRecordedChunks((prev) => prev.concat(data));
-  //     }
-  //   },
-  //   [setRecordedChunks]
-  // );
-
   function formatTime(date) {
     let minutes = date.getMinutes().toString().padStart(2, "0");
     let seconds = date.getSeconds().toString().padStart(2, "0");
@@ -121,7 +94,7 @@ export const WebcamStreamCapture = () => {
   }, [recordedChunks]);
 
   useEffect(() => {
-    console.log("Video URL:", videoUrl); // Check if the URL is correct
+    console.log("Video URL:", videoUrl);
   }, [videoUrl]);
 
   const handleStopCaptureClick = useCallback(() => {
@@ -144,6 +117,7 @@ export const WebcamStreamCapture = () => {
   const resultHandler = async () => {
     const start = formatTime(new Date("00:00"));
     const end = formatTime(new Date("01:00"));
+    setIsLoading(true);
     const res = await fetch(recordVideo)
       .then((response) => response.blob())
       .then((blob) => {
@@ -155,10 +129,27 @@ export const WebcamStreamCapture = () => {
         return formData;
       });
 
-    const response = await guideResult(res);
-    console.log(response);
+    try {
+      const response = await guideResult(guideId, res);
+      if (response.status === 201) {
+        alert("피드백 채점 요청 성공! 마이페이지 피드백 페이지에서 해당 채점 결과를 확인하실 수 있습니다.");
+        navigate("/home");
+      } else {
+        throw new Error("Unexpected response status");
+      }
+    } catch (error) {
+      alert("서버상 문제로 다시 요청 바랍니다.");
+      console.error("Error fetching guide list:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    setIsLoading(!isLoading);
+  const handleBackClick = () => {
+    const confirmBack = window.confirm("해당 페이지에서 벗어나게 되면 녹화된 영상이 삭제됩니다.\n정말 나가시겠습니까?");
+    if (confirmBack) {
+      navigate(-1);
+    }
   };
 
   return (
@@ -168,6 +159,11 @@ export const WebcamStreamCapture = () => {
       >
         <span className={styles.glowingTxt}>ON AIR</span>
       </button>
+      <ArrowBackIcon 
+        fontSize="large" 
+        className={styles.backButton}
+        onClick={handleBackClick}
+      />
       {recordVideo ? (
         <>
           <ReactPlayer
@@ -177,6 +173,7 @@ export const WebcamStreamCapture = () => {
             width={widthSize}
             height={heightSize * 0.9}
             autoPlay
+            playsinline={true}
           />
           <article className={styles["record-button"]}>
             <div
@@ -221,7 +218,6 @@ export const WebcamStreamCapture = () => {
               playsinline={true}
               type="video/mp4"
             />
-            {/* <canvas ref={canvasRef} style={{ width: '100%' }} /> */}
             <Webcam
               audio={false}
               ref={webcamRef}
