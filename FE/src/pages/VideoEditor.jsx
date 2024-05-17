@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ReactPlayer from "react-player";
 import styles from "../styles/VideoEditor.module.css";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
@@ -17,18 +16,24 @@ function VideoEditor() {
   const [startAt, setStartAt] = useState(parseTime(state.highlightStartAt));
   const [endAt, setEndAt] = useState(parseTime(state.highlightEndAt));
   const [duration, setDuration] = useState(0);
-  const playerRef = useRef(null);
+  const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
+  const [loading, setLoading] = useState(false);
   const initialStartAt = parseTime(state.highlightStartAt);
   const initialEndAt = parseTime(state.highlightEndAt);
-  
+
   const handlePlayPause = () => {
     if (ended) {
-      playerRef.current.seekTo(0);
+      videoRef.current.currentTime = 0;
       setEnded(false);
+    }
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play();
     }
     setIsPlaying(!isPlaying);
   };
@@ -50,32 +55,42 @@ function VideoEditor() {
     setHeightSize(window.innerHeight);
   };
 
+  const handleLoadedMetadata = () => {
+    const videoDuration = videoRef.current.duration;
+    setDuration(videoDuration);
+    if (videoDuration < startAt) {
+      setStartAt(0);
+      setEndAt(videoDuration);
+    } else if (videoDuration < endAt) {
+      setEndAt(videoDuration);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    const currentTime = videoRef.current.currentTime;
+    setPlayed(currentTime / duration);
+  };
+
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     seconds = Math.floor(seconds % 60);
-    console.log("얍얍",seconds);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
 
   function parseTime(timeString) {
-    // "HH:mm:ss" 형식과 "mm:ss" 형식을 모두 처리하기 위해 정규식을 사용합니다.
     const timeRegex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
     const match = timeString.match(timeRegex);
   
     if (!match) {
-      // 유효한 형식이 아닌 경우 0을 반환합니다.
       return 0;
     }
   
-    // 시간, 분, 초를 추출합니다.
     const hours = match[1] ? parseInt(match[1], 10) : 0;
     const minutes = parseInt(match[2], 10);
     const seconds = match[3] ? parseInt(match[3], 10) : 0;
   
-    // 시간을 초 단위로 변환하여 반환합니다.
     return hours * 3600 + minutes * 60 + seconds;
   }
-  
 
   function formatLocalTime(seconds) {
     const hours = Math.floor(seconds / 3600);
@@ -90,6 +105,7 @@ function VideoEditor() {
   }
 
   const createShortform = async () => {
+    setLoading(true);
     console.log("시작:", formatLocalTime(startAt));
     console.log("끝:", formatLocalTime(endAt));
     const response = await uploadShortform(
@@ -111,50 +127,69 @@ function VideoEditor() {
     setStartAt(start);
     setEndAt(end);
   };
+
   const handlePlaybarMove = (clickTime) => {
-    playerRef.current.seekTo(clickTime);
+    videoRef.current.currentTime = clickTime;
     setPlayed(clickTime / duration);
   };
 
   return (
-    <div className={styles.homeContainer}>
-      <div>
-        <button onClick={reset}>원본으로 복원</button>
-        <button onClick={createShortform}>완료</button>
-      </div>
-      <div>
-        <ReactPlayer
-          url={videoUrl}
-          ref={playerRef}
-          playing={isPlaying}
+    <div className={`${styles.recordPage} ${styles.mainView}`}>
+      
+      {loading && (
+        <div className={styles.loadingOverlay}>
+          <div className={styles.arcReactor}>
+            <div className={styles.caseContainer}>
+              <div className={styles.e7}>
+                <div className={`${styles.semiArc3} ${styles.e5_1}`}>
+                  <div className={`${styles.semiArc3} ${styles.e5_2}`}>
+                    <div className={`${styles.semiArc3} ${styles.e5_3}`}>
+                      <div className={`${styles.semiArc3} ${styles.e5_4}`}></div>
+                    </div>
+                  </div>  
+                </div>
+                <div className={styles.core2}>
+                편집중입니다
+                </div>
+              </div>
+              <ul className={styles.marks}>
+                {Array.from({ length: 60 }, (_, i) => (
+                  <li key={i}></li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+    
+      <div className={styles.playerWrapper}>
+        <video
+          ref={videoRef}
+          src={videoUrl}
           width={widthSize}
           height={heightSize * 0.5}
-          onDuration={(duration) => setDuration(duration)}
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate}
           onEnded={handleVideoEnded}
-          controls={false}
-          onProgress={({ played, loadedSeconds }) => {
-            setPlayed(played);
-            setDuration(loadedSeconds);
-          }}
-          className={styles.player}
+          playsInline
         />
       </div>
-      <div>
-        <div className={styles.playButton} onClick={handlePlayPause}>
-          {ended ? (
-            <PlayArrowIcon fontSize="large" />
-          ) : isPlaying ? (
-            <PauseIcon fontSize="large" />
-          ) : (
-            <PlayArrowIcon fontSize="large" />
-          )}
-        </div>
+      <div className={styles.playButton} onClick={handlePlayPause}>
+        {ended ? (
+          <PlayArrowIcon fontSize="large" />
+        ) : isPlaying ? (
+          <PauseIcon fontSize="large" />
+        ) : (
+          <PlayArrowIcon fontSize="large" />
+        )}
       </div>
       <div className={styles.timeDisplayOverlay}>
         {formatTime(played * duration)} / {formatTime(duration)}
       </div>
       <div style={{ marginTop: '5vw' }}>
-        <p style={{marginLeft:'5vw', color: 'white' }}>시작 {formatTime(startAt)} &nbsp; 끝 {formatTime(endAt)}</p>
+        <p style={{ marginLeft: '5vw', color: 'white' }}>
+          시작 {formatTime(startAt)} &nbsp; 끝 {formatTime(endAt)}
+        </p>
       </div>
       <div className={styles.timelineContainer}>
         <Timeline 
@@ -169,6 +204,14 @@ function VideoEditor() {
           onPlaybarMove={handlePlaybarMove}
           currentTime={played * duration}
         />
+      </div>
+      <div className={styles.playerWrapper}>
+        <div className={`${styles.glowingBtn} ${styles.resetButton}`} onClick={reset}>
+          원본으로 복원
+        </div>
+        <div className={`${styles.glowingBtn} ${styles.createButton}`} onClick={createShortform}>
+          완료
+        </div>
       </div>
     </div>
   );
