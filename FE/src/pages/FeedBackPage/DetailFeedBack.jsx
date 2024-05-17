@@ -146,6 +146,7 @@ const DetailFeedback = () => {
               controls={false}
               className={styles.player}
               style={highlightStyle}
+              playsInline={true}
             />
             <video
               ref={uploadPlayerRef}
@@ -159,6 +160,7 @@ const DetailFeedback = () => {
               controls={false}
               className={styles.player}
               style={highlightStyle}
+              playsInline={true}
             />
             <div className={styles.controlsOverlay}>
               <div className={styles.playButton} onClick={handlePlayPause}>
