@@ -157,9 +157,9 @@ function VideoEditor() {
       <div className={styles.timelineContainer}>
         <Timeline 
           fixedMinTime={0} 
-          fixedMaxTime={duration || 1} 
-          rangeMin={4}
-          rangeMax={10}
+          fixedMaxTime={67} 
+          rangeMin={startAt}
+          rangeMax={endAt}
           timeGap={1} 
           onTimeChange={handleTimelineChange}
           onPlaybarMove={handlePlaybarMove}
