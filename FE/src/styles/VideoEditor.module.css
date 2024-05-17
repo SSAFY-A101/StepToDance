@@ -42,3 +42,9 @@
   font-size: 1rem; /* Larger font size for visibility */
   text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Enhancing readability */
 }
+
+.timelineContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* Adjust margin as needed */
+}

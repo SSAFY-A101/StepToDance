@@ -5,8 +5,7 @@ import styles from "../styles/VideoEditor.module.css";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PauseIcon from "@mui/icons-material/Pause";
 import { uploadShortform } from "../api/ShortformApis";
-import TimeRange from "@glav-kod/react-timeline-range-slider";
-import { format } from "date-fns";
+import Timeline from "../components/Timeline";
 
 function VideoEditor() {
   const location = useLocation();
@@ -14,27 +13,17 @@ function VideoEditor() {
   const state = location.state;
   const [guideId, setGuideId] = useState(state.guideId);
   const [videoUrl, setVideoUrl] = useState(state.videoUrl);
-  const [highlightStartAt, setHighlightStartAt] = useState(
-    state.highlightStartAt
-  );
+  const [highlightStartAt, setHighlightStartAt] = useState(state.highlightStartAt);
   const [highlightEndAt, setHighlightEndAt] = useState(state.highlightEndAt);
   const [played, setPlayed] = useState(0);
-  // const [startAt, setStartAt] = useState(convertTimeFormat(state.highlightStartAt));
-  // const [endAt, setEndAt] = useState(convertTimeFormat(state.highlightEndAt));
+  const [startAt, setStartAt] = useState(parseTime(state.highlightStartAt));
+  const [endAt, setEndAt] = useState(parseTime(state.highlightEndAt));
   const [duration, setDuration] = useState(0);
   const playerRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [widthSize, setWidthSize] = useState(window.innerWidth);
   const [heightSize, setHeightSize] = useState(window.innerHeight);
-  const [timelineScrubberError, setTimelineScrubberError] = useState(false);
-
-  const [selectedInterval, setSelectedInterval] = useState([
-    new Date(convertTimeFormat(highlightStartAt)),
-    new Date(convertTimeFormat(highlightEndAt)),
-  ]);
-
-  const timeline = [new Date(0), new Date(67 * 1000)];
 
   const handlePlayPause = () => {
     if (ended) {
@@ -64,71 +53,73 @@ function VideoEditor() {
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60);
     seconds = Math.floor(seconds % 60);
+    console.log("얍얍",seconds);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   }
 
-  function convertTimeFormat(input) {
-    // 문자열인 경우 ms 객체로 변환
-    if (typeof input === "string") {
-      const [hours, minutes, seconds] = input.split(":");
-      const milliseconds =
-        (parseInt(hours, 10) * 3600 +
-          parseInt(minutes, 10) * 60 +
-          parseInt(seconds, 10)) *
-        1000;
-      return milliseconds;
+  function parseTime(timeString) {
+    // "HH:mm:ss" 형식과 "mm:ss" 형식을 모두 처리하기 위해 정규식을 사용합니다.
+    const timeRegex = /^(\d{1,2}):(\d{2})(?::(\d{2}))?$/;
+    const match = timeString.match(timeRegex);
+  
+    if (!match) {
+      // 유효한 형식이 아닌 경우 0을 반환합니다.
+      return 0;
     }
-    // Date 객체인 경우 문자열로 변환
-    else if (input instanceof Date) {
-      const hours = ("0" + input.getHours()).slice(-2);
-      const minutes = ("0" + input.getMinutes()).slice(-2);
-      const seconds = ("0" + input.getSeconds()).slice(-2);
-      return `${hours}:${minutes}:${seconds}`;
-    }
-    // 다른 형식인 경우 에러 반환
-    else {
-      throw new Error("Unsupported input format");
-    }
+  
+    // 시간, 분, 초를 추출합니다.
+    const hours = match[1] ? parseInt(match[1], 10) : 0;
+    const minutes = parseInt(match[2], 10);
+    const seconds = match[3] ? parseInt(match[3], 10) : 0;
+  
+    // 시간을 초 단위로 변환하여 반환합니다.
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+  
+
+  function formatLocalTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+  
+    const formattedHours = String(hours).padStart(2, "0");
+    const formattedMinutes = String(minutes).padStart(2, "0");
+    const formattedSeconds = String(remainingSeconds).padStart(2, "0");
+  
+    return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
   }
 
   const createShortform = async () => {
-    console.log("시작:", convertTimeFormat(selectedInterval[0]));
-    console.log("끝:", convertTimeFormat(selectedInterval[1]));
+    console.log("시작:", formatLocalTime(startAt));
+    console.log("끝:", formatLocalTime(endAt));
     const response = await uploadShortform(
       guideId,
       videoUrl,
-      convertTimeFormat(selectedInterval[0]),
-      convertTimeFormat(selectedInterval[1])
+      formatLocalTime(startAt),
+      formatLocalTime(endAt)
     );
     console.log("Shortform created successfully:", response);
     navigate(`/shortsShare?id=${response.data}`);
   };
 
-  // const handleInputChange = (index, newValue) => {
-  //   if(index==="start") setStartAt(newValue);
-  //   if(index==="end") setEndAt(newValue);
-  // };
-
   const reset = () => {
-    setSelectedInterval([
-      new Date(convertTimeFormat(highlightStartAt)),
-      new Date(convertTimeFormat(highlightEndAt)),
-    ]);
+    setStartAt(parseTime(state.highlightStartAt));
+    setEndAt(parseTime(state.highlightEndAt));
   };
 
-  const timelineScrubberErrorHandler = ({ error }) => {
-    setTimelineScrubberError(error);
+  const handleTimelineChange = (start, end) => {
+    setStartAt(start);
+    setEndAt(end);
   };
-
-  const onChangeCallback = (selectedInterval) => {
-    console.log(selectedInterval);
-    setSelectedInterval(selectedInterval);
+  const handlePlaybarMove = (clickTime) => {
+    playerRef.current.seekTo(clickTime);
+    setPlayed(clickTime / duration);
   };
 
   return (
     <div className={styles.homeContainer}>
       <div>
-        <button onClick={() => reset}>원본으로 복원</button>
+        <button onClick={reset}>원본으로 복원</button>
         <button onClick={createShortform}>완료</button>
       </div>
       <div>
@@ -138,7 +129,7 @@ function VideoEditor() {
           playing={isPlaying}
           width={widthSize}
           height={heightSize * 0.5}
-          onDuration={setDuration}
+          onDuration={(duration) => setDuration(duration)}
           onEnded={handleVideoEnded}
           controls={false}
           onProgress={({ played, loadedSeconds }) => {
@@ -162,7 +153,7 @@ function VideoEditor() {
       <div className={styles.timeDisplayOverlay}>
         {formatTime(played * duration)} / {formatTime(duration)}
       </div>
-      <div className={styles.progressContainer}>
+      {/* <div className={styles.progressContainer}>
         <div
           className={styles.progressBar}
           onClick={(e) => {
@@ -176,25 +167,19 @@ function VideoEditor() {
             style={{ width: `${played * 100}%` }}
           ></div>
         </div>
-      </div>
-      {/* <div style={{marginTop:'5vw'}}>
-        <p style={{color:'white'}}>시작 시간</p>
-        <input type="text" value={startAt} onChange={(e) => handleInputChange('start', e.target.value)}/>
-        <p style={{color:'white'}}>끝 시간</p>
-        <input type="text" value={endAt} onChange={(e) => handleInputChange( 'end', e.target.value)}/>
       </div> */}
-      <div>
-        <TimeRange
-          showNow
-          error={timelineScrubberError}
-          ticksNumber={4}
-          selectedInterval={selectedInterval}
-          timelineInterval={timeline}
-          onUpdateCallback={timelineScrubberErrorHandler}
-          onChangeCallback={onChangeCallback}
-          // disabledIntervals={gap}
-          step={1}
-          formatTick={(ms) => format(new Date(ms), "HH:mm:ss")}
+      <div style={{ marginTop: '5vw' }}>
+        <p style={{marginLeft:'5vw', color: 'white' }}>시작 {formatTime(startAt)} &nbsp; 끝 {formatTime(endAt)}</p>
+      </div>
+      <div className={styles.timelineContainer}>
+        <Timeline 
+          fixedMinTime={0} 
+          fixedMaxTime={67} 
+          rangeMin={4}
+          rangeMax={10}
+          timeGap={1} 
+          onTimeChange={handleTimelineChange}
+          onPlaybarMove={handlePlaybarMove}
         />
       </div>
     </div>
