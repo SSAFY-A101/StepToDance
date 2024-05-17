@@ -1,13 +1,14 @@
-.homeContainer {
+
+.mainView {
   height: calc(100vh - 11.5rem);
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .playButton {
-  /* transform: scale(1.8); */
   color: white;
   display: flex;
+  margin-bottom: 1vh;
   justify-content: center;
 }
 
@@ -22,7 +23,6 @@
   width: 40vh;
   height: 5vh;
   background-color: #ffffff;
-  /* position: absolute; */
 }
 
 .progress {
@@ -34,17 +34,214 @@
   display: flex; 
   justify-content: center; 
   align-items: center;
-  /* position: absolute;
-  left: 50%;
-  transform: translateX(-20%); */
   color: white;
-  /* width: 30vh; */
-  font-size: 1rem; /* Larger font size for visibility */
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Enhancing readability */
+  font-size: 1rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 .timelineContainer {
   display: flex;
   justify-content: center;
-  margin-top: 20px; /* Adjust margin as needed */
+  margin-top: 20px;
+}
+
+.glowingBtn {
+  appearance: none;
+  border: none;
+  font-size: inherit;
+  border-radius: 2em;
+  padding: 0.75em 1em;
+  margin-right: 5vw;
+  margin-left: 5vw;
+  background: var(--glow1-color);;
+  border: 0.15em solid var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  color: hsl(209, 25%, 65%);
+  display: inline-flex;
+  align-items: center;
+  cursor: wait;
+  animation: neonGlow 2s infinite alternate;
+}
+
+@keyframes neonGlow {
+  0% {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+                 0 0 20px rgba(255, 255, 255, 0.8),
+                 0 0 22px rgba(255, 255, 255, 0.8),
+                 0 0 40px rgba(66, 220, 219, 0.8),
+                 0 0 60px rgba(66, 220, 219, 0.8),
+                 0 0 80px rgba(66, 220, 219, 0.5),
+                 0 0 100px rgba(66, 220, 219, 0.5),
+                 0 0 140px rgba(66, 220, 219, 0.5),
+                 0 0 200px rgba(66, 220, 219, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.8),
+                 0 0 8px rgba(255, 255, 255, 0.8),
+                 0 0 10px rgba(255, 255, 255, 0.8),
+                 0 0 20px rgba(66, 220, 219, 0.8),
+                 0 0 30px rgba(66, 220, 219, 0.8),
+                 0 0 40px rgba(66, 220, 219, 0.8),
+                 0 0 50px rgba(66, 220, 219, 0.5),
+                 0 0 80px rgba(66, 220, 219, 0.5);
+  }
+}
+
+.recordPage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.playerWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.arcReactor {
+  position: relative;
+  top: 50%;
+  margin-top: -100vh;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 50px 15px rgba(66, 220, 219, 0.5), inset 0px 0px 50px 15px rgba(66, 220, 219, 0.5);
+}
+
+.core2 {
+  background: var(--glow1-color);
+  width: 110px;
+  height: 110px;
+  color: 5px solid rgba(66, 220, 219, 0.5);
+  border-radius: 80%;
+  border: 5px solid rgba(66, 220, 219, 0.5);
+  animation: flicker2 0.2s infinite;
+  margin-left: 12.5vw;
+  margin-top: 40px;
+}
+
+.e7 {
+  width: 95.25%;
+  height: 95.25%;
+  left: 2.5475%;
+  right: 2.5475%;
+  border: 3px solid transparent;
+  background: transparent;
+  border-radius: 50%;
+  transform: rotateZ(0deg);
+  transition: box-shadow 3s ease;
+  text-align: center;
+  line-height: 100px;
+}
+
+.caseContainer {
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  position: absolute;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.marks li {
+  display: block;
+  width: 3px;
+  height: 11px;
+  background: rgba(2, 254, 255, 1);
+  position: absolute;
+  margin-left: 105px;
+  margin-top: -110px;
+  animation: colourEase2 3s infinite ease-in-out;
+}
+
+@keyframes colourEase2 {
+  0% { background: rgba(2, 254, 255, 1); }
+  50% { background: rgba(2, 254, 255, 0.3); }
+  100% { background: rgba(2, 254, 255, 1); }
+}
+
+.marks li:nth-child(1) { transform: rotate(6deg) translateY(125px); }
+.marks li:nth-child(2) { transform: rotate(12deg) translateY(125px); }
+.marks li:nth-child(3) { transform: rotate(18deg) translateY(125px); }
+.marks li:nth-child(4) { transform: rotate(24deg) translateY(125px); }
+.marks li:nth-child(5) { transform: rotate(30deg) translateY(125px); }
+.marks li:nth-child(6) { transform: rotate(36deg) translateY(125px); }
+.marks li:nth-child(7) { transform: rotate(42deg) translateY(125px); }
+.marks li:nth-child(8) { transform: rotate(48deg) translateY(125px); }
+.marks li:nth-child(9) { transform: rotate(54deg) translateY(125px); }
+.marks li:nth-child(10) { transform: rotate(60deg) translateY(125px); }
+.marks li:nth-child(11) { transform: rotate(66deg) translateY(125px); }
+.marks li:nth-child(12) { transform: rotate(72deg) translateY(125px); }
+.marks li:nth-child(13) { transform: rotate(78deg) translateY(125px); }
+.marks li:nth-child(14) { transform: rotate(84deg) translateY(125px); }
+.marks li:nth-child(15) { transform: rotate(90deg) translateY(125px); }
+.marks li:nth-child(16) { transform: rotate(96deg) translateY(125px); }
+.marks li:nth-child(17) { transform: rotate(102deg) translateY(125px); }
+.marks li:nth-child(18) { transform: rotate(108deg) translateY(125px); }
+.marks li:nth-child(19) { transform: rotate(114deg) translateY(125px); }
+.marks li:nth-child(20) { transform: rotate(120deg) translateY(125px); }
+.marks li:nth-child(21) { transform: rotate(126deg) translateY(125px); }
+.marks li:nth-child(22) { transform: rotate(132deg) translateY(125px); }
+.marks li:nth-child(23) { transform: rotate(138deg) translateY(125px); }
+.marks li:nth-child(24) { transform: rotate(144deg) translateY(125px); }
+.marks li:nth-child(25) { transform: rotate(150deg) translateY(125px); }
+.marks li:nth-child(26) { transform: rotate(156deg) translateY(125px); }
+.marks li:nth-child(27) { transform: rotate(162deg) translateY(125px); }
+.marks li:nth-child(28) { transform: rotate(168deg) translateY(125px); }
+.marks li:nth-child(29) { transform: rotate(174deg) translateY(125px); }
+.marks li:nth-child(30) { transform: rotate(180deg) translateY(125px); }
+.marks li:nth-child(31) { transform: rotate(186deg) translateY(125px); }
+.marks li:nth-child(32) { transform: rotate(192deg) translateY(125px); }
+.marks li:nth-child(33) { transform: rotate(198deg) translateY(125px); }
+.marks li:nth-child(34) { transform: rotate(204deg) translateY(125px); }
+.marks li:nth-child(35) { transform: rotate(210deg) translateY(125px); }
+.marks li:nth-child(36) { transform: rotate(216deg) translateY(125px); }
+.marks li:nth-child(37) { transform: rotate(222deg) translateY(125px); }
+.marks li:nth-child(38) { transform: rotate(228deg) translateY(125px); }
+.marks li:nth-child(39) { transform: rotate(234deg) translateY(125px); }
+.marks li:nth-child(40) { transform: rotate(240deg) translateY(125px); }
+.marks li:nth-child(41) { transform: rotate(246deg) translateY(125px); }
+.marks li:nth-child(42) { transform: rotate(252deg) translateY(125px); }
+.marks li:nth-child(43) { transform: rotate(258deg) translateY(125px); }
+.marks li:nth-child(44) { transform: rotate(264deg) translateY(125px); }
+.marks li:nth-child(45) { transform: rotate(270deg) translateY(125px); }
+.marks li:nth-child(46) { transform: rotate(276deg) translateY(125px); }
+.marks li:nth-child(47) { transform: rotate(282deg) translateY(125px); }
+.marks li:nth-child(48) { transform: rotate(288deg) translateY(125px); }
+.marks li:nth-child(49) { transform: rotate(294deg) translateY(125px); }
+.marks li:nth-child(50) { transform: rotate(300deg) translateY(125px); }
+.marks li:nth-child(51) { transform: rotate(306deg) translateY(125px); }
+.marks li:nth-child(52) { transform: rotate(312deg) translateY(125px); }
+.marks li:nth-child(53) { transform: rotate(318deg) translateY(125px); }
+.marks li:nth-child(54) { transform: rotate(324deg) translateY(125px); }
+.marks li:nth-child(55) { transform: rotate(330deg) translateY(125px); }
+.marks li:nth-child(56) { transform: rotate(336deg) translateY(125px); }
+.marks li:nth-child(57) { transform: rotate(342deg) translateY(125px); }
+.marks li:nth-child(58) { transform: rotate(348deg) translateY(125px); }
+.marks li:nth-child(59) { transform: rotate(354deg) translateY(125px); }
+.marks li:nth-child(60) { transform: rotate(360deg) translateY(125px); }
+
+@keyframes flicker2 {
+  0% { opacity: 0.8; }
+  50% { opacity: 0.2; }
+  100% { opacity: 0.8; }
 }
