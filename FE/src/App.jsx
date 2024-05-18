@@ -22,6 +22,7 @@ import ShowShortForm from "./pages/ShortFormPage/ShowShortForm";
 import UserPage from "./pages/UserPage";
 import FeedBackList from "./pages/FeedBackPage/FeedBackList";
 import DetailFeedback from "./pages/FeedBackPage/DetailFeedBack";
+import ShowShortDetail from "./pages/ShortFormPage/ShowShortDetail";
 
 function App() {
   const user = useSelector(userLoggedInSelector);
@@ -61,6 +62,7 @@ function App() {
           <Route path="/withdraw" element={<WithDrawPage />} />
           <Route path="/showShortForm" element={<ShowShortForm />} />
           <Route path="/userPage/:id" element={<UserPage />} />
+          <Route path="/showShortForm/:id" element={<ShowShortDetail />} />
         </Route>
         <Route path="/guideDetail/:id" element={<GuideDetail />} />
         <Route path="/record" element={<WebcamStreamCapture />} />
