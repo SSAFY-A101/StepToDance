@@ -6,7 +6,6 @@ import styles from "./MyPage.module.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { getUserDatas } from "../../api/UserApis";
-import { getFeedbackDetail } from "../../api/FeedbackApis";
 import ReactPlayer from "react-player";
 
 const MyPage = () => {
@@ -16,19 +15,27 @@ const MyPage = () => {
   const [profile, setProfile] = useState({});
   const [feedbackList, setFeedbackList] = useState([]);
   const [shortsList, setShortsList] = useState([]);
+  const [displayedShorts, setDisplayedShorts] = useState([]);
   const [activeTab, setActiveTab] = useState("home");
   const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const [shortsOffset, setShortsOffset] = useState(0);
+  const [loadingMoreShorts, setLoadingMoreShorts] = useState(false);
 
-  const limit = 30;
+  const limit = 5;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await getUserDatas(limit, 0);
         console.log(data.data);
+        const sortedShorts = (data.data.shortform_list || []).sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
         setProfile(data.data.user || {});
         setFeedbackList(data.data.feedback_list || []);
-        setShortsList(data.data.shortform_list || []);
+        setShortsList(sortedShorts);
+        setDisplayedShorts(sortedShorts.slice(0, limit));
+        setShortsOffset(limit);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -37,14 +44,13 @@ const MyPage = () => {
     fetchData();
   }, []);
 
-  const fetchFeedbackDetail = async (feedbackId) => {
-    try {
-      const data = await getFeedbackDetail(feedbackId);
-      setSelectedFeedback(data.data.feedback);
-      console.log(data);
-    } catch (error) {
-      console.error("Error fetching feedback detail:", error);
-    }
+  const fetchMoreShorts = () => {
+    setLoadingMoreShorts(true);
+    const newOffset = shortsOffset + limit;
+    const moreShorts = shortsList.slice(shortsOffset, newOffset);
+    setDisplayedShorts((prevList) => [...prevList, ...moreShorts]);
+    setShortsOffset(newOffset);
+    setLoadingMoreShorts(false);
   };
 
   const signOut = async () => {
@@ -194,8 +200,8 @@ const MyPage = () => {
                 Shorts
               </h2>
               <div className={styles.shortsList}>
-                {shortsList.length > 0 ? (
-                  shortsList.map((shorts) => (
+                {displayedShorts.length > 0 ? (
+                  displayedShorts.map((shorts) => (
                     <div key={shorts.id} className={styles.shortsItem}>
                       <div className={styles.videoDate}>
                         {new Date(shorts.created_at).toLocaleDateString()}
@@ -216,6 +222,14 @@ const MyPage = () => {
                   <p>생성한 숏츠가 존재하지 않습니다.</p>
                 )}
               </div>
+              {shortsList.length > displayedShorts.length && (
+                <div
+                  onClick={fetchMoreShorts}
+                  className={styles.viewAllButton}
+                >
+                  {loadingMoreShorts ? "Loading..." : "더 보기"}
+                </div>
+              )}
             </div>
           )}
         </section>
