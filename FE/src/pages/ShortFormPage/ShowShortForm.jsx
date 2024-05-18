@@ -8,6 +8,8 @@ const ShowShortForm = () => {
   const [showShortForm, setShowShortForm] = useState([]);
   const [renderVideo, setRenderVideo] = useState([]);
   const [currentPos, setCurrentPos] = useState();
+  const [isModal, setIsModal] = useState(false);
+  const [currentVideoId, setCurrentVideoId] = useState(null);
   const outerDivRef = useRef();
 
   // 스크롤 이벤트 막기
@@ -135,28 +137,36 @@ const ShowShortForm = () => {
   // 비디오 렌더링
   useEffect(() => {
     const videoList = showShortForm.map((short, index) => {
-      console.log(short);
       return (
         <article className={styles["vidoe-page"]} key={index}>
-          <ShareModal infos={short} />
+          {isModal && currentVideoId === index ? (
+            <ShareModal infos={short} setIsModal={setIsModal} />
+          ) : null}
           <video
             className={styles["short-video"]}
             src={short.video_url}
             id={`video_${index}`}
             loop
             muted
-            playsInline
-          ></video>
+            playsInline></video>
           <p className={styles["short-title"]}>
             {short.song_title} - {short.singer}
           </p>
-          <img className={styles["short-share"]} src={FLY} alt="" />
+          <img
+            className={styles["short-share"]}
+            onClick={() => {
+              setIsModal(true);
+              setCurrentVideoId(index);
+            }}
+            src={FLY}
+            alt=""
+          />
         </article>
       );
     });
 
     setRenderVideo(videoList);
-  }, [showShortForm]);
+  }, [showShortForm, isModal]);
 
   return (
     <section className={styles["short-page"]} ref={outerDivRef}>
