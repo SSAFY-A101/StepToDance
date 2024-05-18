@@ -28,7 +28,7 @@ const MyPage = () => {
         console.log(data.data);
         setProfile(data.data.user || {});
         setFeedbackList(data.data.feedback_list || []);
-        setShortsList(data.data.shortform_list.slice(0, 3) || []);
+        setShortsList(data.data.shortform_list || []);
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
