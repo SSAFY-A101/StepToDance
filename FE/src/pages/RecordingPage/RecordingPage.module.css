@@ -112,8 +112,10 @@
 
 .mirrorToggle {
   position: absolute;
-  top: 0vh;
-  right: 33vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  top: 0;
   z-index: 2;
   border-radius: 10px;
   background-color: var;
