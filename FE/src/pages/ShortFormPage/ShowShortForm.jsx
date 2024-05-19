@@ -159,9 +159,10 @@ const ShowShortForm = () => {
             muted
             playsInline
           ></video>
-          <p className={styles["short-title"]}>
-            {short.song_title} - {short.singer}
-          </p>
+          <article className={styles["short-title"]}>
+            <p>@{short.uploader}</p>
+            <p>{short.song_title} - {short.singer}</p>
+          </article>
           <img
             className={styles["short-share"]}
             onClick={() => {
