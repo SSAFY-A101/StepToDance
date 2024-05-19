@@ -10,8 +10,10 @@ const ShowShortDetail = () => {
   const [isModal, setIsModal] = useState(false);
 
   useEffect(() => {
+    const shortformId =
+      location.pathname.split("/")[location.pathname.split("/").length - 1];
     const getData = async () => {
-      const response = await getShortformDetail(70);
+      const response = await getShortformDetail(shortformId);
       setShowShortForm(response.data);
     };
     getData();

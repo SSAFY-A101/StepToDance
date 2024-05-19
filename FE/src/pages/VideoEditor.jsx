@@ -115,7 +115,7 @@ function VideoEditor() {
       formatLocalTime(endAt)
     );
     console.log("Shortform created successfully:", response);
-    navigate(`/shortsShare?id=${response.data}`);
+    navigate(`/showShortForm/${response.data}`);
   };
 
   const reset = () => {
