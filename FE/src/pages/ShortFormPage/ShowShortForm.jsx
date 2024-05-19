@@ -15,13 +15,12 @@ const ShowShortForm = () => {
 
   // 스크롤 이벤트 막기
   useEffect(() => {
-    const touchHandler = (e) => {
+    const scrollHandler = (e) => {
       e.preventDefault();
-      const { pageY } = e.touches[0];
+      const { deltaY } = e;
       const { scrollTop } = outerDivRef.current;
       const pageHeight = outerDivRef.current.offsetHeight;
       setCurrentPos(pageHeight);
-      const deltaY = pageY - startY;
       if (deltaY > 0) {
         // 스크롤 내릴 때
         if (scrollTop >= 0 && scrollTop < pageHeight) {
@@ -93,21 +92,15 @@ const ShowShortForm = () => {
       }
     };
 
-    let startY = 0;
-
-    const touchStartHandler = (e) => {
-      startY = e.touches[0].pageY;
-    };
-
     const outerDivRefCurrent = outerDivRef.current;
-    outerDivRefCurrent.addEventListener("touchstart", touchStartHandler);
-    outerDivRefCurrent.addEventListener("touchmove", touchHandler, { passive: false });
+    outerDivRefCurrent.addEventListener("wheel", scrollHandler);
+    outerDivRefCurrent.addEventListener("touchmove", scrollHandler, { passive: false });
 
     return () => {
-      outerDivRefCurrent.removeEventListener("touchstart", touchStartHandler);
-      outerDivRefCurrent.removeEventListener("touchmove", touchHandler);
-  };
-}, [flag]);
+      outerDivRefCurrent.removeEventListener("wheel", scrollHandler);
+      outerDivRefCurrent.removeEventListener("touchmove", scrollHandler);
+    };
+  }, [flag]);
 
   // 데이터 받아오는 api 요청
   useEffect(() => {
