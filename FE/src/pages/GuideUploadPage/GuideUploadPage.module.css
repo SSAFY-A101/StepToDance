@@ -9,8 +9,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* 기존 스타일 */
@@ -22,6 +26,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  overflow: scroll;
 }
 
 .text-input {
