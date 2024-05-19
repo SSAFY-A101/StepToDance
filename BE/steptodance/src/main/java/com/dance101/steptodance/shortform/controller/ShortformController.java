@@ -56,11 +56,10 @@ public class ShortformController {
 
 	@PostMapping(value="/file")
 	public ResponseEntity<ApiResponse<Long>> uploadShortform(
-		// @AuthenticationPrincipal SecurityUser securityUser,
+		@AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute ShortformUploadMultipartRequest request
 	){
-		// Long response = shortformService.shortformUploadFile(securityUser, request);
-		Long response = shortformService.shortformUploadFile(2L, request);
+		Long response = shortformService.shortformUploadFile(securityUser.getId(), request);
 		return ApiResponse.toResponse(CREATED, SUCCESS_SHORTS_CREATION, response);
 	}
 
