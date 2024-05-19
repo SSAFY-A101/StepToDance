@@ -91,10 +91,22 @@ const ShowShortForm = () => {
         }
       }
     };
+
+    const touchHandler = (e) => {
+      if (e.type === "touchmove" || e.type === "touchend") {
+        e.preventDefault();
+      }
+    };
+
     const outerDivRefCurrent = outerDivRef.current;
     outerDivRefCurrent.addEventListener("wheel", wheelHandler);
+    outerDivRefCurrent.addEventListener("touchmove", touchHandler, { passive: false });
+    outerDivRefCurrent.addEventListener("touchend", touchHandler, { passive: false });
+
     return () => {
       outerDivRefCurrent.removeEventListener("wheel", wheelHandler);
+      outerDivRefCurrent.removeEventListener("touchmove", touchHandler);
+      outerDivRefCurrent.removeEventListener("touchend", touchHandler);
     };
   }, [flag]);
 
@@ -138,6 +150,12 @@ const ShowShortForm = () => {
       });
 
       return () => {
+        showShortForm.forEach((_, index) => {
+          const videoElement = document.getElementById(`video_${index}`);
+          if (videoElement) {
+            observer.unobserve(videoElement);
+          }
+        });
         observer.disconnect();
       };
     }
