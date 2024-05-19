@@ -109,6 +109,24 @@
   cursor: wait;
 }
 
+
+.mirrorToggle {
+  position: absolute;
+  top: 0vh;
+  right: 33vw;
+  z-index: 2;
+  border-radius: 10px;
+  background-color: var;
+  border: 1px solid #000000;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.mirrorToggle.active {
+  background-color: #000000;
+  color: #ffffff;
+}
+
 .spinner {
   position: relative;
   display: inline-flex;
