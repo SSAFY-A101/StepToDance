@@ -2,6 +2,8 @@
   height: calc(100vh - 11.5rem);
   overflow-y: auto;
   overflow-x: hidden;
+  position: relative;
+  z-index: 10;
 }
 
 .title {
@@ -64,9 +66,12 @@
   will-change: transform;
   backface-visibility: hidden;
   border: 0.15em solid var(--glow1-color);
-  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
-  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
-  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),
+    0px 0px 0.5em 0px var(--glow1-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),
+    0px 0px 0.5em 0px var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),
+    0px 0px 0.5em 0px var(--glow1-color);
   background-color: hsl(212, 100%, 64%);
 }
 
@@ -197,9 +202,12 @@ a {
   border-radius: 10px;
   padding: 10px;
   margin-top: 2vh;
-  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
-  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
-  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color), 0px 0px 0.5em 0px var(--glow1-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),
+    0px 0px 0.5em 0px var(--glow1-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),
+    0px 0px 0.5em 0px var(--glow1-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow1-color),
+    0px 0px 0.5em 0px var(--glow1-color);
 }
 
 .subtitle_shorts {
@@ -209,9 +217,12 @@ a {
   font-family: "esamanru-Medium";
   border-radius: 10px;
   padding: 10px;
-  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
-  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
-  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color),
+    0px 0px 0.5em 0px var(--glow-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color),
+    0px 0px 0.5em 0px var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color),
+    0px 0px 0.5em 0px var(--glow-color);
   margin-top: 5vh;
 }
 
@@ -272,7 +283,7 @@ a {
     gap: 10;
   }
   .profileImage {
-    width: 7.5rem; 
+    width: 7.5rem;
     height: 7.5rem;
     margin-top: 3vh;
   }
@@ -284,7 +295,7 @@ a {
   }
 
   .logoutButton {
-    padding: 0.5rem 1rem; 
+    padding: 0.5rem 1rem;
     font-size: 0.9rem;
     font-family: "WavvePADO-Regular";
   }

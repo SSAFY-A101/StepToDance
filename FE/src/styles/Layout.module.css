@@ -23,7 +23,6 @@
 }
 
 .mainContent {
-  flex-grow: 1; /* Ensures it takes the remaining space */
   height: calc(100vh - 11.5rem);
 }
 

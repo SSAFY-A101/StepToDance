@@ -7,6 +7,8 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - 11.5rem);
+  position: relative;
+  z-index: 10;
 }
 
 .title {
@@ -80,9 +82,12 @@
   font-size: 0.8rem;
   /* margin-bottom: 1vh; */
   border: 0.15em solid var(--glow-color);
-  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
-  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
-  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color), 0px 0px 0.5em 0px var(--glow-color);
+  -webkit-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color),
+    0px 0px 0.5em 0px var(--glow-color);
+  -moz-box-shadow: inset 0px 0px 0.5em 0px var(--glow-color),
+    0px 0px 0.5em 0px var(--glow-color);
+  box-shadow: inset 0px 0px 0.5em 0px var(--glow-color),
+    0px 0px 0.5em 0px var(--glow-color);
   background-color: hsl(0, 100%, 64%);
 }
 
