@@ -17,6 +17,9 @@
   }
 }
 
+form {
+  z-index: 10;
+}
 /* 기존 스타일 */
 .guide_upload-page {
   width: 100vw;
@@ -26,7 +29,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  overflow: scroll;
+  overflow-y: scroll;
 }
 
 .text-input {
@@ -59,6 +62,7 @@
   flex-direction: row;
   align-items: center;
   width: 100%;
+  z-index: 10;
 }
 
 .guide-select {
@@ -115,6 +119,7 @@
   justify-content: center;
   align-items: center;
   font-size: 2rem;
+  z-index: 10;
 }
 
 .guide-play {
@@ -220,4 +225,8 @@ span {
 .bar + span {
   opacity: 0.45;
   transition: opacity var(--transDur) ease-in-out;
+}
+
+button {
+  z-index: 10;
 }
