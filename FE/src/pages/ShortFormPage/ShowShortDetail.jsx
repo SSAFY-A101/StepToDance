@@ -33,9 +33,10 @@ const ShowShortDetail = () => {
               loop
               muted
               playsInline></video>
-            <p className={styles["short-title"]}>
-              {showShortForm.song_title} - {showShortForm.singer}
-            </p>
+            <article className={styles["short-title"]}>
+              <p>@{showShortForm.uploader}</p>
+              <p>{showShortForm.song_title} - {showShortForm.singer}</p>
+            </article>
             <img
               className={styles["short-share"]}
               onClick={() => setIsModal(true)}
