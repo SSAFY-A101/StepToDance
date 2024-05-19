@@ -1,24 +1,25 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { guideUpload } from "../../api/GuideApis";
-import LoadingPage from '../LoadingPage/LoadingPage'; // Import LoadingPage
+import LoadingPage from '../LoadingPage/LoadingPage';
 import styles from "./GuideUploadPage.module.css";
 import UploadIcon from "@mui/icons-material/Upload";
+import Timeline from "../../components/Timeline";
 
 const GuideUploadPage = () => {
   const [selectVideo, setSelectVideo] = useState(null);
   const [selectTitle, setSelectTitle] = useState("");
-  const [videoDuration, setVideoDuration] = useState('00:00');
+  const [videoDuration, setVideoDuration] = useState(0);
   const [artistName, setArtistName] = useState("");
   const [selectedOption, setSelectedOption] = useState('1');  
-  const [highlights, setHighlights] = useState([{ start: '00:00', end: '00:00' }]);
-  const [isUploading, setIsUploading] = useState(false); // Uploading state
-  const [uploadProgress, setUploadProgress] = useState(0); // Progress state
+  const [highlights, setHighlights] = useState([{ start: 0, end: 0 }]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const videoRef = useRef(null);
 
   const handleOptionChange = (e) => {
     setSelectedOption(e.target.value);
   };
-  
+
   const changeHandler = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -27,41 +28,40 @@ const GuideUploadPage = () => {
       const reader = new FileReader();
       reader.onload = event => videoRef.current.src = event.target.result;
       reader.readAsDataURL(file);
-      setVideoDuration('00:00'); 
+      setVideoDuration(0); 
     }
   };
 
   const handleLoadedMetadata = () => {
-    const duration = formatTime(new Date(videoRef.current.duration * 1000));
+    const duration = videoRef.current.duration;
     setVideoDuration(duration);
-    setHighlights([{ start: '00:00', end: duration }]);
+    setHighlights([{ start: 0, end: duration }]);
   };
 
-  function formatTime(date) {
-    let minutes = date.getMinutes().toString().padStart(2, "0");
-    let seconds = date.getSeconds().toString().padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  }
+  const handleHighlightChange = (start, end) => {
+    setHighlights([{ start, end }]);
+  };
 
-  const handleHighlightChange = (index, field, value) => {
-    const newHighlights = highlights.map((highlight, i) => {
-      if (i === index) {
-        return { ...highlight, [field]: value };
-      }
-      return highlight;
-    });
-    setHighlights(newHighlights);
+  const handlePlaybarMove = (clickTime) => {
+    videoRef.current.currentTime = clickTime;
+  };
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.floor(seconds % 60);
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainingSeconds).padStart(2, "0")}`;
   };
 
   const sendApi = async () => {
-    setIsUploading(true); // Start uploading
+    setIsUploading(true);
     const formData = new FormData();
     formData.append("genre_id", selectedOption);
     formData.append("song_title", selectTitle);
     formData.append("singer", artistName);
     highlights.forEach((highlight) => {
-      formData.append(`highlight_section_start`, highlight.start);
-      formData.append(`highlight_section_end`, highlight.end);
+      formData.append("highlight_section_start_at", formatTime(highlight.start));
+      formData.append("highlight_section_end_at", formatTime(highlight.end));
     });
     formData.append("video", selectVideo);
 
@@ -77,13 +77,13 @@ const GuideUploadPage = () => {
       console.log(response);
       if (response.status === 201) {
         alert("가이드 업로드 성공!");
-        window.location.reload(); // Reload the page
+        window.location.reload();
       }
     } catch (error) {
       console.error("Error uploading guide:", error);
       alert("가이드 업로드 실패!");
     } finally {
-      setIsUploading(false); // Finish uploading
+      setIsUploading(false);
     }
   };
 
@@ -186,33 +186,31 @@ const GuideUploadPage = () => {
           </>
         )}
       </article>
-      {highlights.map((highlight, index) => (
-        <div key={index} className={styles["input-section"]}>
-          <input
-            type="text"
-            placeholder="Highlight start (default 00:00)"
-            value={highlight.start}
-            onChange={(e) => handleHighlightChange(index, 'start', e.target.value)}
-            className={styles["text-input"]}
+      <div className={styles.timelineContainer}>
+        {selectVideo && videoDuration > 0 && (
+          <Timeline
+            fixedMinTime={0}
+            fixedMaxTime={videoDuration}
+            rangeMin={highlights[0].start}
+            rangeMax={highlights[0].end}
+            initialStartAt={0}
+            initialEndAt={videoDuration}
+            timeGap={1}
+            onTimeChange={handleHighlightChange}
+            onPlaybarMove={handlePlaybarMove}
+            currentTime={videoRef.current ? videoRef.current.currentTime : 0}
           />
-          <input
-            type="text"
-            placeholder="Highlight end (video end time)"
-            value={highlight.end}
-            onChange={(e) => handleHighlightChange(index, 'end', e.target.value)}
-            className={styles["text-input"]}
-          />
-        </div>
-      ))}
+        )}
+      </div>
       <button
         type="button"
         className={styles["guide-submit"]}
         onClick={sendApi}
-        disabled={isUploading} // Disable button during upload
+        disabled={isUploading}
       >
         <UploadIcon style={{ color: "white" }} />
       </button>
-      {isUploading && <div className={styles.spinner}></div>} {/* Spinner */}
+      {isUploading && <div className={styles.spinner}></div>}
     </section>
   );
 };
