@@ -38,8 +38,8 @@ export const WebcamStreamCapture = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [version, setVersion] = useState("sideBySide");
-  const [isMirrored, setIsMirrored] = useState(true); // State to manage mirrored mode
-  const [facingMode, setFacingMode] = useState("user"); // State to manage camera facing mode
+  const [isMirrored, setIsMirrored] = useState(false); // State to manage mirrored mode
+  const [facingMode, setFacingMode] = useState("environment"); // State to manage camera facing mode
 
   const handleSliderChange = (e) => {
     const newOpacity = e.target.value;
@@ -255,7 +255,7 @@ export const WebcamStreamCapture = () => {
         className={`${styles.cameraToggle} ${facingMode === "user" ? styles.active : ""}`}
         onClick={toggleCamera}
       >
-        {facingMode === "user" ? "후면 카메라" : "전면 카메라"}
+        {facingMode === "user" ? "전면 카메라" : "후면 카메라"}
       </div>
       <input
         type="range"
