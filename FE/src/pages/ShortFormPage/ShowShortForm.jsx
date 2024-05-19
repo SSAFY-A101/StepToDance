@@ -67,32 +67,16 @@ useEffect(() => {
     const { pageY } = touch;
     const { scrollTop } = outerDivRef.current;
     const pageHeight = outerDivRef.current.offsetHeight;
-
+  
     // 터치 스크롤 이벤트의 기본 동작 막기
     e.preventDefault();
-
+  
     // 터치 시작 지점과 현재 터치 위치의 차이 계산
     const deltaY = pageY - startY;
-
+  
     // 현재 스크롤 위치에 따라 스크롤 위치를 조정
     if (deltaY > 0) {
-      // 스크롤을 다음 페이지로 이동
-      if (scrollTop < pageHeight * 3) {
-        outerDivRef.current.scrollTo({
-          top: scrollTop + pageHeight,
-          left: 0,
-          behavior: "smooth",
-        });
-      } else {
-        // 마지막 페이지에 도달하면 첫 페이지로 이동
-        outerDivRef.current.scrollTo({
-          top: 0,
-          left: 0,
-          behavior: "smooth",
-        });
-      }
-    } else {
-      // 스크롤을 이전 페이지로 이동
+      // 아래로 스크롤할 때
       if (scrollTop > 0) {
         outerDivRef.current.scrollTo({
           top: scrollTop - pageHeight,
@@ -107,11 +91,27 @@ useEffect(() => {
           behavior: "smooth",
         });
       }
+    } else {
+      // 위로 스크롤할 때
+      if (scrollTop < pageHeight * 3) {
+        outerDivRef.current.scrollTo({
+          top: scrollTop + pageHeight,
+          left: 0,
+          behavior: "smooth",
+        });
+      } else {
+        // 마지막 페이지에 도달하면 첫 페이지로 이동
+        outerDivRef.current.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: "smooth",
+        });
+      }
     }
-
+  
     // 터치 시작 지점 업데이트
     startY = pageY;
-  };
+  };  
 
   // 스크롤 이벤트 리스너 등록
   outerDivRef.current.addEventListener("wheel", scrollHandler, { passive: false });
