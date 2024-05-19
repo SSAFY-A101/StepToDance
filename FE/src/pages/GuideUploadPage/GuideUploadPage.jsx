@@ -172,6 +172,7 @@ const GuideUploadPage = () => {
               controls
               autoPlay
               onLoadedMetadata={handleLoadedMetadata}
+              playsInline={true}
             ></video>
           </>
         ) : (
