@@ -150,7 +150,8 @@ const ShowShortForm = () => {
             muted
             playsInline></video>
           <p className={styles["short-title"]}>
-            {short.song_title} - {short.singer}
+            <p>@{short.uploader}</p>
+            <p>{short.song_title} - {short.singer}</p>
           </p>
           <img
             className={styles["short-share"]}
