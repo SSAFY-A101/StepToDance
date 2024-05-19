@@ -33,9 +33,7 @@ public class GuideController {
 	public ResponseEntity<ApiResponse<GuideListFindResponse>> findGuideList(
 		@AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute SearchConditions searchConditions) {
-		// TODO: 토큰을 사용하도록 변경
-		// long userId = securityUser.getId();
-		long userId = 2L;
+		long userId = securityUser.getId();
 		GuideListFindResponse response = guideService.findGuideList(searchConditions, userId);
 		return ApiResponse.toResponse(OK, SUCCESS_GUIDE_LIST, response);
 	}
@@ -52,9 +50,7 @@ public class GuideController {
 		@AuthenticationPrincipal SecurityUser securityUser,
 		@ModelAttribute GuideUploadMultipartRequest request
 	) {
-		// TODO: 토큰을 사용하도록 변경
-		// guideService.guideUploadFile(securityUser.getId(), request);
-		guideService.guideUploadFile(2L, request);
+		guideService.guideUploadFile(securityUser.getId(), request);
 		return ApiResponse.toEmptyResponse(CREATED, CREATED_GUIDE);
 	}
 
@@ -77,9 +73,7 @@ public class GuideController {
 		@PathVariable("guide_id") long guideId,
 		@ModelAttribute GuideFeedbackCreateRequest guideFeedbackCreateRequest
 	) throws ExecutionException, InterruptedException {
-		// TODO: 토큰에서 정보를 받도록 변경
-		// long userId = securityUser.getId();
-		long userId = 2L;
+		long userId = securityUser.getId();
 		FeedbackResponse response = guideService.createGuideFeedback(userId, guideId, guideFeedbackCreateRequest);
 		return ApiResponse.toResponse(CREATED, SUCCESS_FEEDBACK_CREATION, response);
 	}
