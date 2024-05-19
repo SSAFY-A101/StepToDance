@@ -181,14 +181,14 @@ const DetailFeedback = () => {
           </div>
           <div className={styles.progressTime}>{formatTime(currentTime)}/{formatTime(duration)}</div>
           <h3 className={styles.infoTitle1}>하이라이트 구간</h3>
-          <p className={styles.info}>
+          <p style={{color:'white'}} className={styles.info}>
             {feedbackDetail.feedback.highlight_section_start_at} - {feedbackDetail.feedback.highlight_section_end_at}
           </p>
           <h3 className={styles.infoTitle2}>틀린 구간</h3>
           <ul className={styles.info}>
             {feedbackDetail.incorrect_section_list.length > 0 ? (
               feedbackDetail.incorrect_section_list.map((section, index) => (
-                <li key={index}>
+                <li style={{color:'white'}} key={index}>
                   {section.start_at} ~ {addSeconds(section.start_at, 3)}
                 </li>
               ))
