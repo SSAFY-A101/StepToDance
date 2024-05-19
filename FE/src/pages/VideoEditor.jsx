@@ -15,7 +15,7 @@ function VideoEditor() {
   const [played, setPlayed] = useState(0);
   const [startAt, setStartAt] = useState(parseTime(state.highlightStartAt));
   const [endAt, setEndAt] = useState(parseTime(state.highlightEndAt));
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState(15);
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
@@ -44,6 +44,13 @@ function VideoEditor() {
   };
 
   useEffect(() => {
+    if (!isNaN(duration)) {
+      setDuration(duration);
+    }
+  }, [duration]);
+  
+
+  useEffect(() => {
     window.addEventListener("resize", handleWindowResize);
     return () => {
       window.removeEventListener("resize", handleWindowResize);
@@ -57,14 +64,20 @@ function VideoEditor() {
 
   const handleLoadedMetadata = () => {
     const videoDuration = videoRef.current.duration;
-    setDuration(videoDuration);
-    if (videoDuration < startAt) {
-      setStartAt(0);
-      setEndAt(videoDuration);
-    } else if (videoDuration < endAt) {
-      setEndAt(videoDuration);
+    if (!isNaN(videoDuration) && isFinite(videoDuration)) {
+      setDuration(videoDuration);
+      if (videoDuration < startAt) {
+        setStartAt(0);
+        setEndAt(videoDuration);
+      } else if (videoDuration < endAt) {
+        setEndAt(videoDuration);
+      }
+    } else {
+      // 비디오의 duration이 유효하지 않은 경우 처리할 로직 추가
+      console.log("duration이 유효하지 않은 값")
     }
   };
+  
 
   const handleTimeUpdate = () => {
     const currentTime = videoRef.current.currentTime;
@@ -194,7 +207,7 @@ function VideoEditor() {
       <div className={styles.timelineContainer}>
         <Timeline 
           fixedMinTime={0} 
-          fixedMaxTime={duration || 1} 
+          fixedMaxTime={duration} 
           rangeMin={startAt}
           rangeMax={endAt}
           initialStartAt={initialStartAt}

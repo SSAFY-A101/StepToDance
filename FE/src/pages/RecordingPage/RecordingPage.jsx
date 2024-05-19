@@ -38,8 +38,11 @@ export const WebcamStreamCapture = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
   const [version, setVersion] = useState("sideBySide");
-  const [isMirrored, setIsMirrored] = useState(false); // State to manage mirrored mode
-  const [facingMode, setFacingMode] = useState("environment"); // State to manage camera facing mode
+  const [isMirrored, setIsMirrored] = useState(false);
+  const [facingMode, setFacingMode] = useState("environment"); 
+
+  const [startAt, setStartAt] = useState("00:00:00");
+  const [endAt, setEndAt] = useState("00:00:00");
 
   const handleSliderChange = (e) => {
     const newOpacity = e.target.value;
@@ -66,9 +69,10 @@ export const WebcamStreamCapture = () => {
   };
 
   function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
     seconds = Math.floor(seconds % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   }
 
   useEffect(() => {
@@ -100,6 +104,7 @@ export const WebcamStreamCapture = () => {
         const recorder = new RecordRTC(stream, options);
         recorder.startRecording();
         setRecordRTC(recorder);
+        setStartAt(formatTime(videoRef.current.getCurrentTime()));
       })
       .catch((error) => {
         console.error("Error accessing the media devices.", error);
@@ -115,6 +120,7 @@ export const WebcamStreamCapture = () => {
         setIsRecording(false);
         recordRTC.destroy();
         setRecordRTC(null);
+        setEndAt(formatTime(videoRef.current.getCurrentTime()));
       });
     }
   }, [recordRTC, setIsRecording]);
@@ -125,23 +131,29 @@ export const WebcamStreamCapture = () => {
   }, []);
 
   const resultHandler = async () => {
-    const start = formatTime(new Date("00:00"));
-    const end = formatTime(new Date("01:00"));
-    setIsLoading(true);
-    const res = await fetch(recordVideo)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const formData = new FormData();
-        formData.append("video", blob, "video.mp4");
-        formData.append("start_at", start);
-        formData.append("end_at", end);
+    if (!recordVideo) {
+      alert("No video recorded.");
+      return;
+    }
 
-        return formData;
-      });
+    setIsLoading(true);
+
+    const formData = new FormData();
 
     try {
-      const response = await guideResult(guideId, res);
-      if (response.status === 201) {
+      const response = await fetch(recordVideo);
+      const blob = await response.blob();
+
+      formData.append("video", blob, "video.mp4");
+      formData.append("start_at", startAt);
+      formData.append("end_at", endAt);
+
+      console.log("FormData entries:", Array.from(formData.entries())); // Debugging line
+
+      // Make the API request
+      const guideResponse = await guideResult(guideId, formData);
+
+      if (guideResponse.status === 201) {
         alert("피드백 채점 요청 성공! 마이페이지 피드백 페이지에서 해당 채점 결과를 확인하실 수 있습니다.");
         navigate("/home");
       } else {
@@ -154,7 +166,7 @@ export const WebcamStreamCapture = () => {
       setIsLoading(false);
     }
   };
-
+  
   const handleBackClick = () => {
     const confirmBack = window.confirm(
       "해당 페이지에서 벗어나게 되면 녹화된 영상이 삭제됩니다.\n정말 나가시겠습니까?"
