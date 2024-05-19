@@ -1,83 +1,83 @@
 @media screen and (max-width: 450px) {
-    .hide {
-        visibility: visible;
-    }
-    .mobileMenu {
-        display: flex;
-        justify-content: space-between;
-    }
-    
-    .mobileMenu.open {
-        transform: translateX(0); /* Slide in */
-      }
+  .hide {
+    visibility: visible;
+  }
+  .mobileMenu {
+    display: flex;
+    justify-content: space-between;
+    z-index: 15;
+  }
 
-    .mobileSide {
+  .mobileMenu.open {
+    transform: translateX(0); /* Slide in */
+  }
+
+  .mobileSide {
     list-style-type: none;
     padding: 20px; /* Padding for aesthetic spacing */
     margin: 0;
-    }
+  }
 
-    .mobileSide li a {
+  .mobileSide li a {
     text-decoration: none;
-    color: #1E1E23;
+    color: #1e1e23;
     display: block; /* Block for easier clicking */
     padding: 2vh 5vw; /* Padding for items */
-    }
+  }
 
-    .toggleMenu {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        font-size: 30px;  
-        position: absolute;
-        top: 2.5vh; /* Adjust based on design */
-        right: 3.5vw; /* Right for easy access */
-        cursor: pointer;
-    }
+  .toggleMenu {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 30px;
+    position: absolute;
+    top: 2.5vh; /* Adjust based on design */
+    right: 3.5vw; /* Right for easy access */
+    cursor: pointer;
+  }
 
-    .sideMenu {
-        height: 100%;
-        z-index: 3;  /* Ensured one z-index property */
-        position: fixed;
-        top: 0;
-        right: 0;  /* Changed from left to right */
-        padding-top: 10vh;
-        background-color:  #f9f9f9;
-        transition: width 0.3s ease-in-out;  /* Transition for width to smooth slide effect */
-        width: 0;  /* Initial width set to 0 */
-        overflow: hidden;
-    }
+  .sideMenu {
+    height: 100%;
+    z-index: 3; /* Ensured one z-index property */
+    position: fixed;
+    top: 0;
+    right: 0; /* Changed from left to right */
+    padding-top: 10vh;
+    background-color: #f9f9f9;
+    transition: width 0.3s ease-in-out; /* Transition for width to smooth slide effect */
+    width: 0; /* Initial width set to 0 */
+    overflow: hidden;
+  }
 
-    .userName {
-        margin-left: 4vw;
-        font-size: 1.1rem; /* Smaller font size for the greeting */
-    }
-    
-    .userNickname {
-        font-size: 1.4rem; /* Larger font size for the nickname */
-    }
+  .userName {
+    margin-left: 4vw;
+    font-size: 1.1rem; /* Smaller font size for the greeting */
+  }
 
-    .mobileSide {
-        display: flex;
-        flex-direction: column;
-        margin-top: 3vh;
-        padding: 0;
-    }
+  .userNickname {
+    font-size: 1.4rem; /* Larger font size for the nickname */
+  }
 
-    .menuOpen {
-        font-size: 27px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;  /* Centers text/icon vertically */
-    }
+  .mobileSide {
+    display: flex;
+    flex-direction: column;
+    margin-top: 3vh;
+    padding: 0;
+  }
 
-    .withdrawLink {
-        font-size: 0.6rem; /* 작은 글씨 크기 */
-        color: gray; /* 회색 글씨 */
-        margin-top: 26vh;
-        margin-right: 5vw;
-        text-align: end; /* 텍스트 중앙 정렬 */
-        cursor: pointer; /* 마우스 오버 시 커서 변경 */
-    }
-    
+  .menuOpen {
+    font-size: 27px;
+    cursor: pointer;
+    display: flex;
+    align-items: center; /* Centers text/icon vertically */
+  }
+
+  .withdrawLink {
+    font-size: 0.6rem; /* 작은 글씨 크기 */
+    color: gray; /* 회색 글씨 */
+    margin-top: 26vh;
+    margin-right: 5vw;
+    text-align: end; /* 텍스트 중앙 정렬 */
+    cursor: pointer; /* 마우스 오버 시 커서 변경 */
+  }
 }
