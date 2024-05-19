@@ -13,7 +13,7 @@ const customAxios = axios.create({
 });
 customAxios.defaults.headers.common[
   "Authorization"
-] = `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkIjoxNzE1NjcxNjc0NzM5LCJpZCI6MiwiZXhwaXJlc0luIjoyNTkyMDAwMDAwLCJhdXRoIjoiQVVUSE9SSVRZIiwiZXhwIjoxNzE4MjYzNjc0fQ.lpA4fIBAkBKrxUA6HoVYiZSw3a4NvaLiblXpLsCilbk`;
+] = `Bearer eyJhbGciOiJIUzI1NiJ9.eyJjcmVhdGVkIjoxNzE2MTEwOTc3MDA0LCJpZCI6OCwiZXhwaXJlc0luIjoyNTkyMDAwMDAwLCJhdXRoIjoiQVVUSE9SSVRZIiwiZXhwIjoxNzE4NzAyOTc3fQ.3qaW7vlvvK7T2ZDisBC5kY72hk-DvK_RwPwaOYhH_8I`;
 
 // if (accessToken) {
 //   customAxios.defaults.headers.common["Authorization"] =
