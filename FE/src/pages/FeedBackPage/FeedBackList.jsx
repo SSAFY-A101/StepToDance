@@ -19,7 +19,7 @@ const FeedBackList = () => {
     const fetchFeedbacks = async () => {
       try {
         setLoading(true);
-        const data = await getUserDatas(limit, feedbackPage * limit);
+        const data = await getUserDatas(limit, feedbackPage);
         setFeedbackList((prevFeedback) => {
           const newFeedbacks = data.data.feedback_list.filter(
             (newFeedback) => !prevFeedback.some((feedback) => feedback.id === newFeedback.id)
@@ -38,9 +38,23 @@ const FeedBackList = () => {
     }
   }, [feedbackPage, initialLoad]);
 
-  const fetchMoreFeedbacks = () => {
-    setFeedbackPage((prevPage) => prevPage + 1);
-  };
+  const fetchMoreFeedbacks = async () => {
+    try {
+      setLoading(true);
+      const data = await getUserDatas(limit, feedbackPage + 1);
+      setFeedbackList((prevFeedback) => {
+        const newFeedbacks = data.data.feedback_list.filter(
+          (newFeedback) => !prevFeedback.some((feedback) => feedback.id === newFeedback.id)
+        );
+        return [...prevFeedback, ...newFeedbacks];
+      });
+      setLoading(false);
+      setFeedbackPage((prevPage) => prevPage + 1); // feedbackPage를 업데이트하여 다음 페이지를 요청하도록 함
+    } catch (error) {
+      console.error("Error fetching feedbacks:", error);
+      setLoading(false);
+    }
+  };  
 
   const handleDelete = async (feedbackId) => {
     try {
