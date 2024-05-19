@@ -194,7 +194,7 @@ function VideoEditor() {
       <div className={styles.timelineContainer}>
         <Timeline 
           fixedMinTime={0} 
-          fixedMaxTime={67} 
+          fixedMaxTime={duration || 1} 
           rangeMin={startAt}
           rangeMax={endAt}
           initialStartAt={initialStartAt}
