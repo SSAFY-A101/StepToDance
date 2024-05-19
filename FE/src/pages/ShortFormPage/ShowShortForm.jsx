@@ -15,12 +15,13 @@ const ShowShortForm = () => {
 
   // 스크롤 이벤트 막기
   useEffect(() => {
-    const wheelHandler = (e) => {
+    const touchHandler = (e) => {
       e.preventDefault();
-      const { deltaY } = e;
+      const { pageY } = e.touches[0];
       const { scrollTop } = outerDivRef.current;
       const pageHeight = outerDivRef.current.offsetHeight;
       setCurrentPos(pageHeight);
+      const deltaY = pageY - startY;
       if (deltaY > 0) {
         // 스크롤 내릴 때
         if (scrollTop >= 0 && scrollTop < pageHeight) {
@@ -92,23 +93,21 @@ const ShowShortForm = () => {
       }
     };
 
-    const touchHandler = (e) => {
-      if (e.type === "touchmove" || e.type === "touchend") {
-        e.preventDefault();
-      }
+    let startY = 0;
+
+    const touchStartHandler = (e) => {
+      startY = e.touches[0].pageY;
     };
 
     const outerDivRefCurrent = outerDivRef.current;
-    outerDivRefCurrent.addEventListener("wheel", wheelHandler);
+    outerDivRefCurrent.addEventListener("touchstart", touchStartHandler);
     outerDivRefCurrent.addEventListener("touchmove", touchHandler, { passive: false });
-    outerDivRefCurrent.addEventListener("touchend", touchHandler, { passive: false });
 
     return () => {
-      outerDivRefCurrent.removeEventListener("wheel", wheelHandler);
+      outerDivRefCurrent.removeEventListener("touchstart", touchStartHandler);
       outerDivRefCurrent.removeEventListener("touchmove", touchHandler);
-      outerDivRefCurrent.removeEventListener("touchend", touchHandler);
-    };
-  }, [flag]);
+  };
+}, [flag]);
 
   // 데이터 받아오는 api 요청
   useEffect(() => {
