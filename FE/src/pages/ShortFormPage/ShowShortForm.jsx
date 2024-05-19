@@ -10,6 +10,7 @@ const ShowShortForm = () => {
   const [currentPos, setCurrentPos] = useState();
   const [isModal, setIsModal] = useState(false);
   const [currentVideoId, setCurrentVideoId] = useState(null);
+  const [flag, setFlag] = useState(false);
   const outerDivRef = useRef();
 
   // 스크롤 이벤트 막기
@@ -40,12 +41,19 @@ const ShowShortForm = () => {
             left: 0,
             behavior: "smooth",
           });
-        } else {
+        } else if (scrollTop >= pageHeight * 3 && scrollTop < pageHeight * 4) {
           outerDivRef.current.scrollTo({
             top: pageHeight * 4 + 11,
             left: 0,
             behavior: "smooth",
           });
+        } else {
+          outerDivRef.current.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth",
+          });
+          setFlag(!flag);
         }
       } else {
         // 스크롤 올릴 때
@@ -55,6 +63,7 @@ const ShowShortForm = () => {
             left: 0,
             behavior: "smooth",
           });
+          setFlag(!flag);
         } else if (scrollTop >= pageHeight && scrollTop < pageHeight * 2) {
           outerDivRef.current.scrollTo({
             top: 0,
@@ -87,7 +96,7 @@ const ShowShortForm = () => {
     return () => {
       outerDivRefCurrent.removeEventListener("wheel", wheelHandler);
     };
-  }, []);
+  }, [flag]);
 
   // 데이터 받아오는 api 요청
   useEffect(() => {
@@ -97,7 +106,7 @@ const ShowShortForm = () => {
       return response.data;
     };
     getData();
-  }, []);
+  }, [flag]);
 
   // Intersection Observer for autoplay
   useEffect(() => {
@@ -148,7 +157,8 @@ const ShowShortForm = () => {
             id={`video_${index}`}
             loop
             muted
-            playsInline></video>
+            playsInline
+          ></video>
           <p className={styles["short-title"]}>
             {short.song_title} - {short.singer}
           </p>
