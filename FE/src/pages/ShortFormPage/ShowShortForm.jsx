@@ -3,6 +3,7 @@ import { getShortformList } from "../../api/ShortformApis";
 import { useEffect, useRef, useState } from "react";
 import FLY from "../../assets/images/fly.png"; // <a href="https://www.flaticon.com/kr/free-icons/-" title="종이 접기 아이콘">종이 접기 아이콘 제작자: Smashicons - Flaticon</a>
 import ShareModal from "./ShareModal.jsx";
+import ReactPlayer from "react-player";
 
 const ShowShortForm = () => {
   const [showShortForm, setShowShortForm] = useState([]);
@@ -12,6 +13,9 @@ const ShowShortForm = () => {
   const [currentVideoId, setCurrentVideoId] = useState(null);
   const [flag, setFlag] = useState(false);
   const outerDivRef = useRef();
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [widthSize, setWidthSize] = useState(window.innerWidth);
+  const [heightSize, setHeightSize] = useState(window.innerHeight);
 
   // 스크롤 이벤트 막기
 useEffect(() => {
@@ -152,13 +156,11 @@ useEffect(() => {
 
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          const video = entry.target;
+          const videoIndex = parseInt(entry.target.dataset.index, 10);
           if (entry.isIntersecting) {
-            video
-              .play()
-              .catch((error) => console.error("Video play failed:", error));
-          } else {
-            video.pause();
+            setIsPlaying(videoIndex);
+          } else if (videoIndex === isPlaying) {
+            setIsPlaying(null);
           }
         });
       }, options);
@@ -186,18 +188,23 @@ useEffect(() => {
   useEffect(() => {
     const videoList = showShortForm.map((short, index) => {
       return (
-        <article className={styles["vidoe-page"]} key={index}>
+        <article className={styles["video-page"]} key={index}>
           {isModal && currentVideoId === index ? (
             <ShareModal infos={short} setIsModal={setIsModal} />
           ) : null}
-          <video
+          <div className={styles["short-video"]}>
+          <ReactPlayer
             className={styles["short-video"]}
-            src={short.video_url}
+            url={short.video_url}
             id={`video_${index}`}
-            loop
+            loop={true}
+            playing={isPlaying}
+            width={widthSize}
+            height={heightSize * 0.9}
             muted
             playsInline
-          ></video>
+          />
+          </div>
           <article className={styles["short-title"]}>
             <p>@{short.uploader}</p>
             <p>{short.song_title} - {short.singer}</p>
