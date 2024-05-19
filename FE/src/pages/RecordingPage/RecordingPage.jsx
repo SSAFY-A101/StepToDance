@@ -39,6 +39,7 @@ export const WebcamStreamCapture = () => {
   const [ended, setEnded] = useState(false);
   const [version, setVersion] = useState("sideBySide");
   const [isMirrored, setIsMirrored] = useState(true); // State to manage mirrored mode
+  const [facingMode, setFacingMode] = useState("user"); // State to manage camera facing mode
 
   const handleSliderChange = (e) => {
     const newOpacity = e.target.value;
@@ -90,7 +91,7 @@ export const WebcamStreamCapture = () => {
     setIsRecording(true);
     setCapturing(true);
     navigator.mediaDevices
-      .getUserMedia({ video: true })
+      .getUserMedia({ video: { facingMode } })
       .then((stream) => {
         if (webcamRef.current) {
           webcamRef.current.srcObject = stream;
@@ -103,7 +104,7 @@ export const WebcamStreamCapture = () => {
       .catch((error) => {
         console.error("Error accessing the media devices.", error);
       });
-  }, [setIsRecording]);
+  }, [facingMode, setIsRecording]);
 
   const handleStopCaptureClick = useCallback(() => {
     if (recordRTC) {
@@ -161,6 +162,10 @@ export const WebcamStreamCapture = () => {
     if (confirmBack) {
       navigate(-1);
     }
+  };
+
+  const toggleCamera = () => {
+    setFacingMode((prevMode) => (prevMode === "user" ? "environment" : "user"));
   };
 
   const renderVideoPlayer = (url, ref, opacity = 1) => (
@@ -235,7 +240,7 @@ export const WebcamStreamCapture = () => {
           height={heightSize * 0.75}
           mirrored={isMirrored} // Apply mirrored state
           videoConstraints={{
-            facingMode: "user",
+            facingMode,
             aspectRatio: 1,
           }}
         />
@@ -245,6 +250,12 @@ export const WebcamStreamCapture = () => {
         onClick={() => setIsMirrored(!isMirrored)}
       >
         {isMirrored ? "미러 모드 On" : "미러 모드 Off"}
+      </div>
+      <div
+        className={`${styles.cameraToggle} ${facingMode === "user" ? styles.active : ""}`}
+        onClick={toggleCamera}
+      >
+        {facingMode === "user" ? "후면 카메라" : "전면 카메라"}
       </div>
       <input
         type="range"
@@ -276,7 +287,7 @@ export const WebcamStreamCapture = () => {
           height={heightSize * 0.75}
           mirrored={isMirrored} // Apply mirrored state
           videoConstraints={{
-            facingMode: "user",
+            facingMode,
             aspectRatio: 1,
           }}
           style={{
@@ -292,6 +303,12 @@ export const WebcamStreamCapture = () => {
         onClick={() => setIsMirrored(!isMirrored)}
       >
         {isMirrored ? "미러 모드 On" : "미러 모드 Off"}
+      </div>
+      <div
+        className={`${styles.cameraToggle} ${facingMode === "user" ? styles.active : ""}`}
+        onClick={toggleCamera}
+      >
+        {facingMode === "user" ? "후면 카메라" : "전면 카메라"}
       </div>
       <input
         type="range"
