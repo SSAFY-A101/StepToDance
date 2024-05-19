@@ -37,7 +37,8 @@ export const WebcamStreamCapture = () => {
   const [played, setPlayed] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [ended, setEnded] = useState(false);
-  const [version, setVersion] = useState("sideBySide"); // State to manage version
+  const [version, setVersion] = useState("sideBySide");
+  const [isMirrored, setIsMirrored] = useState(false); // State to manage mirrored mode
 
   const handleSliderChange = (e) => {
     const newOpacity = e.target.value;
@@ -119,7 +120,7 @@ export const WebcamStreamCapture = () => {
 
   const reRecord = useCallback(() => {
     setRecordVideo("");
-    setVersion("sideBySide"); // Reset to default version
+    setVersion("sideBySide");
   }, []);
 
   const resultHandler = async () => {
@@ -232,12 +233,18 @@ export const WebcamStreamCapture = () => {
           screenshotFormat="image/jpeg"
           width={widthSize / 2}
           height={heightSize * 0.75}
-          mirrored={false}
+          mirrored={isMirrored} // Apply mirrored state
           videoConstraints={{
             facingMode: "user",
             aspectRatio: 1,
           }}
         />
+      </div>
+      <div
+        className={`${styles.mirrorToggle} ${isMirrored ? styles.active : ""}`}
+        onClick={() => setIsMirrored(!isMirrored)}
+      >
+        {isMirrored ? "미러 모드 On" : "미러 모드 Off"}
       </div>
       <input
         type="range"
@@ -267,7 +274,7 @@ export const WebcamStreamCapture = () => {
           screenshotFormat="image/jpeg"
           width={widthSize}
           height={heightSize * 0.75}
-          mirrored={false}
+          mirrored={isMirrored} // Apply mirrored state
           videoConstraints={{
             facingMode: "user",
             aspectRatio: 1,
@@ -279,6 +286,12 @@ export const WebcamStreamCapture = () => {
             zIndex: 2,
           }}
         />
+      </div>
+      <div
+        className={`${styles.mirrorToggle} ${isMirrored ? styles.active : ""}`}
+        onClick={() => setIsMirrored(!isMirrored)}
+      >
+        {isMirrored ? "미러 모드 On" : "미러 모드 Off"}
       </div>
       <input
         type="range"
